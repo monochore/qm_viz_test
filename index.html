@@ -225,7 +225,7 @@
 
   .panel-core {
     display: grid;
-    grid-template-columns: 184px minmax(225px, 1.08fr) minmax(280px, 1.25fr) minmax(225px, 1.02fr);
+    grid-template-columns: 192px minmax(220px, 1.05fr) minmax(278px, 1.25fr) minmax(222px, 1.02fr);
     border-left: 1px solid var(--col-div);
     border-right: 1px solid var(--col-div);
     min-width: 0;
@@ -256,7 +256,7 @@
   }
 
   /* =========================================================================
-     4. UPPER DECK COLUMN 1: SYSTEM & OLED
+     4. UPPER DECK COLUMN 1: SYSTEM & OLED (WITH [V] VIZ SCOPE OVERRIDE)
      ========================================================================= */
   .oled-container {
     width: 100%;
@@ -269,15 +269,50 @@
     box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.04);
   }
 
-  #scope {
+  .scope-strip {
+    display: flex;
+    align-items: stretch;
+    gap: 4px;
     width: 100%;
-    max-width: 156px;
+  }
+
+  #scope {
+    flex: 1;
+    min-width: 0;
     height: 36px;
-    margin: 0 auto;
     background: var(--oled);
     border: 1px solid #222222;
     cursor: pointer;
     display: block;
+  }
+
+  #btn-viz-scope {
+    flex: 0 0 34px;
+    background: #090909;
+    border: 1px solid #444444;
+    color: var(--text-dim);
+    font-family: 'Oswald', sans-serif;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    padding: 0 2px;
+    cursor: pointer;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.1s;
+  }
+  #btn-viz-scope:hover {
+    background: #242424;
+    color: #ffffff;
+    border-color: #999999;
+  }
+  #btn-viz-scope.active {
+    background: var(--c-green);
+    color: #000000;
+    border-color: var(--c-green);
+    box-shadow: 0 0 8px rgba(0, 255, 68, 0.45);
   }
 
   .oled-row {
@@ -900,9 +935,12 @@
           <div class="column" data-col="sys">
             <div class="col-header">SYSTEM &amp; OLED</div>
             <div class="oled-container">
-              <canvas id="scope" width="156" height="36" title="Click to toggle Waveform / Peak Seismograph"></canvas>
+              <div class="scope-strip">
+                <canvas id="scope" width="118" height="36" title="Click to toggle Waveform / Peak Seismograph"></canvas>
+                <button type="button" id="btn-viz-scope" title="Override Main Canvas with Full-Screen Live ASCII Scope [V]">VIZ</button>
+              </div>
               <div class="oled-row">
-                <button class="oled-btn" id="btn-activate" title="Initialize, Resume, or Suspend Audio Engine (Idle Mode When Silent)">ACTIVATE</button>
+                <button class="oled-btn" id="btn-activate" title="Initialize, Resume, or Suspend Audio Engine (Idle Liturgy When Silent)">ACTIVATE</button>
                 <button class="oled-btn" id="btn-scatter" title="Randomize Creative Dials &amp; Seed (Locks GAIN &amp; GROW) [S]">SCATTER</button>
                 <button class="oled-btn" id="btn-drift" title="Slow Organic Random Walk on Creative Dials (Locks GAIN &amp; GROW)">DRIFT</button>
               </div>
@@ -952,7 +990,7 @@
               <!-- EROSION -->
               <div class="knob-container d-amber">
                 <div class="knob-label">EROSION</div>
-                <svg class="knob-svg" id="knob-erosion" data-param="erosion" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Stone Weathering, Gale Gusts &amp; Horizontal Scanline Dissolution (>0.50) | Default: 0.00">
+                <svg class="knob-svg" id="knob-erosion" data-param="erosion" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Stone Weathering, Gale Gusts &amp; Multi-Angle Dissolution (>0.50) | Default: 0.00">
                   <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
                   <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
                 </svg>
@@ -972,7 +1010,7 @@
               <!-- FRACTURE -->
               <div class="knob-container d-red">
                 <div class="knob-label">FRACTURE</div>
-                <svg class="knob-svg" id="knob-fracture" data-param="fracture" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Background Sheet Lightning, Masonry Calving &amp; Structural Shatter (>0.50) | Default: 0.00">
+                <svg class="knob-svg" id="knob-fracture" data-param="fracture" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Sheet Lightning, Masonry Calving &amp; Inward Border Shatter (>0.45) | Default: 0.00">
                   <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
                   <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
                 </svg>
@@ -982,7 +1020,7 @@
               <!-- GROW -->
               <div class="knob-container d-sage">
                 <div class="knob-label">GROW</div>
-                <svg class="knob-svg" id="knob-grow" data-param="grow" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Evolves Selected Engine Stochastically Within Its Domain Rules (Spectral Figures, Sacred Geometry, Crags) | Locked on SCATTER">
+                <svg class="knob-svg" id="knob-grow" data-param="grow" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Evolves Selected Engine Stochastically Within Its Domain Rules | Locked on SCATTER">
                   <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
                   <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
                 </svg>
@@ -1000,12 +1038,12 @@
                 <div class="meter-row disengaged" id="mrow-0">
                   <span class="meter-label" data-lane="0" style="color: var(--c-green-dim);">I. STRATA [Q]</span>
                   <div class="meter-track"><div class="meter-fill" id="meter-0" style="background: var(--c-green-dim);"></div></div>
-                  <button type="button" class="lane-toggle-sq" id="lane-btn-0" data-lane="0" aria-pressed="false" title="Engage Z-1 Midground: Lithic Architecture &amp; Spectral Reliefs [Q]"></button>
+                  <button type="button" class="lane-toggle-sq" id="lane-btn-0" data-lane="0" aria-pressed="false" title="Engage Z-1 Midground: Lithic Architecture &amp; Apparitions [Q]"></button>
                 </div>
                 <div class="meter-row disengaged" id="mrow-1">
                   <span class="meter-label" data-lane="1" style="color: var(--c-amber-dim);">II. EROSION [W]</span>
                   <div class="meter-track"><div class="meter-fill" id="meter-1" style="background: var(--c-amber-dim);"></div></div>
-                  <button type="button" class="lane-toggle-sq" id="lane-btn-1" data-lane="1" aria-pressed="false" title="Engage Z-2 Foreground: Gale Dust &amp; Dissolution Plumes [W]"></button>
+                  <button type="button" class="lane-toggle-sq" id="lane-btn-1" data-lane="1" aria-pressed="false" title="Engage Z-2 Foreground: Restrained Dust &amp; Transient Plumes [W]"></button>
                 </div>
                 <div class="meter-row disengaged" id="mrow-2">
                   <span class="meter-label" data-lane="2" style="color: var(--c-cyan-dim);">III. SILICA [E]</span>
@@ -1015,7 +1053,7 @@
                 <div class="meter-row disengaged" id="mrow-3">
                   <span class="meter-label" data-lane="3" style="color: var(--c-red-dim);">IV. LETHE [R]</span>
                   <div class="meter-track"><div class="meter-fill" id="meter-3" style="background: var(--c-red-dim);"></div></div>
-                  <button type="button" class="lane-toggle-sq" id="lane-btn-3" data-lane="3" aria-pressed="false" title="Engage Z-0 Peripheral Occult Marginalia [R]"></button>
+                  <button type="button" class="lane-toggle-sq" id="lane-btn-3" data-lane="3" aria-pressed="false" title="Engage Z-0/Z-1 Borders (Shatters Inward at High Dials) [R]"></button>
                 </div>
               </div>
 
@@ -1079,8 +1117,8 @@
   /* ===========================================================================
      SECTION A: HACKABLE CODEBOX (EDIT DIRECTLY LIKE A gen~ CODEBOX)
      ---------------------------------------------------------------------------
-     8 Generative Visual Engines + Safe Math Guards + Autonomous Idle
-     Oscilloscope & Quiet Machinery Philosophical Transmission Lexicon.
+     8 Generative Visual Engines + 4 Multi-Angle Dissolution Modes +
+     Layer 5 Embedded Architectural Idle Liturgy + Full-Screen [V] VIZ Scope.
      =========================================================================== */
 
   const FORMATIONS = [
@@ -1178,36 +1216,30 @@
     }
   ];
 
-  // Combinatorial Quiet Machinery Philosophical Lexicon (for Idle Machine Transmissions)
-  const IDLE_SUBJECTS = [
-    'MORTAR', 'THE UNCLOCKED GRID', 'STRATUM ZERO', 'SILICA MEMORY',
-    'FRICTION', 'THE LITURGICAL ENGINE', 'WEATHERED STONE', 'OSTRANENIE',
-    'THE SANCTUARY WALL', 'RESIDUAL TRACE', 'BURIED CADENCE', 'THE FAULT LINE'
+  // Intimate, meditative Quiet Machinery transmissions woven into the architecture during idle
+  const IDLE_FRAGMENTS_A = [
+    'LISTEN TO THE MORTAR SETTLING',
+    'SIT WITH THE UNCOMFORTABILITY',
+    'CATCH A RAGGED SIGH IN THE STONE',
+    'REMAIN INSIDE THE UNCLOCKED PAUSE',
+    'LET THE SILENCE WEATHER THE TRACE',
+    'WATCH THE RUIN BREATHE WITHOUT HANDS',
+    'HOLD STILL WHERE THE GRID FRACTURES',
+    'HEAR THE RESIDUE BEFORE THE STRIKE'
   ];
-  const IDLE_VERBS = [
-    'REFUSES', 'DISSOLVES', 'INSCRIBES', 'WEATHERS', 'FRACTURES',
-    'REMEMBERS', 'SUSPENDS', 'DEFAMILIARIZES', 'ERODES', 'EXCAVATES'
-  ];
-  const IDLE_OBJECTS = [
-    'STERILE EFFICIENCY', 'THE IMMACULATE LOOP', 'FORGOTTEN GEOMETRY',
-    'SILENT ARCHITECTURE', 'THE MEASURE OF TIME', 'SHATTERED RELIQUARIES',
-    'AUTONOMOUS DECAY', 'THE GHOST IN THE BUFFER', 'MONOLITHIC STILLNESS'
-  ];
-  const IDLE_CLAUSES = [
-    '// NOTHING RETRIEVED WHOLE',
-    '// EFFICIENCY IS THE ENEMY OF INNOVATION',
-    '// AWAITING ACOUSTIC EXCITATION',
-    '// STANDING WAVE IN DRY MORTAR',
-    '// RHYTHM BORN FROM RESISTANCE',
-    '// TRACE CAST IN SLOW RUIN'
+  const IDLE_FRAGMENTS_B = [
+    'NOTHING IS RETRIEVED WHOLE',
+    'FRICTION IS THE ONLY WITNESS',
+    'AWAITING THE NEXT BREATH OF AIR',
+    'SLOW EROSION CARVES THE CHAMBER',
+    'STILLNESS IS NOT ABSENCE',
+    'MORTAR REMEMBERS EVERY TREMOR'
   ];
 
-  function generateEsotericTransmission() {
-    const s = IDLE_SUBJECTS[Math.floor(Math.random() * IDLE_SUBJECTS.length)];
-    const v = IDLE_VERBS[Math.floor(Math.random() * IDLE_VERBS.length)];
-    const o = IDLE_OBJECTS[Math.floor(Math.random() * IDLE_OBJECTS.length)];
-    const c = IDLE_CLAUSES[Math.floor(Math.random() * IDLE_CLAUSES.length)];
-    return [`${s} ${v} ${o}`, c];
+  function generateMeditativeTransmission() {
+    const a = IDLE_FRAGMENTS_A[Math.floor(Math.random() * IDLE_FRAGMENTS_A.length)];
+    const b = IDLE_FRAGMENTS_B[Math.floor(Math.random() * IDLE_FRAGMENTS_B.length)];
+    return [a, b];
   }
 
   const PI = Math.PI;
@@ -1309,7 +1341,7 @@
   }
 
   /**
-   * 4. GENERATIVE ARCHITECTURAL & ORGANIC EVALUATOR (NaN-SAFE FOR ALL 8 ENGINES)
+   * 4. GENERATIVE ARCHITECTURAL & ORGANIC EVALUATOR
    */
   function evaluateSingleFormation(fIdx, nx, ny, col, row, f, vGen) {
     const {
@@ -1376,7 +1408,7 @@
           if (isOuterFrame || isDoorFrame || isPlinth) {
             density = 0.72 + b0 * 0.28;
             zone = 0;
-            peak = b0 > 0.58;
+            peak = b0 > 0.55;
             isSkeleton = true;
           } else if (isStepLedge) {
             density = 0.54 + b0 * 0.26;
@@ -1385,11 +1417,11 @@
           } else if (pillarRib) {
             density = 0.40 + b1 * 0.48 + b2 * 0.14;
             zone = 1;
-            peak = b1 > 0.62;
+            peak = b1 > 0.58;
           } else if (lintelRune) {
             density = 0.46 + b3 * 0.54;
             zone = 3;
-            peak = b3 > 0.50;
+            peak = b3 > 0.48;
           } else if (lintelBand) {
             density = 0.24 + b2 * 0.36;
             zone = 2;
@@ -1469,26 +1501,26 @@
         if (dRingOut < 0.026 || dRingIn < 0.020) {
           density = 0.76 + b0 * 0.24;
           zone = 0;
-          peak = b0 > 0.58;
+          peak = b0 > 0.55;
           isSkeleton = true;
         } else if (isTick) {
           density = 0.42 + b3 * 0.56;
           zone = 3;
-          peak = b3 > 0.52;
+          peak = b3 > 0.50;
         } else if (dPoly1 < 0.024) {
           density = 0.66 + b1 * 0.34;
           zone = 1;
-          peak = b1 > 0.58;
+          peak = b1 > 0.55;
           isSkeleton = true;
         } else if (dPoly2 < 0.022 || isPetal) {
           density = 0.58 + b2 * 0.40;
           zone = 2;
-          peak = b2 > 0.58;
+          peak = b2 > 0.55;
           isSkeleton = true;
         } else if (dOculus < 0.022) {
           density = 0.64 + b0 * 0.36;
           zone = 0;
-          peak = b0 > 0.52;
+          peak = b0 > 0.50;
           isSkeleton = true;
         } else if (dPoly3 < 0.018 && r > 0.15) {
           density = 0.38 + b2 * 0.42;
@@ -1569,18 +1601,18 @@
             zone = tileZone;
             if (isCorner) {
               density = 0.54 + tileEnergy * 0.42;
-              peak = tileEnergy > 0.62;
+              peak = tileEnergy > 0.58;
               isSkeleton = true;
             } else if (isBorder) {
               density = 0.28 + tileEnergy * 0.34;
               isSkeleton = (stx + sty) % 2 === 0;
             } else if (centerSeal) {
               density = 0.44 + tileEnergy * 0.54;
-              peak = tileEnergy > 0.55;
+              peak = tileEnergy > 0.52;
               isSkeleton = true;
             } else if (motifHit && (tileEnergy > 0.14 || (stx + sty) % 2 === 0)) {
               density = 0.24 + tileEnergy * 0.64;
-              peak = tileEnergy > 0.70;
+              peak = tileEnergy > 0.66;
             }
           }
         }
@@ -1607,7 +1639,7 @@
         } else if (dRift < riftHalf + 0.048) {
           density = 0.76 + b0 * 0.24;
           zone = 3;
-          peak = b0 > 0.48 || b3 > 0.50;
+          peak = b0 > 0.45 || b3 > 0.48;
           isSkeleton = true;
         } else {
           const strataCount = 4 + Math.round(tess * 6);
@@ -1624,7 +1656,7 @@
           zone = sZone;
           if (isSeam) {
             density = 0.52 + sEnergy * 0.44;
-            peak = sEnergy > 0.62;
+            peak = sEnergy > 0.58;
             isSkeleton = true;
           } else {
             const layerType = (((stratumIdx + Math.floor(vGen.g3 * 3)) % 3) + 3) % 3;
@@ -1639,7 +1671,7 @@
             } else {
               if (Math.abs(sFrac - 0.5) < 0.16 && ((col + stratumIdx) % 4 === 0)) {
                 density = 0.30 + b2 * 0.46 + b3 * 0.24;
-                peak = b3 > 0.55;
+                peak = b3 > 0.52;
               }
             }
           }
@@ -1647,7 +1679,7 @@
       }
 
     // -------------------------------------------------------------------------
-    // ENGINE 5 — V. OBELISK (NaN-Safe Shrouded Idol / Forked Spire)
+    // ENGINE 5 — V. OBELISK
     // -------------------------------------------------------------------------
     } else if (fIdx === 4) {
       if (mut > 0.55 && (vGen.g6 || 0) > 0.42) {
@@ -1673,7 +1705,7 @@
               const isCapEdge = (capW - ax < 0.032) || (capBase - ny < 0.03);
               zone = 3;
               density = isCapEdge ? (0.78 + b3 * 0.22) : (0.30 + b3 * 0.48);
-              peak = isCapEdge && b3 > 0.50;
+              peak = isCapEdge && b3 > 0.48;
               isSkeleton = isCapEdge;
             }
           } else if (ny <= plinthTop) {
@@ -1688,14 +1720,14 @@
               if (isEdge) {
                 density = 0.74 + b0 * 0.26;
                 zone = 0;
-                peak = b0 > 0.58;
+                peak = b0 > 0.55;
                 isSkeleton = true;
               } else if (inSpineGroove) {
                 const pulse = Math.sin(ny * (14 + tess * 12) - t * 2.2) * 0.5 + 0.5;
                 if (pulse > (0.68 - b2 * 0.45)) {
                   density = 0.44 + b2 * 0.54;
                   zone = 2;
-                  peak = b2 > 0.55;
+                  peak = b2 > 0.52;
                 }
               } else {
                 const bandFreq = 6 + Math.round(tess * 10);
@@ -1721,19 +1753,19 @@
               if (isCrossbar && ax > shaftW + 0.04 && ax < barReach) {
                 density = 0.52 + b1 * 0.44;
                 zone = 1;
-                peak = b1 > 0.60;
+                peak = b1 > 0.58;
                 isSkeleton = true;
               } else if (Math.abs(ax - plumb1) < 0.015 && ny > capBase + 0.06 && ny < plinthTop - 0.04) {
                 const nodeHit = Math.abs((ribPos % 1) - 0.5) > 0.38;
                 density = nodeHit ? (0.62 + b2 * 0.36) : (0.20 + b2 * 0.25);
                 zone = 2;
-                peak = nodeHit && b2 > 0.60;
+                peak = nodeHit && b2 > 0.58;
                 isSkeleton = nodeHit;
               } else if (Math.abs(ax - plumb2) < 0.015 && ny > capBase + 0.18 && ny < plinthTop - 0.14) {
                 if (row % 2 === 0 || b3 > 0.25) {
                   density = 0.18 + b3 * 0.58;
                   zone = 3;
-                  peak = b3 > 0.60;
+                  peak = b3 > 0.58;
                 }
               }
             }
@@ -1743,7 +1775,7 @@
               const isEdge = (plinthW - ax < 0.035) || (ny - plinthTop < 0.03) || (plinthBot - ny < 0.03);
               density = isEdge ? (0.72 + b0 * 0.28) : (0.26 + b0 * 0.28);
               zone = 0;
-              peak = isEdge && b0 > 0.60;
+              peak = isEdge && b0 > 0.58;
               isSkeleton = isEdge;
             }
           }
@@ -1751,7 +1783,7 @@
       }
 
     // -------------------------------------------------------------------------
-    // ENGINE 6 — VI. VAULT (NaN-Safe Warping Corridor — fixes Math.log(0) lockup)
+    // ENGINE 6 — VI. VAULT
     // -------------------------------------------------------------------------
     } else if (fIdx === 5) {
       const engage = clamp(erosion * 0.45 + fracture * 0.55 + tess * 0.25 + mut * 0.55, 0, 1.4);
@@ -1803,12 +1835,12 @@
         if (isArchRib) {
           density = (0.56 + aEnergy * 0.44) * depthVis;
           zone = aZone;
-          peak = (archFrac < 0.09) && (aEnergy > 0.54 || b0 > 0.62);
+          peak = (archFrac < 0.09) && (aEnergy > 0.52 || b0 > 0.58);
           isSkeleton = true;
         } else if (isMiter) {
           density = (0.48 + b3 * 0.46) * depthVis;
           zone = 3;
-          peak = b3 > 0.56;
+          peak = b3 > 0.54;
           isSkeleton = true;
         } else if (isCofferStrut && (archFrac > 0.45 && archFrac < 0.68)) {
           density = (0.28 + b1 * 0.36 + b2 * 0.26) * depthVis;
@@ -1817,7 +1849,7 @@
       }
 
     // -------------------------------------------------------------------------
-    // ENGINE 7 — VII. CITADEL (NaN-Safe Tiered Sacred Skyline)
+    // ENGINE 7 — VII. CITADEL
     // -------------------------------------------------------------------------
     } else if (fIdx === 6) {
       const safeAspect = Math.max(0.5, cols / Math.max(1, rows));
@@ -1843,17 +1875,17 @@
           if (isSpireTip) {
             density = 0.82 + b3 * 0.18;
             zone = 3;
-            peak = b3 > 0.50;
+            peak = b3 > 0.48;
             isSkeleton = true;
           } else if (isBattlement || isTowerWall) {
             density = 0.62 + b0 * 0.34;
             zone = 0;
-            peak = b0 > 0.62;
+            peak = b0 > 0.58;
             isSkeleton = isBattlement;
           } else if (isLancetWindow) {
             density = 0.48 + b2 * 0.50;
             zone = 2;
-            peak = b2 > 0.56;
+            peak = b2 > 0.54;
           } else if (isArcadeRow) {
             density = 0.34 + b1 * 0.42;
             zone = 1;
@@ -1864,12 +1896,12 @@
         } else if (tHash > 0.72 && Math.abs(tFrac - 0.5) < 0.08 && ny > roofY - 0.14) {
           density = 0.55 + b3 * 0.45;
           zone = 3;
-          peak = b3 > 0.48;
+          peak = b3 > 0.46;
         }
       }
 
     // -------------------------------------------------------------------------
-    // ENGINE 8 — VIII. HORIZON (Solar Eclipse -> Sculpted Halftone Spectral Bust)
+    // ENGINE 8 — VIII. HORIZON
     // -------------------------------------------------------------------------
     } else if (fIdx === 7) {
       const shiftX = (vGen.g1 - 0.5) * 0.20 * mut;
@@ -1892,7 +1924,7 @@
         } else if (waveRing > (0.35 - coronaBand * 0.55 - b2 * 0.30)) {
           density = clamp(0.24 + coronaBand * 0.55 + b1 * 0.25 + b2 * 0.25, 0, 1);
           zone = coronaBand > 0.45 ? 1 : 2;
-          peak = (coronaBand > 0.65 && b2 > 0.52);
+          peak = (coronaBand > 0.65 && b2 > 0.50);
           isSkeleton = coronaBand > 0.78;
         } else if (rays > 0.78 && r < 0.75) {
           density = 0.20 + b3 * 0.45;
@@ -1918,13 +1950,13 @@
   }
 
   /**
-   * 5. COMPOSITE MORPHOLOGICAL EVALUATOR
+   * 5. COMPOSITE MORPHOLOGICAL EVALUATOR WITH 4 STOCHASTIC DISSOLUTION ANGLES
    */
   function computeFormationCell(fCtx, nx, ny, col, row, wakeScar) {
     const {
       fIdx, morphAlpha,
       variantA, variantB,
-      dissolveThreshold, windAngle,
+      dissolveThreshold, dissolveAngle, dissolveMode,
       t, seed, b0, b1, b2,
       erosion
     } = fCtx;
@@ -1945,18 +1977,36 @@
       isSkeleton = wB > 0.5 ? resB.isSkeleton : resA.isSkeleton;
     }
 
+    // Multi-Angle Stochastic Dissolution (never locked to a single corner)
     let dissolvedToParticle = false;
     if (density > 0.04 && dissolveThreshold > 0.02) {
-      const dirX = Math.cos(windAngle);
-      const dirY = Math.sin(windAngle);
-      const proj = (nx * dirX + ny * dirY) * 0.65 + 0.5;
-      const edgeNoise = (hash2(col * 0.37 + seed, row * 0.41 - seed) - 0.5) * 0.35;
-      const sweepFront = proj + edgeNoise;
+      let sweepFront = 0.5;
+      const edgeNoise = (hash2(col * 0.37 + seed, row * 0.41 - seed) - 0.5) * 0.32;
+
+      if (dissolveMode === 0) {
+        // Mode 0: Full 360-degree randomized directional sweep
+        const dirX = Math.cos(dissolveAngle);
+        const dirY = Math.sin(dissolveAngle);
+        sweepFront = (nx * dirX + ny * dirY) * 0.62 + 0.5 + edgeNoise;
+      } else if (dissolveMode === 1) {
+        // Mode 1: Radial implosion / explosion from core or outer rim
+        const r = Math.hypot(nx, ny);
+        sweepFront = (dissolveAngle > PI ? (1.0 - r) : r) * 1.15 + edgeNoise;
+      } else if (dissolveMode === 2) {
+        // Mode 2: Multi-octave cellular spall pockets eroding from all angles at once
+        const p1 = Math.sin(nx * 5.2 + seed) * Math.cos(ny * 5.2 - seed);
+        const p2 = Math.sin((nx - ny) * 9.0 + seed * 1.7);
+        sweepFront = (p1 * 0.35 + p2 * 0.25 + 0.5) + edgeNoise * 0.7;
+      } else {
+        // Mode 3: Alternating horizontal scanline shred (odd/even rows tear opposite ways)
+        const dir = (row % 2 === 0) ? 1 : -1;
+        sweepFront = (nx * dir) * 0.62 + 0.5 + edgeNoise;
+      }
 
       if (sweepFront < dissolveThreshold) {
         dissolvedToParticle = true;
         const distBehind = dissolveThreshold - sweepFront;
-        if (distBehind < 0.24 && (row % 2 === 0) && hash2(col * 0.21, row * 0.83) < 0.50) {
+        if (distBehind < 0.22 && (row % 2 === 0) && hash2(col * 0.21, row * 0.83) < 0.48) {
           density = 0.24 + b2 * 0.36;
           zone = 2;
           peak = false;
@@ -1966,23 +2016,25 @@
           peak = false;
           isSkeleton = false;
         }
-      } else if (sweepFront < dissolveThreshold + 0.10) {
-        density = clamp(density + 0.35, 0, 1);
+      } else if (sweepFront < dissolveThreshold + 0.11) {
+        // Disintegration rim pulses brightly with active audio transients
+        density = clamp(density + 0.32 + (b0 + b2) * 0.25, 0, 1);
         zone = 3;
         peak = true;
       }
     }
 
+    // Crumbling Stone Erosion + Cross-Layer Wake Carving
     const totalWear = clamp(erosion + wakeScar * 0.85, 0, 1.2);
     if (density > 0 && totalWear > 0.005) {
       const nPit = hash2(col * 0.91 + seed * 3.1, row * 0.91 - seed * 2.3);
-      const effectiveWear = isSkeleton ? totalWear * 0.32 : totalWear;
+      const effectiveWear = isSkeleton ? totalWear * 0.30 : totalWear;
       const pitChance = effectiveWear * (0.82 - density * 0.32);
 
       if (nPit < pitChance) {
         if (isSkeleton || nPit > pitChance * 0.34) {
-          density = Math.max(isSkeleton ? 0.26 : 0.08, density * (0.28 + 0.34 * (1.0 - clamp(effectiveWear, 0, 1))));
-          peak = isSkeleton && (b0 > 0.55 || b1 > 0.55);
+          density = Math.max(isSkeleton ? 0.28 : 0.08, density * (0.28 + 0.34 * (1.0 - clamp(effectiveWear, 0, 1))));
+          peak = isSkeleton && (b0 > 0.50 || b1 > 0.50);
         } else {
           density = 0;
           peak = false;
@@ -1990,6 +2042,12 @@
       } else if (wakeScar > 0.35) {
         zone = 3;
       }
+    }
+
+    // Ensure surviving skeleton cells still punch brightly on audio transients during GROW
+    if (density > 0.15 && isSkeleton && (b0 > 0.55 || b2 > 0.55)) {
+      density = clamp(density + 0.22, 0, 1);
+      peak = true;
     }
 
     return {
@@ -2001,7 +2059,7 @@
   }
 
   /* ===========================================================================
-     SECTION B: APPLICATION STATE, GENERATIVE VARIANT GENOME & IDLE STATE
+     SECTION B: APPLICATION STATE, GENERATIVE VARIANT GENOME & SLEWED IDLE
      =========================================================================== */
   function createVariantGenome(mutAmt) {
     return {
@@ -2031,6 +2089,13 @@
     variantA: createVariantGenome(0.0),
     variantB: createVariantGenome(0.45),
 
+    // Multi-angle dissolution state (randomized per cycle)
+    dissolveAngle: Math.random() * TAU,
+    dissolveMode: 0,
+
+    // Full-Screen ASCII Scope Override ([V] VIZ)
+    vizScopeMode: false,
+
     lexiconIdx: 0,
     paletteIdx: 0,
 
@@ -2055,10 +2120,11 @@
     wasPlayingBeforeSuspend: false,
     isScrubbing: false,
 
-    // Autonomous Idle Mode (Engine Active, No Live Mic or Playing File)
-    isIdleMode: false,
+    // Slewed Idle Presence (0.0 = live audio active, 1.0 = full meditative idle)
+    idlePresence: 0.0,
+    prevIdlePresence: 0.0,
     idleDuration: 0,
-    idlePhraseLines: generateEsotericTransmission(),
+    idlePhraseLines: generateMeditativeTransmission(),
     idlePhraseTimer: 0,
 
     morphTime: 0,
@@ -2089,9 +2155,9 @@
   };
 
   /* ===========================================================================
-     SECTION B2: LAYER II (ASPERITAS) GEOMETRY-AWARE SMOKE & SPLASH PARTICLE ENGINE
+     SECTION B2: LAYER II (ASPERITAS) RESTRAINED DUST & SPLASH PARTICLE ENGINE
      =========================================================================== */
-  const PARTICLE_COUNT = 280;
+  const PARTICLE_COUNT = 220;
   const dustParticles = [];
 
   function spawnParticleOnFormation(p, fIdx, aspect, seed, resetLife) {
@@ -2101,77 +2167,77 @@
 
     if (fIdx === 0) {
       if (r1 < 0.58) {
-        p.nx = (r2 * 2 - 1) * 0.78;
-        p.ny = 0.78 + (Math.random() - 0.5) * 0.12;
-        p.vx = (Math.random() - 0.5) * 0.14;
-        p.vy = -0.06 - Math.random() * 0.16;
+        p.nx = (r2 * 2 - 1) * 0.65;
+        p.ny = 0.78 + (Math.random() - 0.5) * 0.10;
+        p.vx = (Math.random() - 0.5) * 0.10;
+        p.vy = -0.05 - Math.random() * 0.12;
       } else {
-        p.nx = (r2 * 2 - 1) * 0.22;
-        p.ny = -0.22 + Math.random() * 1.02;
-        p.vx = sign * (0.05 + Math.random() * 0.12);
-        p.vy = -0.10 - Math.random() * 0.20;
+        p.nx = (r2 * 2 - 1) * 0.20;
+        p.ny = -0.22 + Math.random() * 0.95;
+        p.vx = sign * (0.04 + Math.random() * 0.09);
+        p.vy = -0.08 - Math.random() * 0.15;
       }
     } else if (fIdx === 1) {
       const ang = r1 * TAU;
-      const rad = 0.72 + (r2 - 0.5) * 0.14;
+      const rad = 0.72 + (r2 - 0.5) * 0.12;
       p.nx = Math.cos(ang) * rad;
       p.ny = Math.sin(ang) * rad;
-      p.vx = -Math.sin(ang) * 0.18 + Math.cos(ang) * 0.06;
-      p.vy = Math.cos(ang) * 0.18 + Math.sin(ang) * 0.06;
+      p.vx = -Math.sin(ang) * 0.14 + Math.cos(ang) * 0.04;
+      p.vy = Math.cos(ang) * 0.14 + Math.sin(ang) * 0.04;
     } else if (fIdx === 2) {
-      p.nx = (r1 * 2 - 1) * aspect * 0.84;
+      p.nx = (r1 * 2 - 1) * aspect * 0.78;
       const rowBand = Math.floor(r2 * 7) - 3;
-      p.ny = clamp(rowBand * 0.24 + (Math.random() - 0.5) * 0.04, -0.84, 0.84);
-      p.vx = (Math.random() - 0.5) * 0.10;
-      p.vy = 0.08 + Math.random() * 0.18;
+      p.ny = clamp(rowBand * 0.24 + (Math.random() - 0.5) * 0.04, -0.82, 0.82);
+      p.vx = (Math.random() - 0.5) * 0.08;
+      p.vy = 0.06 + Math.random() * 0.14;
     } else if (fIdx === 3) {
-      p.nx = (r1 * 2 - 1) * aspect * 0.92;
-      p.ny = Math.sin(p.nx * 2.8 + seed) * 0.11 + (r2 - 0.5) * 0.08;
-      p.vx = (Math.random() - 0.5) * 0.16;
-      p.vy = sign * (0.10 + Math.random() * 0.24);
+      p.nx = (r1 * 2 - 1) * aspect * 0.85;
+      p.ny = Math.sin(p.nx * 2.8 + seed) * 0.11 + (r2 - 0.5) * 0.07;
+      p.vx = (Math.random() - 0.5) * 0.12;
+      p.vy = sign * (0.08 + Math.random() * 0.18);
     } else if (fIdx === 4) {
       if (r1 < 0.72) {
-        p.nx = sign * (0.34 + (r2 < 0.5 ? 0 : 0.18) + (Math.random() - 0.5) * 0.04);
-        p.ny = -0.55 + Math.random() * 1.38;
-        p.vx = sign * (0.03 + Math.random() * 0.08);
-        p.vy = -0.12 - Math.random() * 0.20;
+        p.nx = sign * (0.34 + (r2 < 0.5 ? 0 : 0.18) + (Math.random() - 0.5) * 0.03);
+        p.ny = -0.55 + Math.random() * 1.32;
+        p.vx = sign * (0.02 + Math.random() * 0.06);
+        p.vy = -0.09 - Math.random() * 0.15;
       } else {
-        p.nx = (r2 - 0.5) * 0.16;
-        p.ny = -0.86 + (Math.random() - 0.5) * 0.08;
-        p.vx = sign * (0.09 + Math.random() * 0.16);
-        p.vy = -0.15 - Math.random() * 0.22;
+        p.nx = (r2 - 0.5) * 0.15;
+        p.ny = -0.86 + (Math.random() - 0.5) * 0.07;
+        p.vx = sign * (0.07 + Math.random() * 0.12);
+        p.vy = -0.11 - Math.random() * 0.16;
       }
     } else if (fIdx === 5) {
       const ang = r1 * TAU;
-      const rad = 0.11 + r2 * 0.12;
+      const rad = 0.11 + r2 * 0.10;
       p.nx = Math.cos(ang) * rad * 1.25;
       p.ny = Math.sin(ang) * rad;
-      p.vx = Math.cos(ang) * (0.16 + Math.random() * 0.24);
-      p.vy = Math.sin(ang) * (0.16 + Math.random() * 0.24);
+      p.vx = Math.cos(ang) * (0.12 + Math.random() * 0.18);
+      p.vy = Math.sin(ang) * (0.12 + Math.random() * 0.18);
     } else if (fIdx === 6) {
-      p.nx = (r1 * 2 - 1) * aspect * 0.85;
-      p.ny = -0.25 + (r2 - 0.5) * 0.35;
-      p.vx = (Math.random() - 0.5) * 0.10;
-      p.vy = -0.12 - Math.random() * 0.22;
+      p.nx = (r1 * 2 - 1) * aspect * 0.80;
+      p.ny = -0.25 + (r2 - 0.5) * 0.30;
+      p.vx = (Math.random() - 0.5) * 0.08;
+      p.vy = -0.09 - Math.random() * 0.16;
     } else {
       const ang = r1 * TAU;
-      const rad = 0.32 + r2 * 0.06;
+      const rad = 0.32 + r2 * 0.05;
       p.nx = Math.cos(ang) * rad;
       p.ny = Math.sin(ang) * rad;
-      p.vx = Math.cos(ang) * (0.15 + Math.random() * 0.25);
-      p.vy = Math.sin(ang) * (0.15 + Math.random() * 0.25);
+      p.vx = Math.cos(ang) * (0.12 + Math.random() * 0.18);
+      p.vy = Math.sin(ang) * (0.12 + Math.random() * 0.18);
     }
 
     p.phase = Math.random() * TAU;
     p.weight = 0.15 + Math.random() * 0.85;
     p.zDepth = 0.45 + Math.pow(Math.random(), 1.3) * 0.95;
-    p.maxLife = 1.1 + Math.random() * 2.2;
+    p.maxLife = 1.0 + Math.random() * 2.0;
     p.life = resetLife ? Math.random() * p.maxLife : p.maxLife;
   }
 
   function emitTransientSplashJet(strength, angle) {
     if (!state.lanesActive[1]) return;
-    const count = 12 + Math.floor(strength * 14);
+    const count = 10 + Math.floor(strength * 14);
     const originX = (Math.random() - 0.5) * 0.45;
     const originY = (Math.random() - 0.5) * 0.45;
     const baseSpeed = 0.65 + strength * 1.55;
@@ -2236,6 +2302,7 @@
     toast: document.getElementById('qm-toast'),
     dropOverlay: document.getElementById('drop-overlay'),
 
+    btnVizScope: document.getElementById('btn-viz-scope'),
     btnActivate: document.getElementById('btn-activate'),
     btnScatter: document.getElementById('btn-scatter'),
     btnDrift: document.getElementById('btn-drift'),
@@ -2628,7 +2695,7 @@
   }
 
   /* ===========================================================================
-     SECTION F: TRUE PEAKAMP~ ANALYSIS, IDLE MODE & ENGINE-LOCKED EVOLUTION
+     SECTION F: TRUE PEAKAMP~ ANALYSIS, SLEWED IDLE & MULTI-ANGLE EVOLUTION
      =========================================================================== */
   function advanceMorphCycle(phaseStep) {
     state.morphCyclePhase += phaseStep;
@@ -2638,6 +2705,9 @@
       state.variantA = state.variantB;
       state.variantB = createVariantGenome(clamp(0.30 + grow * 0.70, 0.30, 1.0));
       state.morphAlpha = 0.0;
+      // Roll a fresh dissolution angle & mode on every reconstruction cycle
+      state.dissolveAngle = Math.random() * TAU;
+      state.dissolveMode = Math.floor(Math.random() * 4);
     } else {
       state.morphAlpha = clamp((state.morphCyclePhase - 0.30) / 0.58, 0, 1);
     }
@@ -2651,14 +2721,27 @@
                           (state.sourceMode === 'file' && state.fileLoaded && !dom.audioPlayer.paused);
     const audioRunning = audioCtx && audioCtx.state === 'running' && hasLiveSource;
 
-    // Idle mode engages whenever engine is activated, no live audio is playing (paused file counts),
-    // and at least one visual layer is turned on
     const anyLaneOn = state.lanesActive[0] || state.lanesActive[1] || state.lanesActive[2] || state.lanesActive[3];
-    state.isIdleMode = state.activated && !hasLiveSource && anyLaneOn;
+    const targetIdle = (state.activated && !hasLiveSource && (anyLaneOn || state.vizScopeMode)) ? 1.0 : 0.0;
 
-    if (audioRunning) {
+    // Smoothly slew idlePresence in & out (no abrupt screen cut on unpause)
+    state.prevIdlePresence = state.idlePresence;
+    const slewSpeed = targetIdle > state.idlePresence ? 0.85 : 1.35;
+    state.idlePresence += (targetIdle - state.idlePresence) * Math.min(1, dtSec * slewSpeed);
+
+    if (targetIdle > 0.5) {
+      state.idleDuration += dtSec;
+      state.idlePhraseTimer += dtSec;
+      if (state.idlePhraseTimer > 8.5) {
+        state.idlePhraseTimer = 0;
+        state.idlePhraseLines = generateMeditativeTransmission();
+      }
+    } else {
       state.idleDuration = 0;
       state.idlePhraseTimer = 0;
+    }
+
+    if (audioRunning) {
       for (let i = 0; i < 4; i++) {
         const an = bandAnalysers[i];
         const buf = bandBuffers[i];
@@ -2680,35 +2763,26 @@
           b.env = Math.max(0, b.env - decayPerSec[i] * dtSec);
         }
       }
-    } else if (state.isIdleMode) {
-      // Autonomous Idle Mode: gentle standing-wave breathing across the 4 bands even when GROW === 0
-      state.idleDuration += dtSec;
-      state.idlePhraseTimer += dtSec;
-      if (state.idlePhraseTimer > 7.5) {
-        state.idlePhraseTimer = 0;
-        state.idlePhraseLines = generateEsotericTransmission();
-      }
-
+    } else if (state.idlePresence > 0.02) {
       const tSec = nowMs * 0.001;
       const idleWaves = [
-        0.18 + Math.sin(tSec * 0.85) * 0.14,
-        0.16 + Math.sin(tSec * 1.35 + 1.1) * 0.12,
-        0.20 + Math.cos(tSec * 2.10 + 0.4) * 0.15,
-        0.15 + Math.sin(tSec * 0.65 + 2.3) * 0.12
+        (0.16 + Math.sin(tSec * 0.85) * 0.12) * state.idlePresence,
+        (0.14 + Math.sin(tSec * 1.35 + 1.1) * 0.10) * state.idlePresence,
+        (0.18 + Math.cos(tSec * 2.10 + 0.4) * 0.13) * state.idlePresence,
+        (0.14 + Math.sin(tSec * 0.65 + 2.3) * 0.10) * state.idlePresence
       ];
       for (let i = 0; i < 4; i++) {
         state.bands[i].prevEnv = state.bands[i].env;
         state.bands[i].env += (idleWaves[i] - state.bands[i].env) * Math.min(1, dtSec * 4.0);
       }
     } else {
-      state.idleDuration = 0;
       for (let i = 0; i < 4; i++) {
         state.bands[i].prevEnv = state.bands[i].env;
         state.bands[i].env = Math.max(0, state.bands[i].env - 3.8 * dtSec);
       }
     }
 
-    // Engine-Locked GROW evolution (works both with audio AND in Idle Mode)
+    // Engine-Locked GROW evolution
     const grow = state.params.grow;
     if (!state.frozen && grow > 0.01) {
       state.variantB.mutAmt = clamp(0.30 + grow * 0.70, 0.30, 1.0);
@@ -2826,7 +2900,119 @@
   }
 
   /* ===========================================================================
-     SECTION G: 3-Z-PLANE PARALLAX, IDLE OSCILLOSCOPE & ESOTERIC TRANSMISSIONS
+     SECTION G1: FULL-SCREEN ASCII OSCILLOSCOPE / SEISMOGRAPH ([V] VIZ MODE)
+     =========================================================================== */
+  function renderAsciiScopeOverride(t, b0, b1, b2, b3, gateShear) {
+    const pal = PALETTES[state.paletteIdx];
+    const rampLen = Math.max(1, state.activeGlyphs.length);
+    const maxGlyphIdx = rampLen - 1;
+
+    ctx.fillStyle = pal.bg;
+    ctx.fillRect(0, 0, visCanvas.width, visCanvas.height);
+
+    const cx = (cols - 1) * 0.5;
+    const cy = (rows - 1) * 0.5;
+    const erosion = state.params.erosion;
+    const tess = state.params.tessellation;
+    const fracture = state.params.fracture;
+
+    const spineIdx = maxGlyphIdx;
+    const echoIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.45)), maxGlyphIdx);
+    const gratIdx = 0;
+
+    // Subtle graticule crosshair
+    const midR = Math.round(cy);
+    const midC = Math.round(cx);
+    for (let c = 2; c < cols - 2; c += 3) {
+      ctx.drawImage(atlasCanvas, gratIdx * cellPx, 0, cellPx, cellPx, c * cellPx, midR * cellPx, cellPx, cellPx);
+    }
+    for (let r = 2; r < rows - 2; r += 3) {
+      ctx.drawImage(atlasCanvas, gratIdx * cellPx, 0, cellPx, cellPx, midC * cellPx, r * cellPx, cellPx, cellPx);
+    }
+
+    const active = scopeAnalyser && audioCtx && audioCtx.state === 'running' &&
+      (state.sourceMode === 'mic' || (state.sourceMode === 'file' && !dom.audioPlayer.paused));
+
+    if (active) {
+      scopeAnalyser.getByteTimeDomainData(scopeBytes);
+    }
+
+    if (state.scopeMode === 0) {
+      // Full-Screen ASCII Waveform Trace
+      const stepQuant = Math.max(1, Math.round((1.0 - tess) * 4));
+      for (let c = 1; c < cols - 1; c++) {
+        const qCol = Math.floor(c / stepQuant) * stepQuant;
+        const u = qCol / Math.max(1, cols - 1);
+
+        let sample = 0;
+        if (active && scopeBytes) {
+          const sIdx = Math.min(scopeBytes.length - 1, Math.floor(u * scopeBytes.length));
+          sample = (scopeBytes[sIdx] - 128.0) / 128.0;
+        } else {
+          // Idle standing harmonic carrier
+          sample = Math.sin(u * TAU * 3.0 + t * 2.2) * Math.sin(u * PI) * 0.35 +
+                   Math.sin(u * TAU * 7.0 - t * 3.8) * 0.12;
+        }
+
+        if (erosion > 0.05) {
+          sample += (hash2(c * 0.7, Math.floor(t * 24)) - 0.5) * erosion * 0.45;
+        }
+
+        let drawC = c;
+        if (gateShear > 0.05 && hash2(Math.floor(c / 6), Math.floor(t * 20)) < gateShear * 0.5) {
+          drawC = clamp(c + Math.round((hash2(c, t) - 0.5) * 10 * gateShear), 0, cols - 1);
+        }
+
+        const rTarget = Math.round(cy + sample * (rows * 0.42));
+        const rClamp = clamp(rTarget, 1, rows - 2);
+        const absAmp = Math.abs(sample);
+        const aRow = absAmp > 0.65 ? 5 : (absAmp > 0.35 ? 4 : (absAmp > 0.15 ? 1 : 2));
+
+        // Vertical harmonic echo column between center line and peak
+        const rStart = Math.min(midR, rClamp);
+        const rEnd = Math.max(midR, rClamp);
+        for (let r = rStart; r <= rEnd; r++) {
+          const isSpine = (r === rClamp);
+          const gIdx = isSpine ? spineIdx : echoIdx;
+          const rowInk = isSpine ? aRow : (b2 > 0.35 ? 3 : 0);
+          ctx.drawImage(atlasCanvas, gIdx * cellPx, rowInk * cellPx, cellPx, cellPx, drawC * cellPx, r * cellPx, cellPx, cellPx);
+        }
+      }
+    } else {
+      // Full-Screen ASCII Peak Seismograph Canyon
+      if (active && scopeBytes) {
+        let peak = 0;
+        for (let i = 0; i < scopeBytes.length; i++) {
+          const v = Math.abs(scopeBytes[i] - 128) / 128.0;
+          if (v > peak) peak = v;
+        }
+        state.seismoHistory.shift();
+        state.seismoHistory.push(peak);
+      } else {
+        state.seismoHistory.shift();
+        state.seismoHistory.push(0.08 + Math.abs(Math.sin(t * 1.4)) * 0.14);
+      }
+
+      const histLen = state.seismoHistory.length;
+      for (let c = 1; c < cols - 1; c++) {
+        const hIdx = Math.min(histLen - 1, Math.floor((c / Math.max(1, cols - 1)) * histLen));
+        const val = clamp(state.seismoHistory[hIdx] * (1.0 + erosion * 0.4), 0, 1);
+        const halfH = Math.round(val * (rows * 0.44));
+        const aRow = val > 0.62 ? 5 : (val > 0.35 ? 4 : (val > 0.15 ? 2 : 1));
+
+        for (let dy = -halfH; dy <= halfH; dy++) {
+          const r = midR + dy;
+          if (r < 1 || r >= rows - 1) continue;
+          const isRim = (Math.abs(dy) === halfH);
+          const gIdx = isRim ? spineIdx : echoIdx;
+          ctx.drawImage(atlasCanvas, gIdx * cellPx, (isRim ? aRow : 0) * cellPx, cellPx, cellPx, c * cellPx, r * cellPx, cellPx, cellPx);
+        }
+      }
+    }
+  }
+
+  /* ===========================================================================
+     SECTION G2: 5-LAYER PARALLAX, SHATTERING BORDERS & ARCHITECTURAL LITURGY
      =========================================================================== */
   function renderVisualiser(nowMs, dtSec) {
     const pal = PALETTES[state.paletteIdx];
@@ -2860,6 +3046,12 @@
     const gateDrop = state.gates.drop.env * fracture * (0.35 + transientPulse * 0.65);
     const lightningEnv = state.gates.lightning.env;
 
+    // [V] VIZ Full-Screen ASCII Oscilloscope / Seismograph Override
+    if (state.vizScopeMode) {
+      renderAsciiScopeOverride(t, b0, b1, b2, b3, gateShear);
+      return;
+    }
+
     const anyLaneOn = state.lanesActive[0] || state.lanesActive[1] || state.lanesActive[2] || state.lanesActive[3];
 
     ctx.fillStyle = pal.bg;
@@ -2892,6 +3084,8 @@
       variantA: state.variantA,
       variantB: state.variantB,
       dissolveThreshold,
+      dissolveAngle: state.dissolveAngle,
+      dissolveMode: state.dissolveMode,
       windAngle: state.windAngle,
       t, seed, b0, b1, b2, b3,
       tess, erosion, fracture,
@@ -2903,7 +3097,7 @@
     const dropSeed = state.gates.drop.seed;
 
     // =========================================================================
-    // Z-PLANE 0: DEEP BACKGROUND (0.65x SCALE — SHEET LIGHTNING, PATINA & MARGINALIA)
+    // Z-PLANE 0: DEEP BACKGROUND (0.65x SCALE — SHEET LIGHTNING & PATINA WALL)
     // =========================================================================
     const bgCols = Math.ceil(visCanvas.width / bgCellPx);
     const bgRows = Math.ceil(visCanvas.height / bgCellPx);
@@ -2982,12 +3176,17 @@
       }
     }
 
+    // =========================================================================
+    // LAYER 4 (IV. LETHE): PERIPHERAL BORDERS — SHATTER INWARD AT HEAVY DIALS
+    // =========================================================================
     if (state.lanesActive[3]) {
       const letheEnergy = clamp(b3 * 1.2 + b0 * 0.25 + 0.14, 0.14, 1.0);
-      const marginColL = Math.max(2, Math.floor(cols * 0.05));
-      const marginColR = Math.min(cols - 3, Math.ceil(cols * 0.95));
-      const innerRailL = Math.max(5, Math.floor(cols * 0.11));
-      const innerRailR = Math.min(cols - 6, Math.ceil(cols * 0.89));
+      const borderShatter = clamp(Math.max(0, erosion - 0.40) * 1.1 + Math.max(0, fracture - 0.35) * 1.35 + gateShear * 0.5, 0, 1.2);
+
+      const baseMarginL = Math.max(2, Math.floor(cols * 0.05));
+      const baseMarginR = Math.min(cols - 3, Math.ceil(cols * 0.95));
+      const baseRailL = Math.max(5, Math.floor(cols * 0.11));
+      const baseRailR = Math.min(cols - 6, Math.ceil(cols * 0.89));
 
       const runeIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.52)), maxGlyphIdx);
       const sigilIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.74)), maxGlyphIdx);
@@ -2998,32 +3197,51 @@
         const ny = (r - cy) * invScale;
         const wave = Math.sin(ny * (8.0 + tess * 10.0) - t * (1.2 + b3 * 3.0) + seed);
 
-        if (r % 3 === 0 || (b3 > 0.35 && wave > 0.35)) {
-          const isMajor = (r % 9 === 0);
-          const gIdx = isMajor ? sigilIdx : tickIdx;
-          const aRow = (isMajor && b3 > 0.35 ? 5 : (b3 > 0.16 ? 4 : 0));
+        // At heavy dial values, border rails bow inward & fracture into the central architecture
+        const rowNoise = hash2(r * 0.73 + seed, frameTick * 0.18);
+        const inwardPull = borderShatter > 0.05
+          ? Math.round(borderShatter * (cols * 0.28) * (0.35 + Math.abs(Math.sin(ny * 3.5 + t * 1.4)) * 0.65) * (rowNoise > 0.25 ? 1 : 0.2))
+          : 0;
 
-          ctx.drawImage(atlasCanvas, gIdx * cellPx, aRow * cellPx, cellPx, cellPx, marginColL * cellPx, drawY, cellPx, cellPx);
-          ctx.drawImage(atlasCanvas, gIdx * cellPx, aRow * cellPx, cellPx, cellPx, marginColR * cellPx, drawY, cellPx, cellPx);
+        const colL = clamp(baseMarginL + inwardPull, 1, Math.floor(cx - 2));
+        const colR = clamp(baseMarginR - inwardPull, Math.ceil(cx + 2), cols - 2);
+        const railL = clamp(baseRailL + Math.round(inwardPull * 1.25), 2, Math.floor(cx - 1));
+        const railR = clamp(baseRailR - Math.round(inwardPull * 1.25), Math.ceil(cx + 1), cols - 3);
+
+        // Carve wake scar where shattered border shards slam into the central formation
+        if (inwardPull > cols * 0.14) {
+          wakeGrid[r * cols + railL] = Math.min(1.0, wakeGrid[r * cols + railL] + 0.35);
+          wakeGrid[r * cols + railR] = Math.min(1.0, wakeGrid[r * cols + railR] + 0.35);
         }
 
-        if (wave > (0.76 - letheEnergy * 0.42)) {
-          const aRow = (b3 > 0.48 ? 5 : 4);
-          ctx.drawImage(atlasCanvas, runeIdx * cellPx, aRow * cellPx, cellPx, cellPx, innerRailL * cellPx, drawY, cellPx, cellPx);
-          ctx.drawImage(atlasCanvas, runeIdx * cellPx, aRow * cellPx, cellPx, cellPx, innerRailR * cellPx, drawY, cellPx, cellPx);
+        if (r % 3 === 0 || (b3 > 0.35 && wave > 0.35) || borderShatter > 0.35) {
+          const isMajor = (r % 9 === 0) || (borderShatter > 0.45 && rowNoise > 0.72);
+          const gIdx = isMajor ? sigilIdx : tickIdx;
+          const aRow = (isMajor && (b3 > 0.35 || borderShatter > 0.5) ? 5 : (b3 > 0.16 || borderShatter > 0.25 ? 4 : 0));
+
+          ctx.drawImage(atlasCanvas, gIdx * cellPx, aRow * cellPx, cellPx, cellPx, colL * cellPx, drawY, cellPx, cellPx);
+          ctx.drawImage(atlasCanvas, gIdx * cellPx, aRow * cellPx, cellPx, cellPx, colR * cellPx, drawY, cellPx, cellPx);
+        }
+
+        if (wave > (0.76 - letheEnergy * 0.42 - borderShatter * 0.25)) {
+          const aRow = (b3 > 0.48 || borderShatter > 0.6 ? 5 : 4);
+          ctx.drawImage(atlasCanvas, runeIdx * cellPx, aRow * cellPx, cellPx, cellPx, railL * cellPx, drawY, cellPx, cellPx);
+          ctx.drawImage(atlasCanvas, runeIdx * cellPx, aRow * cellPx, cellPx, cellPx, railR * cellPx, drawY, cellPx, cellPx);
         }
       }
 
-      const topRow = 1;
-      const botRow = rows - 2;
       const bracketSpan = Math.min(10, Math.floor(cols * 0.08));
-      const bRowColor = (b3 > 0.32 ? 4 : 0);
+      const bRowColor = (b3 > 0.32 || borderShatter > 0.4 ? 4 : 0);
       for (let k = 0; k < bracketSpan; k++) {
         const gIdx = (k === 0) ? sigilIdx : tickIdx;
-        ctx.drawImage(atlasCanvas, gIdx * cellPx, bRowColor * cellPx, cellPx, cellPx, (marginColL + k) * cellPx, topRow * cellPx, cellPx, cellPx);
-        ctx.drawImage(atlasCanvas, gIdx * cellPx, bRowColor * cellPx, cellPx, cellPx, (marginColR - k) * cellPx, topRow * cellPx, cellPx, cellPx);
-        ctx.drawImage(atlasCanvas, gIdx * cellPx, bRowColor * cellPx, cellPx, cellPx, (marginColL + k) * cellPx, botRow * cellPx, cellPx, cellPx);
-        ctx.drawImage(atlasCanvas, gIdx * cellPx, bRowColor * cellPx, cellPx, cellPx, (marginColR - k) * cellPx, botRow * cellPx, cellPx, cellPx);
+        const dropY = borderShatter > 0.15 ? Math.round(borderShatter * (rows * 0.22) * hash2(k, seed)) : 0;
+        const topRow = clamp(1 + dropY, 1, Math.floor(cy - 2));
+        const botRow = clamp(rows - 2 - dropY, Math.ceil(cy + 2), rows - 2);
+
+        ctx.drawImage(atlasCanvas, gIdx * cellPx, bRowColor * cellPx, cellPx, cellPx, (baseMarginL + k) * cellPx, topRow * cellPx, cellPx, cellPx);
+        ctx.drawImage(atlasCanvas, gIdx * cellPx, bRowColor * cellPx, cellPx, cellPx, (baseMarginR - k) * cellPx, topRow * cellPx, cellPx, cellPx);
+        ctx.drawImage(atlasCanvas, gIdx * cellPx, bRowColor * cellPx, cellPx, cellPx, (baseMarginL + k) * cellPx, botRow * cellPx, cellPx, cellPx);
+        ctx.drawImage(atlasCanvas, gIdx * cellPx, bRowColor * cellPx, cellPx, cellPx, (baseMarginR - k) * cellPx, botRow * cellPx, cellPx, cellPx);
       }
     }
 
@@ -3138,12 +3356,13 @@
     }
 
     // =========================================================================
-    // Z-PLANE 2: FOREGROUND GALE GUSTS, SHOCKWAVES & SPLASH PLUMES (LAYER II)
+    // Z-PLANE 2: FOREGROUND DUST & SPLASH PLUMES (RESTRAINED 8% FLOOR AT REST)
     // =========================================================================
     if (state.lanesActive[1]) {
-      const highPresence = clamp(b2 * 0.70 + b3 * 1.05 + b1 * 0.35 + erosion * 0.45 + grow * 0.40, 0, 1.9);
-      const speedScale = 0.32 + Math.pow(highPresence, 1.55) * 4.2 + gateShear * 2.8;
-      const activeCount = Math.floor(PARTICLE_COUNT * clamp(0.35 + highPresence * 0.65, 0.35, 1.0));
+      const highPresence = clamp(b2 * 0.75 + b3 * 1.10 + b1 * 0.30 + erosion * 0.45 + grow * 0.35, 0, 1.9);
+      const speedScale = 0.25 + Math.pow(highPresence, 1.65) * 4.4 + gateShear * 2.8;
+      // Quiet 8% baseline floor (~18 motes) so it stays subtle until transients or EROSION hit
+      const activeCount = Math.floor(PARTICLE_COUNT * clamp(0.08 + Math.pow(highPresence, 1.3) * 0.92, 0.08, 1.0));
 
       const windVx = Math.cos(state.windAngle) * state.windGust * 1.55;
       const windVy = Math.sin(state.windAngle) * state.windGust * 0.85;
@@ -3174,8 +3393,8 @@
             }
           }
 
-          const swirlX = Math.sin(p.ny * 5.5 + t * 1.8 + p.phase) * (0.08 + highPresence * 0.55);
-          const swirlY = Math.cos(p.nx * 5.5 - t * 1.6 + p.phase) * (0.08 + highPresence * 0.55);
+          const swirlX = Math.sin(p.ny * 5.5 + t * 1.8 + p.phase) * (0.06 + highPresence * 0.55);
+          const swirlY = Math.cos(p.nx * 5.5 - t * 1.6 + p.phase) * (0.06 + highPresence * 0.55);
 
           const zVel = p.zDepth;
           p.nx += ((p.vx * speedScale + windVx + shockVx + swirlX) * zVel) * dtSec;
@@ -3193,7 +3412,7 @@
 
         const lifeNorm = clamp(p.life / p.maxLife, 0, 1);
         const energy = clamp(lifeNorm * (0.35 + highPresence * 0.80) * p.weight, 0, 1);
-        const isStreaking = (highPresence > 0.60 && p.zDepth > 1.02);
+        const isStreaking = (highPresence > 0.62 && p.zDepth > 1.02);
         const gIdx = isStreaking ? streakIdx : (energy > 0.68 ? dustHi : (energy > 0.32 ? dustMid : dustLo));
 
         let atlasRow = 0;
@@ -3201,7 +3420,7 @@
           atlasRow = 5;
         } else if (b3 > 0.32 && p.weight > 0.55) {
           atlasRow = 4;
-        } else if (highPresence > 0.16) {
+        } else if (highPresence > 0.22) {
           atlasRow = 2;
         }
 
@@ -3218,55 +3437,94 @@
     }
 
     // =========================================================================
-    // IDLE MODE OVERLAY: STANDING OSCILLOSCOPE WAVES & ESOTERIC MACHINE LITURGY
-    // Active whenever engine is ON with no live mic or playing file (even GROW = 0)
+    // LAYER 5: ARCHITECTURAL IDLE LITURGY & SLEWED DISINTEGRATION
+    // Embeds meditative phrases directly onto the formation's geometry on the
+    // exact ASCII grid; unbolts characters into wind-blown dust when unpaused.
     // =========================================================================
-    if (state.isIdleMode) {
-      const waveIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.48)), maxGlyphIdx);
-      const nodeIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.78)), maxGlyphIdx);
+    if (state.idlePresence > 0.03) {
+      const ip = state.idlePresence;
+      const isReleasing = (ip < state.prevIdlePresence); // Audio just started/unpaused
+      const fIdx = state.formationIdx;
 
-      // 1. Standing multi-harmonic oscilloscope trace breathing across the field
-      for (let c = 2; c < cols - 2; c++) {
+      // 1. Subtle standing harmonic wave woven through the architecture
+      const waveIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.42)), maxGlyphIdx);
+      for (let c = 4; c < cols - 4; c += 2) {
         const nx = (c - cx) * invScale;
-        const carrier = Math.sin(nx * (4.5 + tess * 6.0) + t * 1.4) * Math.cos(nx * 2.1 - t * 0.6);
-        const harmonic = Math.sin(nx * 11.0 - t * 2.5) * 0.25;
-        const waveY = (carrier + harmonic) * (0.22 + b0 * 0.35);
+        const carrier = Math.sin(nx * (4.0 + tess * 5.0) + t * 1.2) * Math.cos(nx * 2.0 - t * 0.5);
+        const waveY = carrier * (0.18 + b0 * 0.28) * ip;
         const rWave = Math.round(cy + waveY * halfScale);
-
-        if (rWave >= 1 && rWave < rows - 1) {
-          const isAntinode = Math.abs(carrier) > 0.78;
-          ctx.drawImage(
-            atlasCanvas,
-            (isAntinode ? nodeIdx : waveIdx) * cellPx,
-            (isAntinode ? 1 : 0) * cellPx,
-            cellPx, cellPx,
-            c * cellPx, rWave * cellPx, cellPx, cellPx
-          );
+        if (rWave >= 2 && rWave < rows - 2) {
+          ctx.drawImage(atlasCanvas, waveIdx * cellPx, 0, cellPx, cellPx, c * cellPx, rWave * cellPx, cellPx, cellPx);
         }
       }
 
-      // 2. After 2.2s of idle stillness, materialize esoteric Quiet Machinery philosophical transmissions
-      if (state.idleDuration > 2.2) {
-        const phraseAlpha = Math.sin(clamp(state.idlePhraseTimer / 7.5, 0, 1) * PI);
-        if (phraseAlpha > 0.08) {
+      // 2. Embed meditative machine transmissions directly into the active formation
+      if (state.idleDuration > 1.6 || isReleasing) {
+        const cycleFade = isReleasing ? ip : Math.sin(clamp(state.idlePhraseTimer / 8.5, 0, 1) * PI);
+        const visibility = clamp(cycleFade * ip * 1.35, 0, 1);
+
+        if (visibility > 0.05) {
           const line1 = state.idlePhraseLines[0];
           const line2 = state.idlePhraseLines[1];
-          const baseRow = Math.max(3, Math.floor(rows * 0.16));
 
           ctx.save();
-          ctx.globalAlpha = clamp(phraseAlpha * 0.92, 0, 1);
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
+          const fontPx = Math.floor(cellPx * 0.84);
+          ctx.font = `bold ${fontPx}px 'Courier New', Menlo, monospace`;
 
-          const fontMain = Math.max(12, Math.floor(cellPx * 0.92));
-          ctx.font = `bold ${fontMain}px 'Courier New', Menlo, monospace`;
-          ctx.fillStyle = pal.highlight;
-          ctx.fillText(line1, visCanvas.width * 0.5, baseRow * cellPx);
+          const renderEmbeddedText = (text, lineOffset) => {
+            const len = text.length;
+            for (let i = 0; i < len; i++) {
+              const ch = text[i];
+              if (ch === ' ') continue;
+              const u = (i - (len - 1) * 0.5);
 
-          const fontSub = Math.max(10, Math.floor(cellPx * 0.72));
-          ctx.font = `bold ${fontSub}px 'Courier New', Menlo, monospace`;
-          ctx.fillStyle = pal.domains[2];
-          ctx.fillText(line2, visCanvas.width * 0.5, (baseRow + 1.5) * cellPx);
+              let colPos = cx + u;
+              let rowPos = cy + lineOffset;
+
+              // Shape text path to merge naturally with the active formation's geometry
+              if (fIdx === 1 || fIdx === 7) {
+                // Circular / Eclipse formations: curve along lower inner astrolabe arc
+                const rad = (fIdx === 1 ? 0.56 : 0.62) + lineOffset * 0.08;
+                const arcSpan = Math.min(PI * 0.78, len * 0.055);
+                const ang = PI * 0.5 - (u / Math.max(1, len * 0.5)) * (arcSpan * 0.5) + Math.sin(t * 0.3) * 0.08;
+                colPos = cx + Math.cos(ang) * rad * halfScale;
+                rowPos = cy + Math.sin(ang) * rad * halfScale;
+              } else if (fIdx === 5) {
+                // Vault corridor: align along floor & ceiling threshold bays
+                rowPos = cy + (lineOffset === 0 ? -0.52 : 0.52) * halfScale;
+              } else if (fIdx === 0 || fIdx === 4) {
+                // Monolith / Obelisk: carve into upper lintel & base plinth
+                rowPos = cy + (lineOffset === 0 ? -0.62 : 0.76) * halfScale;
+              } else {
+                // Mosaic / Strata / Citadel: follow geological bedding seam
+                rowPos = cy + (lineOffset === 0 ? -0.18 : 0.24) * halfScale + Math.sin((colPos - cx) * 0.12 + t * 0.5) * 0.8;
+              }
+
+              // When unpausing (isReleasing), characters unbolt & blow away on the wind!
+              if (isReleasing) {
+                const scatterAmt = (1.0 - ip) * 14.0;
+                const h = hash2(i * 1.9, lineOffset + 3.1);
+                colPos += Math.cos(state.windAngle + h) * scatterAmt * (0.4 + h);
+                rowPos += Math.sin(state.windAngle + h) * scatterAmt * (0.4 + h);
+              }
+
+              const cGrid = Math.round(colPos);
+              const rGrid = Math.round(rowPos);
+              if (cGrid < 1 || cGrid >= cols - 1 || rGrid < 1 || rGrid >= rows - 1) continue;
+
+              // Per-character materialization threshold
+              const charAppear = hash2(i * 0.61, lineOffset * 2.3);
+              if (visibility < charAppear * 0.85) continue;
+
+              ctx.fillStyle = (lineOffset === 0) ? pal.highlight : pal.domains[2];
+              ctx.fillText(ch, cGrid * cellPx + cellPx * 0.5, rGrid * cellPx + cellPx * 0.52);
+            }
+          };
+
+          renderEmbeddedText(line1, 0);
+          renderEmbeddedText(line2, 1);
           ctx.restore();
         }
       }
@@ -3295,12 +3553,12 @@
       (state.sourceMode === 'mic' || (state.sourceMode === 'file' && !dom.audioPlayer.paused));
 
     if (!active) {
-      scopeCtx.strokeStyle = state.frozen ? '#00aaff' : (state.isIdleMode ? '#52a869' : '#446252');
+      scopeCtx.strokeStyle = state.frozen ? '#00aaff' : (state.idlePresence > 0.1 ? '#52a869' : '#446252');
       scopeCtx.lineWidth = 1;
       scopeCtx.beginPath();
       for (let x = 0; x < w; x++) {
         const u = x / w;
-        const amp = state.isIdleMode ? 4.5 : 2.5;
+        const amp = state.idlePresence > 0.1 ? 4.5 : 2.5;
         const y = h * 0.5 + Math.sin(u * TAU * 2.0 + state.morphTime * 1.8) * Math.sin(u * PI) * amp;
         if (x === 0) scopeCtx.moveTo(x, y);
         else scopeCtx.lineTo(x, y);
@@ -3363,9 +3621,9 @@
      =========================================================================== */
   const LANE_NAMES = [
     'I. STRATA // Z-1 ARCHITECTURE & APPARITIONS',
-    'II. EROSION // Z-2 GALE GUSTS & SPLASH PLUMES',
+    'II. EROSION // Z-2 DUST & TRANSIENT PLUMES',
     'III. SILICA // Z-0 PATINA WALL & LIGHTNING',
-    'IV. LETHE // Z-0 OCCULT MARGINALIA'
+    'IV. LETHE // Z-0/Z-1 SHATTERING BORDERS'
   ];
 
   function syncLaneEngagementUI() {
@@ -3378,6 +3636,10 @@
   }
 
   function toggleVisualLane(idx, silent = false) {
+    if (state.vizScopeMode) {
+      state.vizScopeMode = false;
+      dom.btnVizScope.classList.remove('active');
+    }
     state.lanesActive[idx] = !state.lanesActive[idx];
     syncLaneEngagementUI();
     if (!silent) {
@@ -3386,11 +3648,21 @@
   }
 
   function toggleAllVisualLanes() {
+    if (state.vizScopeMode) {
+      state.vizScopeMode = false;
+      dom.btnVizScope.classList.remove('active');
+    }
     const anyOn = state.lanesActive.some(Boolean);
     const target = !anyOn;
     state.lanesActive = [target, target, target, target];
     syncLaneEngagementUI();
     showToast(`ALL VISUAL LAYERS: ${target ? 'ENGAGED' : 'DISENGAGED'}`);
+  }
+
+  function toggleVizScopeOverride() {
+    state.vizScopeMode = !state.vizScopeMode;
+    dom.btnVizScope.classList.toggle('active', state.vizScopeMode);
+    showToast(state.vizScopeMode ? 'VIZ OVERRIDE // FULL-SCREEN ASCII SCOPE' : 'VIZ OVERRIDE // ARCHITECTURAL STRATA');
   }
 
   function syncFormationButtonsUI() {
@@ -3419,6 +3691,8 @@
     state.morphCyclePhase = 0.0;
     state.variantA = createVariantGenome(0.0);
     state.variantB = createVariantGenome(clamp(0.30 + state.params.grow * 0.70, 0.30, 1.0));
+    state.dissolveAngle = Math.random() * TAU;
+    state.dissolveMode = Math.floor(Math.random() * 4);
     syncFormationButtonsUI();
     const fm = FORMATIONS[state.formationIdx];
     state.calvedChunks.length = 0;
@@ -3607,6 +3881,8 @@
     });
     state.morphSeed = 0.5 + Math.random() * 25.0;
     state.windAngle = Math.random() * TAU;
+    state.dissolveAngle = Math.random() * TAU;
+    state.dissolveMode = Math.floor(Math.random() * 4);
     if (state.frozen) {
       state.frozenSeed = state.morphSeed;
     }
@@ -3704,6 +3980,7 @@
       showToast(state.scopeMode === 0 ? 'OLED // WAVEFORM' : 'OLED // SEISMOGRAPH');
     });
 
+    dom.btnVizScope.addEventListener('click', toggleVizScopeOverride);
     dom.btnActivate.addEventListener('click', toggleActivate);
     dom.btnScatter.addEventListener('click', triggerScatter);
     dom.btnDrift.addEventListener('click', toggleDrift);
@@ -3829,6 +4106,8 @@
         toggleVisualLane(3);
       } else if (key === 'a') {
         toggleAllVisualLanes();
+      } else if (key === 'v') {
+        toggleVizScopeOverride();
       } else if (key >= '1' && key <= '8') {
         selectFormation(Number(key) - 1);
       } else if (key === 'm') {
