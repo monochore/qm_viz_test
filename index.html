@@ -903,8 +903,8 @@
               <canvas id="scope" width="156" height="36" title="Click to toggle Waveform / Peak Seismograph"></canvas>
               <div class="oled-row">
                 <button class="oled-btn" id="btn-activate" title="Initialize, Resume, or Suspend Audio Engine">ACTIVATE</button>
-                <button class="oled-btn" id="btn-scatter" title="Randomize Creative Dials &amp; Seed [S]">SCATTER</button>
-                <button class="oled-btn" id="btn-drift" title="Slow Organic Random Walk on Creative Dials (Excludes GAIN &amp; GROW)">DRIFT</button>
+                <button class="oled-btn" id="btn-scatter" title="Randomize Creative Dials &amp; Seed (Locks GAIN &amp; GROW) [S]">SCATTER</button>
+                <button class="oled-btn" id="btn-drift" title="Slow Organic Random Walk on Creative Dials (Locks GAIN &amp; GROW)">DRIFT</button>
               </div>
               <button class="oled-btn freeze" id="btn-freeze" style="width:100%;" title="Freeze Current Trace in Mortar [X]">FREEZE</button>
             </div>
@@ -969,7 +969,7 @@
                 <div class="knob-readout" id="readout-tessellation">0.50</div>
               </div>
 
-              <!-- FRACTURE: Default 0.00 (Background sheet lightning, shear & calving; >0.50 shatters & reforms) -->
+              <!-- FRACTURE: Default 0.00 -->
               <div class="knob-container d-red">
                 <div class="knob-label">FRACTURE</div>
                 <svg class="knob-svg" id="knob-fracture" data-param="fracture" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Background Sheet Lightning, Masonry Calving &amp; Structural Shatter (>0.50) | Default: 0.00">
@@ -979,10 +979,10 @@
                 <div class="knob-readout" id="readout-fracture">0.00</div>
               </div>
 
-              <!-- GROW: Autonomous Topological Morphing & Dissolve-Reform Cycle -->
+              <!-- GROW: Autonomous Generative Shatter & Reconstruction Rate -->
               <div class="knob-container d-sage">
                 <div class="knob-label">GROW</div>
-                <svg class="knob-svg" id="knob-grow" data-param="grow" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Autonomous Morphological Evolution: Dissolves &amp; Reforms Across All 8 Shapes Over Time | Default: 0.00">
+                <svg class="knob-svg" id="knob-grow" data-param="grow" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Generative Shatter &amp; Reconstruction Speed (Slow Drift at Low, Transient-Triggered Mutation at High) | Locked on SCATTER">
                   <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
                   <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
                 </svg>
@@ -1005,7 +1005,7 @@
                 <div class="meter-row disengaged" id="mrow-1">
                   <span class="meter-label" data-lane="1" style="color: var(--c-amber-dim);">II. EROSION [W]</span>
                   <div class="meter-track"><div class="meter-fill" id="meter-1" style="background: var(--c-amber-dim);"></div></div>
-                  <button type="button" class="lane-toggle-sq" id="lane-btn-1" data-lane="1" aria-pressed="false" title="Engage Z-2 Foreground: Gale Dust &amp; Dissolution Trails [W]"></button>
+                  <button type="button" class="lane-toggle-sq" id="lane-btn-1" data-lane="1" aria-pressed="false" title="Engage Z-2 Foreground: Gale Dust &amp; Dissolution Plumes [W]"></button>
                 </div>
                 <div class="meter-row disengaged" id="mrow-2">
                   <span class="meter-label" data-lane="2" style="color: var(--c-cyan-dim);">III. SILICA [E]</span>
@@ -1079,11 +1079,10 @@
   /* ===========================================================================
      SECTION A: HACKABLE CODEBOX (EDIT DIRECTLY LIKE A gen~ CODEBOX)
      ---------------------------------------------------------------------------
-     8 Architectural/Morphological Formations, 8 Occult Symbol Ramps,
-     10 Mineral Palettes, and Real-Time Dissolve-and-Reform SDF Equations.
+     8 Generative Architectural Formations with Stochastic Variant Genomes,
+     Cohesive Structural Skeleton Anchors, and Transient-Coupled Shatter/Reform.
      =========================================================================== */
 
-  // 1. EIGHT ARCHITECTURAL & MORPHOLOGICAL FORMATIONS
   const FORMATIONS = [
     { id: 0, label: 'I. MONOLITH',    subtitle: 'STEPPED TEMPLE PORTAL' },
     { id: 1, label: 'II. SEAL',       subtitle: 'OCCULT RITUAL CIRCLE' },
@@ -1095,7 +1094,6 @@
     { id: 7, label: 'VIII. HORIZON',  subtitle: 'SOLAR ECLIPSE & INTERFERENCE' }
   ];
 
-  // 2. EIGHT SAFARI/MACOS-SAFE MONOCHROME OCCULT & ARCHITECTURAL SYMBOL LEXICONS
   const SYMBOL_LEXICONS = [
     { name: 'RELIQUARY', chars: '·∶╵┼†‡◈❖╬▓█' },
     { name: 'SIGILUM',   chars: '·∘○△▽◬⊕⊗⊙✦◉▓' },
@@ -1107,101 +1105,79 @@
     { name: 'CIPHER',    chars: '·:|=+-‡┃▼#▓█' }
   ];
 
-  // 3. TEN PURE QUIET MACHINERY MINERAL & ARCHIVAL PALETTES
   const PALETTES = [
     {
       name: 'MNEMOSYNE',
       bg: '#060606',
       rest: '#446252',
       domains: ['#52a869', '#bf893b', '#498eb8', '#b85454'],
-      highlight: '#ecece6',
-      invertBg: '#ecece6',
-      invertInk: '#060606'
+      highlight: '#ecece6'
     },
     {
       name: 'OBSIDIAN',
       bg: '#040404',
       rest: '#4c4c4c',
       domains: ['#6e6e6e', '#949494', '#bdbdbd', '#e0e0e0'],
-      highlight: '#ffffff',
-      invertBg: '#e8e8e8',
-      invertInk: '#040404'
+      highlight: '#ffffff'
     },
     {
       name: 'LIMESTONE',
       bg: '#090908',
       rest: '#5f5b52',
       domains: ['#827b6d', '#a89c82', '#c7a96b', '#ded8c8'],
-      highlight: '#f7f3e8',
-      invertBg: '#e6e0d1',
-      invertInk: '#090908'
+      highlight: '#f7f3e8'
     },
     {
       name: 'VERDIGRIS',
       bg: '#050807',
       rest: '#3c5a52',
       domains: ['#4b7a6b', '#4fa695', '#b37a4c', '#c7ded8'],
-      highlight: '#ebf7f3',
-      invertBg: '#d8eae4',
-      invertInk: '#050807'
+      highlight: '#ebf7f3'
     },
     {
       name: 'CINNABAR',
       bg: '#070505',
       rest: '#574c4c',
       domains: ['#786f6f', '#9c6f5e', '#bf4d3d', '#e33b27'],
-      highlight: '#f7e6e3',
-      invertBg: '#e33b27',
-      invertInk: '#070505'
+      highlight: '#f7e6e3'
     },
     {
       name: 'SLATE & SALT',
       bg: '#05070a',
       rest: '#465466',
       domains: ['#5d728a', '#6f92ad', '#4ca6c2', '#cfe0ed'],
-      highlight: '#f2f8fc',
-      invertBg: '#dde9f2',
-      invertInk: '#05070a'
+      highlight: '#f2f8fc'
     },
     {
       name: 'SULPHUR',
       bg: '#070704',
       rest: '#52543d',
       domains: ['#6e704b', '#8f8d48', '#baa13d', '#e0d56c'],
-      highlight: '#faf6cf',
-      invertBg: '#ebe288',
-      invertInk: '#070704'
+      highlight: '#faf6cf'
     },
     {
       name: 'ASH & RUST',
       bg: '#080605',
       rest: '#5c524d',
       domains: ['#7d6b5f', '#a8653e', '#c24e29', '#dba786'],
-      highlight: '#f7ece1',
-      invertBg: '#e8dbd0',
-      invertInk: '#080605'
+      highlight: '#f7ece1'
     },
     {
       name: 'VELLUM INK',
       bg: '#e6e1d6',
       rest: '#262421',
       domains: ['#394a3d', '#7d522c', '#2e4a59', '#8f3029'],
-      highlight: '#080807',
-      invertBg: '#161513',
-      invertInk: '#e6e1d6'
+      highlight: '#080807'
     },
     {
       name: 'PHOSPHOR',
       bg: '#040805',
       rest: '#265c36',
       domains: ['#2f8748', '#3dba5f', '#21d976', '#00ff44'],
-      highlight: '#ccffda',
-      invertBg: '#00ff44',
-      invertInk: '#040805'
+      highlight: '#ccffda'
     }
   ];
 
-  // Clean SDF math helpers
   const PI = Math.PI;
   const TAU = Math.PI * 2;
 
@@ -1223,51 +1199,61 @@
   }
 
   /**
-   * 4. Z-PLANE 1 EVALUATOR: 8 MORPHOLOGICAL ARCHITECTURES
-   *    Evaluates one grid cell (nx, ny) for formation `fIdx`.
+   * 4. GENERATIVE ARCHITECTURAL EVALUATOR
+   *    Each formation accepts a stochastic variant genome `vGen` so every
+   *    re-construction creates a fresh geological/architectural variation
+   *    while marking primary structural outlines (`isSkeleton = true`) so
+   *    high dial settings remain visually legible and locked to the beat.
    */
-  function evaluateSingleFormation(fIdx, nx, ny, col, row, f) {
+  function evaluateSingleFormation(fIdx, nx, ny, col, row, f, vGen) {
     const {
       t, seed, b0, b1, b2, b3,
-      tess, fracture,
+      tess, erosion, fracture,
       gateShear, gateDrop, cols, rows, frameTick
     } = f;
 
     let density = 0;
     let zone = 0;
     let peak = false;
+    let isSkeleton = false; // High-contrast anchor preserved even at 100% dials
 
     // -------------------------------------------------------------------------
-    // FORMATION 0 — I. MONOLITH (Stepped Temple Portal)
+    // FORMATION 0 — I. MONOLITH (Reforms from Temple Portal into Twin Crags / Basalt Mesa)
     // -------------------------------------------------------------------------
     if (fIdx === 0) {
-      const ax = Math.abs(nx);
+      // Variant genome mutates symmetry, split chasm, and geological stepping
+      const asymSkew = (vGen.g1 - 0.5) * 0.28 * vGen.mutAmt;
+      const splitGap = vGen.g2 > 0.55 ? (vGen.g2 - 0.55) * 0.35 * vGen.mutAmt : 0;
+      const ax = Math.abs(nx + asymSkew * ny);
       const heave = b0 * 0.14;
-      const stepCount = 3 + Math.round(tess * 4);
+      const stepCount = 3 + Math.round(tess * 4 + vGen.g3 * 3);
 
       const yNorm = clamp((ny + 0.86) / 1.72, 0, 1);
       const stepQuant = Math.floor(yNorm * stepCount) / stepCount;
-      const outerW = 0.44 + stepQuant * 0.34 + heave;
+      const cragNoise = Math.sin(ny * (7 + vGen.g4 * 12) + vGen.seed) * 0.08 * vGen.mutAmt;
+      const outerW = 0.44 + stepQuant * 0.34 + heave + cragNoise;
       const topY = -0.84 - heave * 0.30;
       const botY = 0.84 + heave * 0.25;
 
-      if (ax <= outerW && ny >= topY && ny <= botY) {
-        const doorW = 0.21 + b0 * 0.04;
-        const doorTop = -0.26 - b0 * 0.04;
-        const inSanctum = (ax < doorW && ny > doorTop && ny < botY - 0.07);
+      if (ax <= outerW && ax >= splitGap && ny >= topY && ny <= botY) {
+        const doorW = (0.21 + b0 * 0.04) * (1.0 - vGen.mutAmt * 0.45);
+        const doorTop = -0.26 - b0 * 0.04 + vGen.mutAmt * 0.25;
+        const inSanctum = (splitGap === 0) && (ax < doorW && ny > doorTop && ny < botY - 0.07);
 
         if (!inSanctum) {
           const dOuterX = outerW - ax;
+          const dSplitX = ax - splitGap;
           const dOuterY = Math.min(ny - topY, botY - ny);
           const dStepH = Math.abs(((yNorm * stepCount) % 1) - 0.5);
-          const isOuterFrame = (dOuterX < 0.055) || (dOuterY < 0.055);
+          const isOuterFrame = (dOuterX < 0.055) || (dOuterY < 0.055) || (splitGap > 0 && dSplitX < 0.045);
           const isStepLedge = (dStepH > 0.44 && ax > doorW + 0.06);
 
           const dDoorX = ax - doorW;
           const dDoorTop = doorTop - ny;
-          const isDoorFrame =
+          const isDoorFrame = (splitGap === 0) && (
             (dDoorX >= 0 && dDoorX < 0.055 && ny >= doorTop - 0.055) ||
-            (dDoorTop >= 0 && dDoorTop < 0.055 && ax <= doorW + 0.055);
+            (dDoorTop >= 0 && dDoorTop < 0.055 && ax <= doorW + 0.055)
+          );
 
           const isPlinth = (ny > botY - 0.09);
 
@@ -1283,18 +1269,20 @@
           if (isOuterFrame || isDoorFrame || isPlinth) {
             density = 0.72 + b0 * 0.28;
             zone = 0;
-            peak = b0 > 0.65;
+            peak = b0 > 0.58;
+            isSkeleton = true;
           } else if (isStepLedge) {
             density = 0.54 + b0 * 0.26;
             zone = 0;
+            isSkeleton = true;
           } else if (pillarRib) {
             density = 0.40 + b1 * 0.48 + b2 * 0.14;
             zone = 1;
-            peak = b1 > 0.68;
+            peak = b1 > 0.62;
           } else if (lintelRune) {
             density = 0.46 + b3 * 0.54;
             zone = 3;
-            peak = b3 > 0.52;
+            peak = b3 > 0.50;
           } else if (lintelBand) {
             density = 0.24 + b2 * 0.36;
             zone = 2;
@@ -1320,25 +1308,29 @@
             density = 0.92;
             zone = 3;
             peak = true;
+            isSkeleton = true;
           }
         }
       }
 
     // -------------------------------------------------------------------------
-    // FORMATION 1 — II. SEAL (Occult Ritual Circle)
+    // FORMATION 1 — II. SEAL (Mutates Polygon Sides, Eccentric Orbits & Chladni Modes)
     // -------------------------------------------------------------------------
     } else if (fIdx === 1) {
+      const eccX = (vGen.g1 - 0.5) * 0.14 * vGen.mutAmt;
+      const eccY = (vGen.g2 - 0.5) * 0.14 * vGen.mutAmt;
       const r = Math.hypot(nx, ny);
+      const rInner = Math.hypot(nx - eccX, ny - eccY);
       const theta = Math.atan2(ny, nx);
       const R = 0.78 + b0 * 0.10;
 
       if (r <= R + 0.045) {
-        const sides = 3 + Math.round(tess * 5);
-        const rotA = t * 0.22 + b1 * 0.55 + seed;
-        const rotB = -t * 0.18 - b2 * 0.55 + seed + PI / sides;
+        const sides = 3 + Math.round(tess * 4 + vGen.g3 * 4);
+        const rotA = t * 0.22 + b1 * 0.55 + vGen.seed;
+        const rotB = -t * 0.18 - b2 * 0.55 + vGen.seed + PI / sides;
 
         const dRingOut = Math.abs(r - R);
-        const dRingIn = Math.abs(r - (R - 0.095));
+        const dRingIn = Math.abs(rInner - (R - 0.11));
         const inRingBand = (r <= R && r >= R - 0.095);
         const tickCount = 12 + Math.round(tess * 24);
         const isTick = inRingBand && (Math.abs(Math.cos(theta * tickCount * 0.5)) > 0.92);
@@ -1346,35 +1338,39 @@
         const isCardinal = (Math.abs(nx) < 0.018 || Math.abs(ny) < 0.018) && r > 0.14 && r < R - 0.095;
         const isDiag = (Math.abs(Math.abs(nx) - Math.abs(ny)) < 0.016) && r > 0.18 && r < R - 0.11;
 
-        const dPoly1 = Math.abs(regularPolygonSDF(nx, ny, sides, R * 0.69, rotA));
-        const dPoly2 = Math.abs(regularPolygonSDF(nx, ny, sides, R * 0.52, rotB));
-        const dPoly3 = Math.abs(regularPolygonSDF(nx, ny, sides, R * 0.30, rotA * 1.4));
+        const dPoly1 = Math.abs(regularPolygonSDF(nx - eccX, ny - eccY, sides, R * 0.69, rotA));
+        const dPoly2 = Math.abs(regularPolygonSDF(nx + eccX, ny + eccY, Math.max(3, sides - 1), R * 0.50, rotB));
+        const dPoly3 = Math.abs(regularPolygonSDF(nx, ny, sides, R * 0.28, rotA * 1.4));
 
-        const dOculus = Math.abs(r - (0.14 + b0 * 0.04));
-        const nHarm = 2 + Math.round(tess * 4);
+        const dOculus = Math.abs(rInner - (0.14 + b0 * 0.04));
+        const nHarm = 2 + Math.round(tess * 4 + vGen.g4 * 3);
         const chladni = Math.cos(r * (10 + tess * 12) - t * 0.9) * Math.cos(theta * nHarm + rotA * 0.5);
         const isNodal = (r < R - 0.11 && r > 0.15) && (Math.abs(chladni) < (0.09 + b2 * 0.11)) && (b2 > 0.08 || b1 > 0.12);
 
         if (dRingOut < 0.026 || dRingIn < 0.020) {
           density = 0.76 + b0 * 0.24;
           zone = 0;
-          peak = b0 > 0.62;
+          peak = b0 > 0.58;
+          isSkeleton = true;
         } else if (isTick) {
           density = 0.42 + b3 * 0.56;
           zone = 3;
-          peak = b3 > 0.55;
+          peak = b3 > 0.52;
         } else if (dPoly1 < 0.024) {
           density = 0.66 + b1 * 0.34;
           zone = 1;
-          peak = b1 > 0.62;
+          peak = b1 > 0.58;
+          isSkeleton = true;
         } else if (dPoly2 < 0.022) {
           density = 0.58 + b2 * 0.40;
           zone = 2;
-          peak = b2 > 0.60;
+          peak = b2 > 0.58;
+          isSkeleton = true;
         } else if (dOculus < 0.022) {
           density = 0.64 + b0 * 0.36;
           zone = 0;
-          peak = b0 > 0.55;
+          peak = b0 > 0.52;
+          isSkeleton = true;
         } else if (dPoly3 < 0.018 && r > 0.15) {
           density = 0.38 + b2 * 0.42;
           zone = 2;
@@ -1391,12 +1387,14 @@
       }
 
     // -------------------------------------------------------------------------
-    // FORMATION 2 — III. MOSAIC (Reliquary Coffered Wall with Cellular Matrix)
+    // FORMATION 2 — III. MOSAIC (Mutates Coffer Aspect Ratio & Quadrant Motifs)
     // -------------------------------------------------------------------------
     } else if (fIdx === 2) {
       if (Math.abs(ny) <= 0.86 && Math.abs(nx) <= (cols / Math.max(1, rows)) * 0.86) {
-        const tileW = Math.round(12 - tess * 6);
-        const tileH = Math.round(8 - tess * 3);
+        const wMod = Math.round((vGen.g1 - 0.5) * 4 * vGen.mutAmt);
+        const hMod = Math.round((vGen.g2 - 0.5) * 3 * vGen.mutAmt);
+        const tileW = clamp(Math.round(12 - tess * 6) + wMod, 5, 16);
+        const tileH = clamp(Math.round(8 - tess * 3) + hMod, 4, 12);
         const centerCol = Math.floor(cols * 0.5);
         const centerRow = Math.floor(rows * 0.5);
 
@@ -1410,7 +1408,7 @@
         const stx = Math.abs(tx);
         const sty = Math.abs(ty);
 
-        const tileZone = (stx + sty + Math.floor(seed * 2.0)) % 4;
+        const tileZone = (stx + sty + Math.floor(vGen.seed * 3.0)) % 4;
         const bandVals = [b0, b1, b2, b3];
         const tileEnergy = bandVals[tileZone];
 
@@ -1437,7 +1435,7 @@
             const manhattan = Math.abs(ux) + Math.abs(uy);
             const maxBox = Math.max(Math.abs(ux), Math.abs(uy));
 
-            const motifType = (stx * 3 + sty) % 3;
+            const motifType = (stx * 3 + sty + Math.floor(vGen.g3 * 3)) % 3;
             let motifHit = false;
             if (motifType === 0) {
               motifHit = Math.abs(manhattan - (0.58 + tileEnergy * 0.25)) < 0.24;
@@ -1452,31 +1450,35 @@
             zone = tileZone;
             if (isCorner) {
               density = 0.54 + tileEnergy * 0.42;
-              peak = tileEnergy > 0.65;
+              peak = tileEnergy > 0.62;
+              isSkeleton = true;
             } else if (isBorder) {
               density = 0.28 + tileEnergy * 0.34;
+              isSkeleton = (stx + sty) % 2 === 0;
             } else if (centerSeal) {
               density = 0.44 + tileEnergy * 0.54;
-              peak = tileEnergy > 0.58;
+              peak = tileEnergy > 0.55;
+              isSkeleton = true;
             } else if (motifHit && (tileEnergy > 0.14 || (stx + sty) % 2 === 0)) {
               density = 0.24 + tileEnergy * 0.64;
-              peak = tileEnergy > 0.74;
+              peak = tileEnergy > 0.70;
             }
           }
         }
       }
 
     // -------------------------------------------------------------------------
-    // FORMATION 3 — IV. STRATA (Geological Fault Cross-Section)
+    // FORMATION 3 — IV. STRATA (Mutates Fault Dip Angle, Rift Offset & Folds)
     // -------------------------------------------------------------------------
     } else if (fIdx === 3) {
-      const shelfSteps = 5 + Math.round(tess * 7);
+      const dipSlope = (vGen.g1 - 0.5) * 0.45 * vGen.mutAmt;
+      const shelfSteps = 5 + Math.round(tess * 7 + vGen.g2 * 4);
       const qx = Math.floor(nx * shelfSteps) / shelfSteps;
-      const horizonTop = -0.64 + Math.sin(qx * 3.1 + seed) * 0.08 + Math.cos(qx * 6.5) * 0.03;
-      const bedrockBot = 0.72 + Math.cos(qx * 2.4 + seed) * 0.05;
+      const horizonTop = -0.64 + qx * dipSlope * 0.5 + Math.sin(qx * 3.1 + vGen.seed) * 0.10;
+      const bedrockBot = 0.72 + qx * dipSlope * 0.3 + Math.cos(qx * 2.4 + vGen.seed) * 0.06;
 
       if (ny >= horizonTop && ny <= bedrockBot) {
-        const riftCenter = Math.sin(qx * 2.8 + t * 0.35 + seed) * 0.11 + (b1 - 0.2) * 0.06;
+        const riftCenter = qx * dipSlope + Math.sin(qx * 2.8 + t * 0.35 + vGen.seed) * 0.12 + (b1 - 0.2) * 0.06;
         const riftHalf = 0.065 + b0 * 0.17 + gateShear * 0.09;
         const dRift = Math.abs(ny - riftCenter);
 
@@ -1485,7 +1487,8 @@
         } else if (dRift < riftHalf + 0.048) {
           density = 0.76 + b0 * 0.24;
           zone = 3;
-          peak = b0 > 0.48 || b3 > 0.52;
+          peak = b0 > 0.48 || b3 > 0.50;
+          isSkeleton = true;
         } else {
           const strataCount = 4 + Math.round(tess * 6);
           const depthShift = (ny < riftCenter ? -1 : 1) * (b0 * 0.08 + b1 * 0.12);
@@ -1501,9 +1504,10 @@
           zone = sZone;
           if (isSeam) {
             density = 0.52 + sEnergy * 0.44;
-            peak = sEnergy > 0.66;
+            peak = sEnergy > 0.62;
+            isSkeleton = true;
           } else {
-            const layerType = ((stratumIdx % 3) + 3) % 3;
+            const layerType = ((stratumIdx + Math.floor(vGen.g3 * 3)) % 3 + 3) % 3;
             if (layerType === 0) {
               if (col % 3 === 0) {
                 density = 0.32 + b0 * 0.38 + sEnergy * 0.24;
@@ -1515,7 +1519,7 @@
             } else {
               if (Math.abs(sFrac - 0.5) < 0.16 && ((col + stratumIdx) % 4 === 0)) {
                 density = 0.30 + b2 * 0.46 + b3 * 0.24;
-                peak = b3 > 0.58;
+                peak = b3 > 0.55;
               }
             }
           }
@@ -1523,42 +1527,46 @@
       }
 
     // -------------------------------------------------------------------------
-    // FORMATION 4 — V. OBELISK (Vertical Totem Spine)
+    // FORMATION 4 — V. OBELISK (Reforms into Forked Spire / Stepped Geological Menhir)
     // -------------------------------------------------------------------------
     } else if (fIdx === 4) {
+      const forkSplit = vGen.g1 > 0.58 ? (vGen.g1 - 0.58) * 0.22 * vGen.mutAmt : 0;
       const ax = Math.abs(nx);
       const topTip = -0.88;
-      const capBase = -0.58;
+      const capBase = -0.58 + (vGen.g2 - 0.5) * 0.12 * vGen.mutAmt;
       const plinthTop = 0.72;
       const plinthBot = 0.86;
 
       if (ny >= topTip && ny <= plinthBot) {
         if (ny < capBase) {
-          const capW = ((ny - topTip) / (capBase - topTip)) * (0.14 + b0 * 0.04);
-          if (ax <= capW) {
+          const capW = ((ny - topTip) / (capBase - topTip)) * (0.14 + b0 * 0.04 + forkSplit);
+          if (ax <= capW && ax >= forkSplit * 0.6) {
             const isCapEdge = (capW - ax < 0.032) || (capBase - ny < 0.03);
             zone = 3;
             density = isCapEdge ? (0.78 + b3 * 0.22) : (0.30 + b3 * 0.48);
             peak = isCapEdge && b3 > 0.50;
+            isSkeleton = isCapEdge;
           }
         } else if (ny <= plinthTop) {
           const shaftProg = (ny - capBase) / (plinthTop - capBase);
-          const shaftW = 0.13 + shaftProg * 0.06 + b0 * 0.055;
+          const geoBulge = Math.sin(shaftProg * PI * (2 + Math.round(vGen.g3 * 3))) * 0.04 * vGen.mutAmt;
+          const shaftW = 0.13 + shaftProg * 0.06 + b0 * 0.055 + forkSplit + geoBulge;
 
-          if (ax <= shaftW) {
-            const isEdge = (shaftW - ax < 0.032);
-            const inSpineGroove = (ax < 0.036);
+          if (ax <= shaftW && ax >= forkSplit) {
+            const isEdge = (shaftW - ax < 0.032) || (forkSplit > 0 && ax - forkSplit < 0.028);
+            const inSpineGroove = (forkSplit === 0 && ax < 0.036);
 
             if (isEdge) {
               density = 0.74 + b0 * 0.26;
               zone = 0;
-              peak = b0 > 0.62;
+              peak = b0 > 0.58;
+              isSkeleton = true;
             } else if (inSpineGroove) {
               const pulse = Math.sin(ny * (14 + tess * 12) - t * 2.2) * 0.5 + 0.5;
               if (pulse > (0.68 - b2 * 0.45)) {
                 density = 0.44 + b2 * 0.54;
                 zone = 2;
-                peak = b2 > 0.58;
+                peak = b2 > 0.55;
               }
             } else {
               const bandFreq = 6 + Math.round(tess * 10);
@@ -1571,30 +1579,32 @@
                 zone = 0;
               }
             }
-          } else {
-            const plumb1 = 0.34;
-            const plumb2 = 0.52;
+          } else if (ax > shaftW) {
+            const plumb1 = 0.34 + forkSplit * 0.5;
+            const plumb2 = 0.52 + forkSplit * 0.5;
             const ribCount = 5 + Math.round(tess * 7);
             const ribPos = shaftProg * ribCount;
             const isCrossbar = Math.abs((ribPos % 1) - 0.5) > 0.43;
             const ribIdx = Math.floor(ribPos);
 
-            const barReach = 0.28 + ((ribIdx % 2 === 0) ? 0.18 : 0.08) + b1 * 0.20;
+            const barReach = 0.28 + ((ribIdx % 2 === 0) ? 0.18 : 0.08) + b1 * 0.20 + forkSplit * 0.5;
 
             if (isCrossbar && ax > shaftW + 0.04 && ax < barReach) {
               density = 0.52 + b1 * 0.44;
               zone = 1;
-              peak = b1 > 0.62;
+              peak = b1 > 0.60;
+              isSkeleton = true;
             } else if (Math.abs(ax - plumb1) < 0.015 && ny > capBase + 0.06 && ny < plinthTop - 0.04) {
               const nodeHit = Math.abs((ribPos % 1) - 0.5) > 0.38;
               density = nodeHit ? (0.62 + b2 * 0.36) : (0.20 + b2 * 0.25);
               zone = 2;
-              peak = nodeHit && b2 > 0.62;
+              peak = nodeHit && b2 > 0.60;
+              isSkeleton = nodeHit;
             } else if (Math.abs(ax - plumb2) < 0.015 && ny > capBase + 0.18 && ny < plinthTop - 0.14) {
               if (row % 2 === 0 || b3 > 0.25) {
                 density = 0.18 + b3 * 0.58;
                 zone = 3;
-                peak = b3 > 0.62;
+                peak = b3 > 0.60;
               }
             }
           }
@@ -1604,37 +1614,58 @@
             const isEdge = (plinthW - ax < 0.035) || (ny - plinthTop < 0.03) || (plinthBot - ny < 0.03);
             density = isEdge ? (0.72 + b0 * 0.28) : (0.26 + b0 * 0.28);
             zone = 0;
-            peak = isEdge && b0 > 0.64;
+            peak = isEdge && b0 > 0.60;
+            isSkeleton = isEdge;
           }
         }
       }
 
     // -------------------------------------------------------------------------
-    // FORMATION 5 — VI. VAULT (Recessed Stone Corridor)
+    // FORMATION 5 — VI. VAULT (Warps Vanishing Point, Cracks Arch Ribs & Surges Forward)
     // -------------------------------------------------------------------------
     } else if (fIdx === 5) {
-      const sx = Math.abs(nx) * 0.78;
-      const sy = Math.abs(ny);
+      // Dynamic twist: higher dials warp the corridor's vanishing point in a figure-eight
+      // and fracture the archway ribs into jagged stone teeth
+      const engage = clamp(erosion * 0.45 + fracture * 0.55 + tess * 0.25, 0, 1.2);
+      const warpX = Math.sin(t * 0.85 + vGen.seed) * 0.24 * engage;
+      const warpY = Math.sin(t * 1.35 + vGen.seed * 1.7) * 0.16 * engage;
+
+      const rx = nx - warpX * (1.0 - Math.min(1, Math.hypot(nx, ny)));
+      const ry = ny - warpY * (1.0 - Math.min(1, Math.hypot(nx, ny)));
+
+      // Twist angle increases deeper into the tunnel when dials are engaged
+      const dist0 = Math.hypot(rx, ry);
+      const twistAng = (1.0 - clamp(dist0, 0, 1)) * Math.sin(t * 0.6) * 0.38 * engage;
+      const cosT = Math.cos(twistAng);
+      const sinT = Math.sin(twistAng);
+      const tx = rx * cosT - ry * sinT;
+      const ty = rx * sinT + ry * cosT;
+
+      const sx = Math.abs(tx) * 0.78;
+      const sy = Math.abs(ty);
       const cheb = Math.max(sx, sy);
 
       const coreVoid = 0.14 - b0 * 0.03;
-      if (cheb >= coreVoid && cheb <= 0.96) {
+      if (cheb >= coreVoid && cheb <= 0.98) {
         const archDensity = 2.6 + tess * 3.8;
-        const travel = t * 0.52 + b0 * 0.42;
+        // Surges forward faster as dials & bass engage
+        const travel = t * (0.55 + engage * 1.45) + b0 * 0.55;
         const depth = Math.log(cheb) * archDensity + travel;
         const archIdx = Math.floor(depth);
         const archFrac = ((depth % 1) + 1) % 1;
 
-        const ribThickness = 0.24 + b0 * 0.12;
+        // Jagged fault cracks along archway ribs when fracture/erosion rise
+        const crackTooth = engage > 0.2 ? Math.sin((tx + ty) * 28.0 + archIdx * 3.1) * 0.07 * engage : 0;
+        const ribThickness = 0.24 + b0 * 0.12 + crackTooth;
         const isArchRib = (archFrac < ribThickness);
-        const isMiter = Math.abs(sx - sy) < 0.028;
+        const isMiter = Math.abs(sx - sy) < (0.028 + engage * 0.015);
 
         const onCeilingFloor = (sy > sx + 0.03);
         const onSideWalls = (sx > sy + 0.03);
         const strutStep = 5 + Math.round(tess * 6);
         const isCofferStrut =
-          (onCeilingFloor && (Math.abs((nx * strutStep) % 1) < 0.14)) ||
-          (onSideWalls && (Math.abs((ny * strutStep) % 1) < 0.14));
+          (onCeilingFloor && (Math.abs((tx * strutStep) % 1) < 0.14)) ||
+          (onSideWalls && (Math.abs((ty * strutStep) % 1) < 0.14));
 
         const depthVis = clamp((cheb - coreVoid) / 0.55, 0.34, 1.0);
         const aZone = ((archIdx % 4) + 4) % 4;
@@ -1644,11 +1675,13 @@
         if (isArchRib) {
           density = (0.56 + aEnergy * 0.44) * depthVis;
           zone = aZone;
-          peak = (archFrac < 0.09) && (aEnergy > 0.56 || b0 > 0.64);
+          peak = (archFrac < 0.09) && (aEnergy > 0.54 || b0 > 0.62);
+          isSkeleton = true;
         } else if (isMiter) {
           density = (0.48 + b3 * 0.46) * depthVis;
           zone = 3;
-          peak = b3 > 0.58;
+          peak = b3 > 0.56;
+          isSkeleton = true;
         } else if (isCofferStrut && (archFrac > 0.45 && archFrac < 0.68)) {
           density = (0.28 + b1 * 0.36 + b2 * 0.26) * depthVis;
           zone = onCeilingFloor ? 2 : 1;
@@ -1656,23 +1689,21 @@
       }
 
     // -------------------------------------------------------------------------
-    // FORMATION 6 — VII. CITADEL (Tiered Sacred Skyline of Spires, Domes & Battlements)
+    // FORMATION 6 — VII. CITADEL (Tiered Sacred Skyline of Spires & Battlements)
     // -------------------------------------------------------------------------
     } else if (fIdx === 6) {
       const aspect = cols / Math.max(1, rows);
       const maxW = aspect * 0.88;
       if (Math.abs(nx) <= maxW && ny >= -0.88 && ny <= 0.86) {
-        // Quantized vertical architectural towers & terraced stepped rooftops
-        const towerGrid = 7.0 + tess * 9.0;
-        const tx = (nx + seed * 0.35) * towerGrid;
+        const towerGrid = 7.0 + tess * 9.0 + Math.round(vGen.g1 * 4);
+        const tx = (nx + vGen.seed * 0.35) * towerGrid;
         const towerId = Math.floor(tx);
         const tFrac = tx - towerId;
-        const tHash = hash2(towerId, Math.floor(seed * 13));
+        const tHash = hash2(towerId, Math.floor(vGen.seed * 17));
 
-        // Central grand sanctuary dome & flanking stepped ziggurat towers
-        const distCenter = Math.abs(nx);
+        const distCenter = Math.abs(nx + (vGen.g2 - 0.5) * 0.25 * vGen.mutAmt);
         const skylineArch = Math.cos(clamp(distCenter / maxW, 0, 1) * PI * 0.5);
-        const roofY = 0.18 - skylineArch * (0.68 + b0 * 0.14) - (tHash * 0.26) + Math.sin(towerId * 2.1 + t * 0.3) * 0.03;
+        const roofY = 0.18 - skylineArch * (0.68 + b0 * 0.14) - (tHash * 0.28) + Math.sin(towerId * 2.1 + t * 0.3) * 0.03;
 
         if (ny >= roofY) {
           const isSpireTip = (ny < roofY + 0.12) && Math.abs(tFrac - 0.5) < (0.12 + (ny - roofY) * 2.5);
@@ -1684,15 +1715,17 @@
           if (isSpireTip) {
             density = 0.82 + b3 * 0.18;
             zone = 3;
-            peak = b3 > 0.52;
+            peak = b3 > 0.50;
+            isSkeleton = true;
           } else if (isBattlement || isTowerWall) {
             density = 0.62 + b0 * 0.34;
             zone = 0;
-            peak = b0 > 0.65;
+            peak = b0 > 0.62;
+            isSkeleton = isBattlement;
           } else if (isLancetWindow) {
             density = 0.48 + b2 * 0.50;
             zone = 2;
-            peak = b2 > 0.58;
+            peak = b2 > 0.56;
           } else if (isArcadeRow) {
             density = 0.34 + b1 * 0.42;
             zone = 1;
@@ -1701,7 +1734,6 @@
             zone = 0;
           }
         } else if (tHash > 0.72 && Math.abs(tFrac - 0.5) < 0.08 && ny > roofY - 0.14) {
-          // Finial crosses & celestial stars hovering above the spires
           density = 0.55 + b3 * 0.45;
           zone = 3;
           peak = b3 > 0.48;
@@ -1712,26 +1744,28 @@
     // FORMATION 7 — VIII. HORIZON (Solar Eclipse Void & Concentric Interference)
     // -------------------------------------------------------------------------
     } else if (fIdx === 7) {
-      const r = Math.hypot(nx, ny);
-      const eclipseR = 0.30 + b0 * 0.07;
+      const shiftX = (vGen.g1 - 0.5) * 0.22 * vGen.mutAmt;
+      const shiftY = (vGen.g2 - 0.5) * 0.14 * vGen.mutAmt;
+      const r = Math.hypot(nx - shiftX, ny - shiftY);
+      const eclipseR = 0.28 + b0 * 0.07 + vGen.g3 * 0.06 * vGen.mutAmt;
 
-      // Stark pitch-black eclipse core in the center
       if (r >= eclipseR && r <= 0.94) {
         const dRim = r - eclipseR;
         const coronaBand = Math.exp(-dRim * (5.5 - b0 * 2.0));
-        const waveRing = Math.sin(r * (18.0 + tess * 24.0) - t * 1.4 + seed);
-        const azim = Math.atan2(ny, nx);
-        const rays = Math.cos(azim * (6 + Math.round(tess * 10)) + t * 0.3);
+        const waveRing = Math.sin(r * (18.0 + tess * 24.0) - t * 1.4 + vGen.seed);
+        const azim = Math.atan2(ny - shiftY, nx - shiftX);
+        const rays = Math.cos(azim * (6 + Math.round(tess * 10 + vGen.g4 * 6)) + t * 0.3);
 
         if (dRim < 0.045) {
-          // Blazing eclipse rim
           density = 0.86 + b0 * 0.14;
           zone = 3;
           peak = true;
+          isSkeleton = true;
         } else if (waveRing > (0.35 - coronaBand * 0.55 - b2 * 0.30)) {
           density = clamp(0.24 + coronaBand * 0.55 + b1 * 0.25 + b2 * 0.25, 0, 1);
           zone = coronaBand > 0.45 ? 1 : 2;
-          peak = (coronaBand > 0.65 && b2 > 0.55);
+          peak = (coronaBand > 0.65 && b2 > 0.52);
+          isSkeleton = coronaBand > 0.78;
         } else if (rays > 0.78 && r < 0.75) {
           density = 0.20 + b3 * 0.45;
           zone = 3;
@@ -1739,82 +1773,82 @@
       }
     }
 
-    return { density, zone, peak };
+    return { density, zone, peak, isSkeleton };
   }
 
   /**
-   * 5. COMPOSITE MORPHOLOGICAL EVALUATOR (Continuous Cross-Morph + Dissolve/Reform)
+   * 5. COMPOSITE MORPHOLOGICAL EVALUATOR
+   *    Blends Shape A (with genome A) into Shape B (with genome B), applies
+   *    dissolve-and-reform sweeps, and preserves a cohesive audio-reactive
+   *    skeleton anchor so 100% dials remain legibly locked to the beat.
    */
   function computeFormationCell(fCtx, nx, ny, col, row, wakeScar) {
     const {
       fIdxA, fIdxB, morphAlpha,
+      variantA, variantB,
       dissolveThreshold, windAngle,
       t, seed, b0, b1, b2, b3,
-      erosion, fracture
+      erosion
     } = fCtx;
 
-    // Evaluate primary formation A, and blend with formation B during GROW/morph transitions
-    let resA = evaluateSingleFormation(fIdxA, nx, ny, col, row, fCtx);
+    const resA = evaluateSingleFormation(fIdxA, nx, ny, col, row, fCtx, variantA);
     let density = resA.density;
     let zone = resA.zone;
     let peak = resA.peak;
+    let isSkeleton = resA.isSkeleton;
 
-    if (morphAlpha > 0.01 && fIdxB !== fIdxA) {
-      const resB = evaluateSingleFormation(fIdxB, nx, ny, col, row, fCtx);
-      // Crossfade & interference weave between shapes A and B
+    if (morphAlpha > 0.01) {
+      const resB = evaluateSingleFormation(fIdxB, nx, ny, col, row, fCtx, variantB);
       const weave = Math.sin((nx * 6.0 + ny * 6.0) + t * 2.0) * 0.15;
       const wB = clamp(morphAlpha + weave * Math.sin(morphAlpha * PI), 0, 1);
       density = resA.density * (1.0 - wB) + resB.density * wB;
       zone = wB > 0.5 ? resB.zone : resA.zone;
       peak = wB > 0.5 ? resB.peak : resA.peak;
+      isSkeleton = wB > 0.5 ? resB.isSkeleton : resA.isSkeleton;
     }
 
-    // -------------------------------------------------------------------------
-    // HIGH-DIAL (>50%) DISSOLVE-AND-REFORM SWEEP (Inspired by Reference Artworks)
-    // Sweeps across the silhouette along the wind axis, converting dissolved
-    // cells into horizontal scanline trails & live flying dust particles.
-    // -------------------------------------------------------------------------
+    // Dissolve-and-Reform Sweep (converting blown-away cells into live particles)
     let dissolvedToParticle = false;
     if (density > 0.04 && dissolveThreshold > 0.02) {
       const dirX = Math.cos(windAngle);
       const dirY = Math.sin(windAngle);
-      // Project cell onto wind axis [-1..1] + organic noise edge
       const proj = (nx * dirX + ny * dirY) * 0.65 + 0.5;
       const edgeNoise = (hash2(col * 0.37 + seed, row * 0.41 - seed) - 0.5) * 0.35;
       const sweepFront = proj + edgeNoise;
 
       if (sweepFront < dissolveThreshold) {
-        // Cell has been blown away by the dissolution wave!
         dissolvedToParticle = true;
-        // Leave sparse horizontal scanline wake trail immediately behind the front
         const distBehind = dissolveThreshold - sweepFront;
         if (distBehind < 0.22 && (row % 2 === 0) && hash2(col * 0.21, row * 0.83) < 0.48) {
           density = 0.22 + b2 * 0.35;
           zone = 2;
           peak = false;
+          isSkeleton = false;
         } else {
           density = 0;
           peak = false;
+          isSkeleton = false;
         }
       } else if (sweepFront < dissolveThreshold + 0.10) {
-        // Blazing disintegration rim right where stone turns into wind-blown dust
         density = clamp(density + 0.35, 0, 1);
         zone = 3;
         peak = true;
       }
     }
 
-    // -------------------------------------------------------------------------
-    // CRUMBLING STONE EROSION + CROSS-LAYER WAKE COLLISION SCAR
-    // -------------------------------------------------------------------------
+    // Crumbling Stone Erosion + Cross-Layer Wake Carving
+    // Cohesive Legibility Guard: Primary skeleton outlines are protected from total erasure
+    // and instead pulse with Band I / Band II energy so the beat remains unmistakable at 100% dials.
     const totalWear = clamp(erosion + wakeScar * 0.85, 0, 1.2);
     if (density > 0 && totalWear > 0.005) {
       const nPit = hash2(col * 0.91 + seed * 3.1, row * 0.91 - seed * 2.3);
-      const pitChance = totalWear * (0.82 - density * 0.32);
+      const effectiveWear = isSkeleton ? totalWear * 0.32 : totalWear;
+      const pitChance = effectiveWear * (0.82 - density * 0.32);
+
       if (nPit < pitChance) {
-        if (nPit > pitChance * 0.34) {
-          density = Math.max(0.08, density * (0.24 + 0.34 * (1.0 - clamp(totalWear, 0, 1))));
-          peak = false;
+        if (isSkeleton || nPit > pitChance * 0.34) {
+          density = Math.max(isSkeleton ? 0.26 : 0.08, density * (0.28 + 0.34 * (1.0 - clamp(effectiveWear, 0, 1))));
+          peak = isSkeleton && (b0 > 0.55 || b1 > 0.55);
         } else {
           density = 0;
           peak = false;
@@ -1833,8 +1867,19 @@
   }
 
   /* ===========================================================================
-     SECTION B: APPLICATION STATE & EXACT CALIBRATION
+     SECTION B: APPLICATION STATE & GENERATIVE VARIANT GENOME
      =========================================================================== */
+  function createVariantGenome(mutAmt) {
+    return {
+      seed: 0.5 + Math.random() * 40.0,
+      g1: Math.random(),
+      g2: Math.random(),
+      g3: Math.random(),
+      g4: Math.random(),
+      mutAmt: clamp(mutAmt, 0, 1)
+    };
+  }
+
   const state = {
     params: {
       gain: 0.50,
@@ -1846,8 +1891,10 @@
 
     formationIdx: 0,
     nextFormationIdx: 1,
-    morphAlpha: 0.0,      // 0.0 = formationIdx, 1.0 = nextFormationIdx
-    morphCyclePhase: 0.0, // Continuous cycle driven by GROW and dials > 0.50
+    morphAlpha: 0.0,
+    morphCyclePhase: 0.0,
+    variantA: createVariantGenome(0.0),
+    variantB: createVariantGenome(0.4),
 
     lexiconIdx: 0,
     paletteIdx: 0,
@@ -1865,7 +1912,6 @@
     atelierOpen: true,
     scopeMode: 0,
 
-    // 4 Visual Layer Engagement Toggles [I. STRATA, II. EROSION, III. SILICA, IV. LETHE]
     lanesActive: [false, false, false, false],
 
     selectedMicId: '',
@@ -1881,16 +1927,16 @@
     frozenBands: [0, 0, 0, 0],
 
     bands: [
-      { env: 0, prevAbove: false, lastFire: 0 },
-      { env: 0, prevAbove: false, lastFire: 0 },
-      { env: 0, prevAbove: false, lastFire: 0 },
-      { env: 0, prevAbove: false, lastFire: 0 }
+      { env: 0, prevEnv: 0, prevAbove: false, lastFire: 0 },
+      { env: 0, prevEnv: 0, prevAbove: false, lastFire: 0 },
+      { env: 0, prevEnv: 0, prevAbove: false, lastFire: 0 },
+      { env: 0, prevEnv: 0, prevAbove: false, lastFire: 0 }
     ],
 
     gates: {
       shear: { env: 0, start: 0, dur: 85, seed: 1 },
       drop:  { env: 0, start: 0, dur: 95, seed: 1 },
-      lightning: { env: 0, start: 0, dur: 110, angle: 0.3, offset: 0.0, lastFlash: 0 }
+      lightning: { env: 0, start: 0, dur: 115, angle: 0.3, offset: 0.0, lastFlash: 0 }
     },
 
     shockwaves: [],
@@ -1902,7 +1948,7 @@
   };
 
   /* ===========================================================================
-     SECTION B2: LAYER II (ASPERITAS) GEOMETRY-AWARE SMOKE & DISSOLUTION PARTICLES
+     SECTION B2: LAYER II (ASPERITAS) GEOMETRY-AWARE SMOKE & SPLASH PARTICLE ENGINE
      =========================================================================== */
   const PARTICLE_COUNT = 280;
   const dustParticles = [];
@@ -1962,13 +2008,11 @@
       p.vx = Math.cos(ang) * (0.16 + Math.random() * 0.24);
       p.vy = Math.sin(ang) * (0.16 + Math.random() * 0.24);
     } else if (fIdx === 6) {
-      // VII. CITADEL: Smoke rising from spire tips & terraced rooftops
       p.nx = (r1 * 2 - 1) * aspect * 0.85;
       p.ny = -0.25 + (r2 - 0.5) * 0.35;
       p.vx = (Math.random() - 0.5) * 0.10;
       p.vy = -0.12 - Math.random() * 0.22;
     } else {
-      // VIII. HORIZON: Solar corona ejections from the eclipse rim
       const ang = r1 * TAU;
       const rad = 0.32 + r2 * 0.06;
       p.nx = Math.cos(ang) * rad;
@@ -1980,8 +2024,32 @@
     p.phase = Math.random() * TAU;
     p.weight = 0.15 + Math.random() * 0.85;
     p.zDepth = 0.45 + Math.pow(Math.random(), 1.3) * 0.95;
-    p.maxLife = 1.2 + Math.random() * 2.4;
+    p.maxLife = 1.1 + Math.random() * 2.2;
     p.life = resetLife ? Math.random() * p.maxLife : p.maxLife;
+  }
+
+  // Coherent directional splash jet emitted on sharp transient hits
+  function emitTransientSplashJet(strength, angle) {
+    if (!state.lanesActive[1]) return;
+    const count = 12 + Math.floor(strength * 14);
+    const originX = (Math.random() - 0.5) * 0.45;
+    const originY = (Math.random() - 0.5) * 0.45;
+    const baseSpeed = 0.65 + strength * 1.55;
+
+    for (let k = 0; k < count; k++) {
+      const p = dustParticles[Math.floor(Math.random() * dustParticles.length)];
+      if (!p) continue;
+      const spread = (Math.random() - 0.5) * 0.65;
+      const spd = baseSpeed * (0.6 + Math.random() * 0.8);
+      p.nx = originX + (Math.random() - 0.5) * 0.08;
+      p.ny = originY + (Math.random() - 0.5) * 0.08;
+      p.vx = Math.cos(angle + spread) * spd;
+      p.vy = Math.sin(angle + spread) * spd;
+      p.zDepth = 1.05 + Math.random() * 0.35;
+      p.weight = 0.75 + Math.random() * 0.25;
+      p.life = 0.65 + Math.random() * 0.55;
+      p.maxLife = p.life;
+    }
   }
 
   function initDustParticles() {
@@ -2111,7 +2179,7 @@
     fgCellPx = Math.max(15, Math.round(cellPx * 1.35));
 
     atlasCanvas.width = Math.max(cellPx, ramp.length * cellPx);
-    atlasCanvas.height = 7 * cellPx;
+    atlasCanvas.height = 6 * cellPx;
 
     atlasCtx.clearRect(0, 0, atlasCanvas.width, atlasCanvas.height);
     atlasCtx.textAlign = 'center';
@@ -2125,8 +2193,7 @@
       pal.domains[1],
       pal.domains[2],
       pal.domains[3],
-      pal.highlight,
-      pal.invertInk
+      pal.highlight
     ];
 
     for (let r = 0; r < rowColors.length; r++) {
@@ -2421,8 +2488,32 @@
   }
 
   /* ===========================================================================
-     SECTION F: TRUE PEAKAMP~ ANALYSIS, AUTONOMOUS MORPH & SAFE SHEET LIGHTNING
+     SECTION F: TRUE PEAKAMP~ ANALYSIS, TRANSIENT SHATTER & GENERATIVE REFORM
      =========================================================================== */
+  function advanceMorphCycle(phaseStep) {
+    state.morphCyclePhase += phaseStep;
+    if (state.morphCyclePhase >= 1.0) {
+      state.morphCyclePhase -= 1.0;
+      state.formationIdx = state.nextFormationIdx;
+      state.variantA = state.variantB;
+
+      // Choose next formation stochastically (or stay on current form with a fresh generative genome)
+      const grow = state.params.grow;
+      if (Math.random() < (0.35 + grow * 0.55)) {
+        let pick = Math.floor(Math.random() * FORMATIONS.length);
+        if (pick === state.formationIdx) pick = (pick + 1) % FORMATIONS.length;
+        state.nextFormationIdx = pick;
+      } else {
+        state.nextFormationIdx = state.formationIdx;
+      }
+      state.variantB = createVariantGenome(clamp(0.35 + grow * 0.65, 0.35, 1.0));
+      state.morphAlpha = 0.0;
+      syncFormationButtonsUI();
+    } else {
+      state.morphAlpha = clamp((state.morphCyclePhase - 0.32) / 0.55, 0, 1);
+    }
+  }
+
   function processAudioAndGates(nowMs, dtSec) {
     const decayPerSec = [3.0, 3.8, 4.5, 5.8];
     const spectralComp = [1.15, 1.55, 2.05, 2.85];
@@ -2435,6 +2526,7 @@
         const an = bandAnalysers[i];
         const buf = bandBuffers[i];
         const b = state.bands[i];
+        b.prevEnv = b.env;
         an.getFloatTimeDomainData(buf);
 
         let peak = 0;
@@ -2453,43 +2545,40 @@
       }
     } else {
       for (let i = 0; i < 4; i++) {
+        state.bands[i].prevEnv = state.bands[i].env;
         state.bands[i].env = Math.max(0, state.bands[i].env - 3.8 * dtSec);
       }
     }
 
-    // Autonomous GROW evolution: continuously cycles dissolve -> reform across all 8 shapes
+    // Non-linear GROW rate:
+    // - Low GROW (< 0.35): slow tectonic drift over 20-45s
+    // - High GROW (> 0.60): fast transient-triggered tear, fly-off & reconstruction
     const grow = state.params.grow;
     if (!state.frozen && grow > 0.01) {
-      const energyBoost = 0.6 + (state.bands[0].env + state.bands[2].env) * 0.65;
-      const cycleRate = (0.04 + Math.pow(grow, 1.4) * 0.28) * energyBoost;
-      state.morphCyclePhase += dtSec * cycleRate;
-
-      if (state.morphCyclePhase >= 1.0) {
-        state.morphCyclePhase -= 1.0;
-        state.formationIdx = state.nextFormationIdx;
-        state.nextFormationIdx = (state.formationIdx + 1) % FORMATIONS.length;
-        state.morphAlpha = 0.0;
-        syncFormationButtonsUI();
-      } else {
-        // Smooth topological cross-morph during second half of each GROW cycle
-        state.morphAlpha = clamp((state.morphCyclePhase - 0.35) / 0.55, 0, 1);
-      }
+      const slowDriftRate = 0.022 + Math.pow(grow, 2.2) * 0.24;
+      advanceMorphCycle(dtSec * slowDriftRate);
     } else if (grow <= 0.01) {
       state.morphCyclePhase = 0.0;
       state.morphAlpha = 0.0;
     }
 
-    // Band I (STRATA) sub-bass shockwave impulse emission
+    // Band I (STRATA) sub-bass shockwave + transient shatter jump when GROW is high
     const b1 = state.bands[0];
     const above1 = b1.env > 0.56;
-    if (audioRunning && above1 && !b1.prevAbove && (nowMs - b1.lastFire > 160)) {
+    if (audioRunning && above1 && !b1.prevAbove && (nowMs - b1.lastFire > 150)) {
       b1.lastFire = nowMs;
       state.shockwaves.push({
         r: 0.08,
-        speed: 1.4 + b1.env * 2.2,
+        speed: 1.5 + b1.env * 2.4,
         strength: b1.env
       });
       if (state.shockwaves.length > 5) state.shockwaves.shift();
+
+      if (!state.frozen && grow > 0.45) {
+        const jump = Math.pow((grow - 0.45) / 0.55, 1.4) * (0.28 + b1.env * 0.32);
+        advanceMorphCycle(jump);
+        emitTransientSplashJet(b1.env, state.windAngle);
+      }
     }
     b1.prevAbove = above1;
 
@@ -2502,53 +2591,60 @@
       }
     }
 
-    // Directional gale gust dynamics
-    const targetGust = clamp(state.bands[1].env * 0.55 + state.bands[2].env * 0.75 + state.params.erosion * 0.45 + grow * 0.35, 0, 1.8);
-    state.windGust += (targetGust - state.windGust) * Math.min(1, dtSec * 6.5);
+    // Directional gale gust dynamics driven by transient attack spikes + EROSION
+    const attackSpike = Math.max(0, state.bands[1].env - state.bands[1].prevEnv) * 2.5 +
+                        Math.max(0, state.bands[2].env - state.bands[2].prevEnv) * 3.0;
+    const targetGust = clamp(state.bands[1].env * 0.45 + state.bands[2].env * 0.65 + attackSpike + state.params.erosion * 0.45 + grow * 0.30, 0, 2.0);
+    state.windGust += (targetGust - state.windGust) * Math.min(1, dtSec * 8.0);
     state.windAngle += Math.sin(nowMs * 0.0007) * 0.35 * dtSec;
 
-    // Stochastic fracture gates + Z-Plane 0 Background Sheet Lightning (NO full-screen white strobe)
+    // Stochastic fracture gates + Splash Particle Jets + Z-Plane 0 Sheet Lightning
     const frac = state.params.fracture;
-    if (audioRunning && frac > 0.005) {
-      const prob = clamp(0.15 + frac * 0.80, 0.15, 0.95);
-      const thr3 = clamp(0.62 - frac * 0.30, 0.28, 0.62);
-      const thr4 = clamp(0.56 - frac * 0.28, 0.24, 0.56);
+    if (audioRunning && (frac > 0.005 || grow > 0.55)) {
+      const effFrac = Math.max(frac, (grow - 0.55) * 1.4);
+      const prob = clamp(0.18 + effFrac * 0.78, 0.18, 0.96);
+      const thr3 = clamp(0.60 - effFrac * 0.28, 0.26, 0.60);
+      const thr4 = clamp(0.54 - effFrac * 0.26, 0.22, 0.54);
 
       const b3 = state.bands[2];
       const above3 = b3.env > thr3;
-      if (above3 && !b3.prevAbove && (nowMs - b3.lastFire > 90)) {
+      if (above3 && !b3.prevAbove && (nowMs - b3.lastFire > 85)) {
         b3.lastFire = nowMs;
         if (Math.random() < prob) {
           state.gates.shear.env = 1.0;
           state.gates.shear.start = nowMs;
           state.gates.shear.seed = Math.floor(Math.random() * 9973) + 1;
+          emitTransientSplashJet(b3.env * Math.max(0.4, effFrac), state.windAngle + (Math.random() - 0.5) * 0.8);
         }
       }
       b3.prevAbove = above3;
 
       const b4 = state.bands[3];
       const above4 = b4.env > thr4;
-      if (above4 && !b4.prevAbove && (nowMs - b4.lastFire > 90)) {
+      if (above4 && !b4.prevAbove && (nowMs - b4.lastFire > 85)) {
         b4.lastFire = nowMs;
         if (Math.random() < prob) {
           state.gates.drop.env = 1.0;
           state.gates.drop.start = nowMs;
           state.gates.drop.seed = Math.floor(Math.random() * 9973) + 1;
+          emitTransientSplashJet(b4.env * Math.max(0.4, effFrac), state.windAngle + PI * 0.25);
 
-          // Calve off a 3x3 masonry chunk from the monument on strong FRACTURE hits
-          if (state.lanesActive[0] && frac > 0.25 && state.calvedChunks.length < 14) {
+          if (!state.frozen && grow > 0.55) {
+            advanceMorphCycle(Math.pow((grow - 0.55) / 0.45, 1.3) * 0.25);
+          }
+
+          if (state.lanesActive[0] && effFrac > 0.25 && state.calvedChunks.length < 16) {
             const sign = Math.random() < 0.5 ? -1 : 1;
             state.calvedChunks.push({
               nx: sign * (0.12 + Math.random() * 0.35),
               ny: -0.45 + Math.random() * 0.75,
-              vx: sign * (0.18 + Math.random() * 0.35) + Math.cos(state.windAngle) * 0.25,
-              vy: 0.25 + Math.random() * 0.45,
+              vx: sign * (0.22 + Math.random() * 0.40) + Math.cos(state.windAngle) * 0.30,
+              vy: 0.28 + Math.random() * 0.50,
               size: 2 + Math.floor(Math.random() * 2),
-              life: 1.4
+              life: 1.3
             });
           }
 
-          // Distant Z-Plane 0 Sheet Lightning behind clouds & dust (safe, non-strobing)
           if (frac > 0.35 && b4.env > thr4 + 0.10 && (nowMs - state.gates.lightning.lastFlash > 240) && Math.random() < frac * 0.65) {
             state.gates.lightning.env = 1.0;
             state.gates.lightning.start = nowMs;
@@ -2604,30 +2700,30 @@
     const fracture = state.params.fracture;
     const grow = state.params.grow;
 
-    const gateShear = state.gates.shear.env * fracture;
-    const gateDrop = state.gates.drop.env * fracture;
+    // Envelope-gated shear so even at FRACTURE = 1.00, rows snap back between transients
+    const transientPulse = clamp(b0 * 0.4 + b2 * 0.7 + b3 * 0.8, 0, 1.2);
+    const gateShear = state.gates.shear.env * fracture * (0.35 + transientPulse * 0.65);
+    const gateDrop = state.gates.drop.env * fracture * (0.35 + transientPulse * 0.65);
     const lightningEnv = state.gates.lightning.env;
 
     const anyLaneOn = state.lanesActive[0] || state.lanesActive[1] || state.lanesActive[2] || state.lanesActive[3];
 
-    // Always keep steady dark (or archival vellum) void — no full-screen white strobe
     ctx.fillStyle = pal.bg;
     ctx.fillRect(0, 0, visCanvas.width, visCanvas.height);
 
     if (!anyLaneOn) return;
 
-    // Heal cross-layer collision wake scars gradually
     const wakeHeal = Math.pow(0.38, dtSec);
     for (let i = 0; i < wakeGrid.length; i++) {
       if (wakeGrid[i] > 0.005) wakeGrid[i] *= wakeHeal;
       else wakeGrid[i] = 0;
     }
 
-    // Compute real-time Dissolve-and-Reform threshold:
-    // Activates when GROW > 0 OR when EROSION / FRACTURE are pushed past 50%
+    // Real-time Dissolve-and-Reform threshold:
+    // At high dials (>50%) or GROW > 0, transient hits sweep dissolution across the shape
     const dialDissolve = Math.max(0, (erosion - 0.50) * 1.4, (fracture - 0.50) * 1.4);
-    const growDissolve = grow > 0.01 ? Math.sin(state.morphCyclePhase * PI) * (0.45 + grow * 0.75) : 0;
-    const dissolveThreshold = clamp(Math.max(dialDissolve * (0.65 + (b1 + b2) * 0.45), growDissolve), 0, 1.35);
+    const growDissolve = grow > 0.01 ? Math.sin(state.morphCyclePhase * PI) * (0.40 + grow * 0.85) : 0;
+    const dissolveThreshold = clamp(Math.max(dialDissolve * (0.45 + transientPulse * 0.65), growDissolve), 0, 1.35);
 
     const cx = (cols - 1) * 0.5;
     const cy = (rows - 1) * 0.5;
@@ -2642,6 +2738,8 @@
       fIdxA: state.formationIdx,
       fIdxB: state.nextFormationIdx,
       morphAlpha: state.morphAlpha,
+      variantA: state.variantA,
+      variantB: state.variantB,
       dissolveThreshold,
       windAngle: state.windAngle,
       t, seed, b0, b1, b2, b3,
@@ -2662,7 +2760,6 @@
     const bgCy = (bgRows - 1) * 0.5;
     const bgInvScale = 1.0 / Math.max(1, Math.min(bgCols, bgRows) * 0.48);
 
-    // Distant Z-Plane 0 Sheet Lightning Discharge (illuminating behind clouds & dust)
     if (lightningEnv > 0.04) {
       const lAngle = state.gates.lightning.angle;
       const lOffset = state.gates.lightning.offset;
@@ -2687,7 +2784,6 @@
       }
     }
 
-    // LAYER 3 (III. SILICA): Tucked deep background patina wall + wake carving
     if (state.lanesActive[2]) {
       const duckMult = clamp(1.0 - b3 * 0.85 - gateDrop * 0.65, 0.08, 1.0);
       const silicaEnergy = clamp((b2 * 0.85 + erosion * 0.25 + 0.08) * duckMult, 0.03, 0.85);
@@ -2735,7 +2831,6 @@
       }
     }
 
-    // LAYER 4 (IV. LETHE): Peripheral occult marginalia & astrolabe plumb rails
     if (state.lanesActive[3]) {
       const letheEnergy = clamp(b3 * 1.2 + b0 * 0.25 + 0.14, 0.14, 1.0);
       const marginColL = Math.max(2, Math.floor(cols * 0.05));
@@ -2795,7 +2890,7 @@
           const h = hash2(bandBand + shearSeed, frameTick * 0.25);
           if (h > (1.0 - gateShear * 0.65)) {
             const dir = (bandBand % 2 === 0) ? 1 : -1;
-            rowShiftCols = Math.round(dir * (2 + gateShear * 9));
+            rowShiftCols = Math.round(dir * (2 + gateShear * 8));
           }
         }
 
@@ -2806,15 +2901,14 @@
 
           const cell = computeFormationCell(fCtx, nx, ny, srcCol, r, wakeScar);
 
-          // Spawn live flying dust particles directly from cells dissolved by the wave
-          if (cell.dissolvedToParticle && state.lanesActive[1] && Math.random() < 0.035) {
+          if (cell.dissolvedToParticle && state.lanesActive[1] && Math.random() < 0.045) {
             const p = dustParticles[Math.floor(Math.random() * dustParticles.length)];
             if (p) {
               p.nx = nx;
               p.ny = ny;
-              p.vx = Math.cos(state.windAngle) * (0.45 + Math.random() * 0.65);
-              p.vy = Math.sin(state.windAngle) * (0.35 + Math.random() * 0.55);
-              p.zDepth = 1.15;
+              p.vx = Math.cos(state.windAngle) * (0.55 + Math.random() * 0.75);
+              p.vy = Math.sin(state.windAngle) * (0.40 + Math.random() * 0.60);
+              p.zDepth = 1.18;
               p.life = p.maxLife;
             }
           }
@@ -2823,7 +2917,7 @@
 
           if (gateDrop > 0.06 && state.formationIdx !== 2) {
             const dh = hash2(Math.floor(c / 4) + dropSeed, Math.floor(r / 2) + dropSeed);
-            if (dh < gateDrop * 0.55) continue;
+            if (dh < gateDrop * 0.50) continue;
           }
 
           const finalDensity = clamp(cell.density * idleBreath, 0, 1);
@@ -2859,14 +2953,14 @@
         }
         if (ch.life <= 0 || ch.ny > 0.94) {
           if (state.lanesActive[1]) {
-            for (let k = 0; k < 6; k++) {
+            for (let k = 0; k < 8; k++) {
               const p = dustParticles[Math.floor(Math.random() * dustParticles.length)];
               if (p) {
                 p.nx = ch.nx + (Math.random() - 0.5) * 0.12;
                 p.ny = Math.min(0.92, ch.ny);
-                p.vx = (Math.random() - 0.5) * 0.65;
-                p.vy = -0.15 - Math.random() * 0.45;
-                p.zDepth = 1.25;
+                p.vx = (Math.random() - 0.5) * 0.85;
+                p.vy = -0.20 - Math.random() * 0.55;
+                p.zDepth = 1.28;
                 p.life = p.maxLife;
               }
             }
@@ -2894,7 +2988,7 @@
     }
 
     // =========================================================================
-    // Z-PLANE 2: FOREGROUND GALE GUSTS, SHOCKWAVES & STREAKING DEBRIS (LAYER II)
+    // Z-PLANE 2: FOREGROUND GALE GUSTS, SHOCKWAVES & SPLASH PLUMES (LAYER II)
     // =========================================================================
     if (state.lanesActive[1]) {
       const highPresence = clamp(b2 * 0.70 + b3 * 1.05 + b1 * 0.35 + erosion * 0.45 + grow * 0.40, 0, 1.9);
@@ -2924,7 +3018,7 @@
             const sw = state.shockwaves[s];
             const distToRing = Math.abs(pr - sw.r);
             if (distToRing < 0.14) {
-              const impulse = (1.0 - distToRing / 0.14) * sw.strength * 2.6;
+              const impulse = (1.0 - distToRing / 0.14) * sw.strength * 2.8;
               shockVx += (p.nx / pr) * impulse;
               shockVy += (p.ny / pr) * impulse;
             }
@@ -3063,7 +3157,7 @@
      =========================================================================== */
   const LANE_NAMES = [
     'I. STRATA // Z-1 LITHIC ARCHITECTURE',
-    'II. EROSION // Z-2 GALE GUSTS & DEBRIS',
+    'II. EROSION // Z-2 GALE GUSTS & SPLASH PLUMES',
     'III. SILICA // Z-0 PATINA WALL & LIGHTNING',
     'IV. LETHE // Z-0 OCCULT MARGINALIA'
   ];
@@ -3118,6 +3212,8 @@
     state.nextFormationIdx = (state.formationIdx + 1) % FORMATIONS.length;
     state.morphAlpha = 0.0;
     state.morphCyclePhase = 0.0;
+    state.variantA = createVariantGenome(0.0);
+    state.variantB = createVariantGenome(clamp(0.35 + state.params.grow * 0.65, 0.35, 1.0));
     syncFormationButtonsUI();
     const fm = FORMATIONS[state.formationIdx];
     state.calvedChunks.length = 0;
@@ -3298,6 +3394,7 @@
     });
   }
 
+  // SCATTER strictly excludes GAIN and GROW so users can lock in their evolution speed
   function triggerScatter() {
     knobEls.forEach((knob) => {
       const p = knob.dataset.param;
@@ -3310,13 +3407,13 @@
       state.frozenSeed = state.morphSeed;
     }
     initDustParticles();
-    showToast('SCATTER // DIALS & STRUCTURAL SEED ROLLED');
+    showToast('SCATTER // DIALS & SEED ROLLED (GAIN & GROW LOCKED)');
   }
 
   function toggleDrift() {
     state.driftActive = !state.driftActive;
     dom.btnDrift.classList.toggle('active', state.driftActive);
-    showToast(`DRIFT: ${state.driftActive ? 'ON (GAIN/GROW LOCKED)' : 'OFF'}`);
+    showToast(`DRIFT: ${state.driftActive ? 'ON (GAIN & GROW LOCKED)' : 'OFF'}`);
   }
 
   setInterval(() => {
