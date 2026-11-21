@@ -229,7 +229,7 @@
 
   .panel-core {
     display: grid;
-    grid-template-columns: 186px minmax(235px, 1.15fr) minmax(235px, 1.05fr) minmax(220px, 1fr);
+    grid-template-columns: 186px minmax(235px, 1.15fr) minmax(235px, 1.05fr) minmax(230px, 1.05fr);
     border-left: 1px solid var(--col-div);
     border-right: 1px solid var(--col-div);
     min-width: 0;
@@ -531,7 +531,7 @@
   }
 
   /* =========================================================================
-     7. UPPER DECK COLUMN 4: STRATA METERS & VIEW CONTROLS
+     7. UPPER DECK COLUMN 4: STRATA LANES & VIEW CONTROLS
      ========================================================================= */
   .strata-stack {
     display: flex;
@@ -547,20 +547,25 @@
     gap: 4px;
     background: var(--oled);
     border: 1px solid #262626;
-    padding: 6px 7px;
+    padding: 5px 7px;
   }
   .meter-row {
     display: grid;
-    grid-template-columns: 66px 1fr 7px;
+    grid-template-columns: 76px 1fr 12px;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
   }
   .meter-label {
     font-family: 'Courier New', Menlo, monospace;
     font-size: 8.5px;
     font-weight: bold;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.3px;
     white-space: nowrap;
+    cursor: pointer;
+    transition: opacity 0.12s;
+  }
+  .meter-row.disengaged .meter-label {
+    opacity: 0.52;
   }
   .meter-track {
     height: 5px;
@@ -572,11 +577,41 @@
     height: 100%;
     width: 0%;
   }
-  .gate-led {
-    width: 6px;
-    height: 6px;
-    background: #161616;
-    border: 1px solid #333333;
+
+  /* Tactile Lane Engagement Square Button */
+  .lane-toggle-sq {
+    width: 12px;
+    height: 12px;
+    padding: 0;
+    margin: 0;
+    background: #0a0a0a;
+    border: 1px solid #444444;
+    cursor: pointer;
+    display: block;
+    transition: background-color 0.1s, border-color 0.1s, box-shadow 0.1s;
+  }
+  .lane-toggle-sq:hover {
+    border-color: #ffffff;
+  }
+  .lane-toggle-sq[data-lane="0"].active {
+    background: var(--c-green-dim);
+    border-color: var(--c-green);
+    box-shadow: 0 0 6px rgba(0, 255, 68, 0.55);
+  }
+  .lane-toggle-sq[data-lane="1"].active {
+    background: var(--c-amber-dim);
+    border-color: var(--c-amber);
+    box-shadow: 0 0 6px rgba(255, 157, 0, 0.55);
+  }
+  .lane-toggle-sq[data-lane="2"].active {
+    background: var(--c-cyan-dim);
+    border-color: var(--c-cyan);
+    box-shadow: 0 0 6px rgba(0, 170, 255, 0.55);
+  }
+  .lane-toggle-sq[data-lane="3"].active {
+    background: var(--c-red-dim);
+    border-color: var(--c-red);
+    box-shadow: 0 0 6px rgba(255, 68, 68, 0.55);
   }
 
   .view-btn-row {
@@ -955,30 +990,30 @@
             <div class="dials-hint">DRAG · SHIFT FINE · DBL-CLK RESET</div>
           </div>
 
-          <!-- COLUMN 4: STRATA & VIEW -->
+          <!-- COLUMN 4: STRATA LANES & VIEW (LIVE LAYER ENGAGEMENT [Q/W/E/R] + [A] ALL) -->
           <div class="column" data-col="strata">
             <div class="col-header">STRATA &amp; VIEW</div>
             <div class="strata-stack">
-              <div class="meters-block">
-                <div class="meter-row">
-                  <span class="meter-label" style="color: var(--c-green-dim);">I. STRATA</span>
+              <div class="meters-block" title="Click Square or Label to Engage Visual Layer [Q / W / E / R] · [A] Toggle All">
+                <div class="meter-row disengaged" id="mrow-0">
+                  <span class="meter-label" data-lane="0" style="color: var(--c-green-dim);">I. STRATA [Q]</span>
                   <div class="meter-track"><div class="meter-fill" id="meter-0" style="background: var(--c-green-dim);"></div></div>
-                  <div class="gate-led" id="led-0" title="Band I Peak Indicator"></div>
+                  <button type="button" class="lane-toggle-sq" id="lane-btn-0" data-lane="0" aria-pressed="false" title="Engage Layer I: Lithic Architecture [Q]"></button>
                 </div>
-                <div class="meter-row">
-                  <span class="meter-label" style="color: var(--c-amber-dim);">II. EROSION</span>
+                <div class="meter-row disengaged" id="mrow-1">
+                  <span class="meter-label" data-lane="1" style="color: var(--c-amber-dim);">II. EROSION [W]</span>
                   <div class="meter-track"><div class="meter-fill" id="meter-1" style="background: var(--c-amber-dim);"></div></div>
-                  <div class="gate-led" id="led-1" title="Band II Peak Indicator"></div>
+                  <button type="button" class="lane-toggle-sq" id="lane-btn-1" data-lane="1" aria-pressed="false" title="Engage Layer II: Smoke &amp; Dust Particles [W]"></button>
                 </div>
-                <div class="meter-row">
-                  <span class="meter-label" style="color: var(--c-cyan-dim);">III. SILICA</span>
+                <div class="meter-row disengaged" id="mrow-2">
+                  <span class="meter-label" data-lane="2" style="color: var(--c-cyan-dim);">III. SILICA [E]</span>
                   <div class="meter-track"><div class="meter-fill" id="meter-2" style="background: var(--c-cyan-dim);"></div></div>
-                  <div class="gate-led" id="led-2" title="Band III Fracture Gate LED"></div>
+                  <button type="button" class="lane-toggle-sq" id="lane-btn-2" data-lane="2" aria-pressed="false" title="Engage Layer III: Patina &amp; Interference [E]"></button>
                 </div>
-                <div class="meter-row">
-                  <span class="meter-label" style="color: var(--c-red-dim);">IV. LETHE</span>
+                <div class="meter-row disengaged" id="mrow-3">
+                  <span class="meter-label" data-lane="3" style="color: var(--c-red-dim);">IV. LETHE [R]</span>
                   <div class="meter-track"><div class="meter-fill" id="meter-3" style="background: var(--c-red-dim);"></div></div>
-                  <div class="gate-led" id="led-3" title="Band IV Fracture / Cut Gate LED"></div>
+                  <button type="button" class="lane-toggle-sq" id="lane-btn-3" data-lane="3" aria-pressed="false" title="Engage Layer IV: Peripheral Occult Marginalia [R]"></button>
                 </div>
               </div>
 
@@ -1043,7 +1078,7 @@
      SECTION A: HACKABLE CODEBOX (EDIT DIRECTLY LIKE A gen~ CODEBOX)
      ---------------------------------------------------------------------------
      All architectural silhouettes, occult symbol ramps, mineral palettes, and
-     SDF field equations live right here for direct authorship.
+     4-layer field equations live right here for direct authorship.
      =========================================================================== */
 
   // 1. SIX UNMISTAKABLE ARCHITECTURAL / MOSAIC FORMATIONS
@@ -1185,14 +1220,10 @@
   }
 
   /**
-   * 4. CORE ARCHITECTURAL SDF EVALUATOR
-   *    Evaluates one grid cell (nx, ny) in true aspect-corrected coordinates
-   *    (ny in [-1, 1], nx proportional to viewport aspect ratio).
-   *
-   *    Returns:
-   *      density : 0.0 (pure dark void) .. 1.0 (heaviest glyph in active ramp)
-   *      zone    : 0..3 (coherent mineral domain tied to Bands I-IV)
-   *      peak    : boolean (stark highlight peak on genuine audio transients)
+   * 4. LAYER I EVALUATOR: KARST / KAMEN LITHIC ARCHITECTURE
+   *    Evaluates one grid cell (nx, ny) in true aspect-corrected coordinates.
+   *    High EROSION crumbles dense stone glyphs down the ramp into rubble glyphs
+   *    rather than carving sparse empty holes in the monument.
    */
   function computeFormationCell(fIdx, nx, ny, col, row, f) {
     const {
@@ -1213,44 +1244,37 @@
       const heave = b0 * 0.14;
       const stepCount = 3 + Math.round(tess * 4);
 
-      // Stepped ziggurat temple contour widening from crown to plinth
       const yNorm = clamp((ny + 0.86) / 1.72, 0, 1);
       const stepQuant = Math.floor(yNorm * stepCount) / stepCount;
       const outerW = 0.44 + stepQuant * 0.34 + heave;
       const topY = -0.84 - heave * 0.30;
       const botY = 0.84 + heave * 0.25;
 
-      // Clean dark void outside the stepped monolith silhouette
       if (ax <= outerW && ny >= topY && ny <= botY) {
         const doorW = 0.21 + b0 * 0.04;
         const doorTop = -0.26 - b0 * 0.04;
         const inSanctum = (ax < doorW && ny > doorTop && ny < botY - 0.07);
 
         if (!inSanctum) {
-          // Outer stepped silhouette edge
           const dOuterX = outerW - ax;
           const dOuterY = Math.min(ny - topY, botY - ny);
           const dStepH = Math.abs(((yNorm * stepCount) % 1) - 0.5);
           const isOuterFrame = (dOuterX < 0.055) || (dOuterY < 0.055);
           const isStepLedge = (dStepH > 0.44 && ax > doorW + 0.06);
 
-          // Inner doorway surround frame
           const dDoorX = ax - doorW;
           const dDoorTop = doorTop - ny;
           const isDoorFrame =
             (dDoorX >= 0 && dDoorX < 0.055 && ny >= doorTop - 0.055) ||
             (dDoorTop >= 0 && dDoorTop < 0.055 && ax <= doorW + 0.055);
 
-          // Base temple plinth bar
           const isPlinth = (ny > botY - 0.09);
 
-          // Symmetrical fluted vertical sanctuary pillars flanking doorway
           const ribFreq = 10.0 + tess * 16.0;
           const ribPhase = b1 * 2.4 + Math.sin(t * 0.4 + seed) * 0.35;
           const inPillarZone = (ax > doorW + 0.065 && ax < outerW - 0.065 && ny > doorTop && ny < botY - 0.09);
           const pillarRib = inPillarZone && (Math.cos((ax - doorW) * ribFreq * PI - ribPhase) > 0.42);
 
-          // Upper lintel frieze with high-frequency rune etching
           const inLintel = (ny > topY + 0.065 && ny < doorTop - 0.065 && ax < outerW - 0.065);
           const lintelBand = inLintel && (Math.sin(ny * (16 + tess * 14) + b1 * 1.5) > 0.25);
           const lintelRune = inLintel && (Math.cos(ax * (18 + tess * 18) + seed * 3.0) * Math.sin(ny * 24) > (0.58 - b3 * 0.38));
@@ -1274,22 +1298,19 @@
             density = 0.24 + b2 * 0.36;
             zone = 2;
           } else {
-            // Subtle recessed stone masonry texture inside solid monolith blocks
             const ashlar = ((col + Math.floor(row / 2) * 3) % 5 === 0) && (row % 2 === 0);
             if (ashlar) {
-              density = 0.14 + b0 * 0.16;
+              density = 0.16 + b0 * 0.18;
               zone = 0;
             }
           }
         } else {
-          // Dark central sanctum chamber: only a hairline altar threshold at bottom
           if (ny > botY - 0.13 && ax < doorW - 0.04) {
             density = 0.22 + b2 * 0.30;
             zone = 2;
           }
         }
 
-        // Vertical seismic fault splitting down the temple centerline on strong transients
         const faultAmp = Math.max(b0 > 0.48 ? (b0 - 0.48) * 1.6 : 0, gateShear);
         if (faultAmp > 0.05) {
           const crackX = Math.sin(ny * 11.0 + seed * 4.0 + Math.floor(t * 2.0)) * 0.045;
@@ -1310,29 +1331,24 @@
       const theta = Math.atan2(ny, nx);
       const R = 0.78 + b0 * 0.10;
 
-      // Deep dark void outside the engraved outer seal ring
       if (r <= R + 0.045) {
-        const sides = 3 + Math.round(tess * 5); // 3 (triangle) .. 8 (octagon), default 6 (hexagram)
+        const sides = 3 + Math.round(tess * 5);
         const rotA = t * 0.22 + b1 * 0.55 + seed;
         const rotB = -t * 0.18 - b2 * 0.55 + seed + PI / sides;
 
-        // 1. Engraved double outer ring + radial astrolabe graduations
         const dRingOut = Math.abs(r - R);
         const dRingIn = Math.abs(r - (R - 0.095));
         const inRingBand = (r <= R && r >= R - 0.095);
         const tickCount = 12 + Math.round(tess * 24);
         const isTick = inRingBand && (Math.abs(Math.cos(theta * tickCount * 0.5)) > 0.92);
 
-        // 2. Cardinal axes & diagonal ritual rays
         const isCardinal = (Math.abs(nx) < 0.018 || Math.abs(ny) < 0.018) && r > 0.14 && r < R - 0.095;
         const isDiag = (Math.abs(Math.abs(nx) - Math.abs(ny)) < 0.016) && r > 0.18 && r < R - 0.11;
 
-        // 3. Nested counter-rotating regular polygons (exact SDF edges)
         const dPoly1 = Math.abs(regularPolygonSDF(nx, ny, sides, R * 0.69, rotA));
         const dPoly2 = Math.abs(regularPolygonSDF(nx, ny, sides, R * 0.52, rotB));
         const dPoly3 = Math.abs(regularPolygonSDF(nx, ny, sides, R * 0.30, rotA * 1.4));
 
-        // 4. Central engraved oculus & standing-wave Chladni nodal rings
         const dOculus = Math.abs(r - (0.14 + b0 * 0.04));
         const nHarm = 2 + Math.round(tess * 4);
         const chladni = Math.cos(r * (10 + tess * 12) - t * 0.9) * Math.cos(theta * nHarm + rotA * 0.5);
@@ -1377,14 +1393,12 @@
     // FORMATION 2 — III. MOSAIC (Reliquary Coffered Wall)
     // -------------------------------------------------------------------------
     } else if (fIdx === 2) {
-      // Framed cathedral mosaic panel with clean dark perimeter margin
       if (Math.abs(ny) <= 0.86 && Math.abs(nx) <= (cols / Math.max(1, rows)) * 0.86) {
-        const tileW = Math.round(12 - tess * 6); // 12 down to 6 cells (default 9)
-        const tileH = Math.round(8 - tess * 3);  // 8 down to 5 cells (default 6 or 7)
+        const tileW = Math.round(12 - tess * 6);
+        const tileH = Math.round(8 - tess * 3);
         const centerCol = Math.floor(cols * 0.5);
         const centerRow = Math.floor(rows * 0.5);
 
-        // Symmetrical tile coordinates centered on screen
         const relC = col - centerCol + Math.floor(tileW * 0.5);
         const relR = row - centerRow + Math.floor(tileH * 0.5);
         const tx = Math.floor(relC / tileW);
@@ -1392,16 +1406,13 @@
         const lx = ((relC % tileW) + tileW) % tileW;
         const ly = ((relR % tileH) + tileH) % tileH;
 
-        // Mirrored architectural symmetry across cathedral axes
         const stx = Math.abs(tx);
         const sty = Math.abs(ty);
 
-        // Per-tile coherent domain assignment (0..3)
         const tileZone = (stx + sty + Math.floor(seed * 2.0)) % 4;
         const bandVals = [b0, b1, b2, b3];
         const tileEnergy = bandVals[tileZone];
 
-        // Tile-by-tile transient dropout when FRACTURE is active
         let tileDropped = false;
         if (fracture > 0.02 && gateDrop > 0.05) {
           const dropRoll = hash2(tx * 1.7 + Math.floor(frameTick * 0.2), ty * 2.3 + seed);
@@ -1411,7 +1422,6 @@
         }
 
         if (!tileDropped) {
-          // 1-cell dark grout gap between tiles for crisp masonry legibility
           const isGrout = (lx === 0 || ly === 0);
           if (!isGrout) {
             const innerW = tileW - 1;
@@ -1426,17 +1436,13 @@
             const manhattan = Math.abs(ux) + Math.abs(uy);
             const maxBox = Math.max(Math.abs(ux), Math.abs(uy));
 
-            // Coherent geometric coffer motif inside each tile
             const motifType = (stx * 3 + sty) % 3;
             let motifHit = false;
             if (motifType === 0) {
-              // Engraved central diamond
               motifHit = Math.abs(manhattan - (0.58 + tileEnergy * 0.25)) < 0.24;
             } else if (motifType === 1) {
-              // Inner recessed square coffer
               motifHit = Math.abs(maxBox - (0.48 + tileEnergy * 0.22)) < 0.20;
             } else {
-              // Crossed reliquary ribs
               motifHit = (Math.abs(ux) < 0.22 || Math.abs(uy) < 0.22);
             }
 
@@ -1463,35 +1469,29 @@
     // FORMATION 3 — IV. STRATA (Geological Fault Cross-Section)
     // -------------------------------------------------------------------------
     } else if (fIdx === 3) {
-      // Generous void above upper horizon and below deep bedrock abyss
       const shelfSteps = 5 + Math.round(tess * 7);
       const qx = Math.floor(nx * shelfSteps) / shelfSteps;
       const horizonTop = -0.64 + Math.sin(qx * 3.1 + seed) * 0.08 + Math.cos(qx * 6.5) * 0.03;
       const bedrockBot = 0.72 + Math.cos(qx * 2.4 + seed) * 0.05;
 
       if (ny >= horizonTop && ny <= bedrockBot) {
-        // Living central horizontal seismic rift widening violently on bass hits
         const riftCenter = Math.sin(qx * 2.8 + t * 0.35 + seed) * 0.11 + (b1 - 0.2) * 0.06;
         const riftHalf = 0.065 + b0 * 0.17 + gateShear * 0.09;
         const dRift = Math.abs(ny - riftCenter);
 
         if (dRift < riftHalf) {
-          // Pitch-black seismic chasm void (except glowing rim fracture on peaks)
           density = 0;
         } else if (dRift < riftHalf + 0.048) {
-          // Razor-sharp lit fault lip bordering the chasm
           density = 0.76 + b0 * 0.24;
           zone = 3;
           peak = b0 > 0.48 || b3 > 0.52;
         } else {
-          // Distinct horizontal sedimentary rock strata
           const strataCount = 4 + Math.round(tess * 6);
           const depthShift = (ny < riftCenter ? -1 : 1) * (b0 * 0.08 + b1 * 0.12);
           const sy = (ny - horizonTop + depthShift) * strataCount;
           const stratumIdx = Math.floor(sy);
           const sFrac = sy - stratumIdx;
 
-          // Crisp horizontal bedding seam between geological strata
           const isSeam = (sFrac < 0.14 || sFrac > 0.88);
           const sZone = ((stratumIdx % 4) + 4) % 4;
           const bandVals = [b0, b1, b2, b3];
@@ -1502,20 +1502,16 @@
             density = 0.52 + sEnergy * 0.44;
             peak = sEnergy > 0.66;
           } else {
-            // Distinct geological textures per stratum layer
             const layerType = ((stratumIdx % 3) + 3) % 3;
             if (layerType === 0) {
-              // Vertical basalt column striations
               if (col % 3 === 0) {
                 density = 0.32 + b0 * 0.38 + sEnergy * 0.24;
               }
             } else if (layerType === 1) {
-              // Dense compressed shale bedding dashes
               if (row % 2 === 0 && ((col + stratumIdx * 2) % 2 === 0)) {
                 density = 0.26 + b1 * 0.42 + sEnergy * 0.22;
               }
             } else {
-              // Sparse mineral quartz veins
               if (Math.abs(sFrac - 0.5) < 0.16 && ((col + stratumIdx) % 4 === 0)) {
                 density = 0.30 + b2 * 0.46 + b3 * 0.24;
                 peak = b3 > 0.58;
@@ -1535,10 +1531,8 @@
       const plinthTop = 0.72;
       const plinthBot = 0.86;
 
-      // 1. Monumental Pyramidion Capstone & Tapering Shaft
       if (ny >= topTip && ny <= plinthBot) {
         if (ny < capBase) {
-          // Crisp tapering pyramidion triangle
           const capW = ((ny - topTip) / (capBase - topTip)) * (0.14 + b0 * 0.04);
           if (ax <= capW) {
             const isCapEdge = (capW - ax < 0.032) || (capBase - ny < 0.03);
@@ -1547,7 +1541,6 @@
             peak = isCapEdge && b3 > 0.50;
           }
         } else if (ny <= plinthTop) {
-          // Slightly tapering monolithic stone shaft
           const shaftProg = (ny - capBase) / (plinthTop - capBase);
           const shaftW = 0.13 + shaftProg * 0.06 + b0 * 0.055;
 
@@ -1560,7 +1553,6 @@
               zone = 0;
               peak = b0 > 0.62;
             } else if (inSpineGroove) {
-              // Carved central recessed spine channel with rising harmonic pulses
               const pulse = Math.sin(ny * (14 + tess * 12) - t * 2.2) * 0.5 + 0.5;
               if (pulse > (0.68 - b2 * 0.45)) {
                 density = 0.44 + b2 * 0.54;
@@ -1568,7 +1560,6 @@
                 peak = b2 > 0.58;
               }
             } else {
-              // Engraved horizontal shaft bands
               const bandFreq = 6 + Math.round(tess * 10);
               const isBand = Math.abs(((shaftProg * bandFreq) % 1) - 0.5) > 0.40;
               if (isBand) {
@@ -1580,7 +1571,6 @@
               }
             }
           } else {
-            // 2. Flanking Symmetrical Stepped Architectural Ribs & Plumb Lines
             const plumb1 = 0.34;
             const plumb2 = 0.52;
             const ribCount = 5 + Math.round(tess * 7);
@@ -1588,7 +1578,6 @@
             const isCrossbar = Math.abs((ribPos % 1) - 0.5) > 0.43;
             const ribIdx = Math.floor(ribPos);
 
-            // Crossbars extend outward with low-mid & high energy in clean stepped tiers
             const barReach = 0.28 + ((ribIdx % 2 === 0) ? 0.18 : 0.08) + b1 * 0.20;
 
             if (isCrossbar && ax > shaftW + 0.04 && ax < barReach) {
@@ -1596,13 +1585,11 @@
               zone = 1;
               peak = b1 > 0.62;
             } else if (Math.abs(ax - plumb1) < 0.015 && ny > capBase + 0.06 && ny < plinthTop - 0.04) {
-              // Inner vertical plumb line
               const nodeHit = Math.abs((ribPos % 1) - 0.5) > 0.38;
               density = nodeHit ? (0.62 + b2 * 0.36) : (0.20 + b2 * 0.25);
               zone = 2;
               peak = nodeHit && b2 > 0.62;
             } else if (Math.abs(ax - plumb2) < 0.015 && ny > capBase + 0.18 && ny < plinthTop - 0.14) {
-              // Outer vertical plumb line (reveals softly with highs)
               if (row % 2 === 0 || b3 > 0.25) {
                 density = 0.18 + b3 * 0.58;
                 zone = 3;
@@ -1611,7 +1598,6 @@
             }
           }
         } else {
-          // 3. Stepped Base Plinth Pedestal
           const plinthW = (ny < plinthTop + 0.07) ? 0.32 + b0 * 0.06 : 0.44 + b0 * 0.08;
           if (ax <= plinthW) {
             const isEdge = (plinthW - ax < 0.035) || (ny - plinthTop < 0.03) || (plinthBot - ny < 0.03);
@@ -1626,12 +1612,10 @@
     // FORMATION 5 — VI. VAULT (Recessed Stone Corridor)
     // -------------------------------------------------------------------------
     } else if (fIdx === 5) {
-      // Orthographic rectilinear stone archways receding into a dead-center void
       const sx = Math.abs(nx) * 0.78;
       const sy = Math.abs(ny);
       const cheb = Math.max(sx, sy);
 
-      // Dead-center pitch-black sanctuary void
       const coreVoid = 0.14 - b0 * 0.03;
       if (cheb >= coreVoid && cheb <= 0.96) {
         const archDensity = 2.6 + tess * 3.8;
@@ -1640,53 +1624,48 @@
         const archIdx = Math.floor(depth);
         const archFrac = ((depth % 1) + 1) % 1;
 
-        // Crisp archway rib frames (narrow sharp stone edges with dark recessed bays between)
-        const ribThickness = 0.22 + b0 * 0.10;
+        const ribThickness = 0.24 + b0 * 0.12;
         const isArchRib = (archFrac < ribThickness);
+        const isMiter = Math.abs(sx - sy) < 0.028;
 
-        // Diagonal corner miter seams connecting receding corners cleanly
-        const isMiter = Math.abs(sx - sy) < 0.026;
-
-        // Transverse coffered struts on top/bottom ceiling & floor bays
         const onCeilingFloor = (sy > sx + 0.03);
         const onSideWalls = (sx > sy + 0.03);
         const strutStep = 5 + Math.round(tess * 6);
         const isCofferStrut =
-          (onCeilingFloor && (Math.abs((nx * strutStep) % 1) < 0.12)) ||
-          (onSideWalls && (Math.abs((ny * strutStep) % 1) < 0.12));
+          (onCeilingFloor && (Math.abs((nx * strutStep) % 1) < 0.14)) ||
+          (onSideWalls && (Math.abs((ny * strutStep) % 1) < 0.14));
 
-        // Depth fade: closest arches strongest, deepest arches recede into dark stone
-        const depthVis = clamp((cheb - coreVoid) / 0.55, 0.28, 1.0);
+        const depthVis = clamp((cheb - coreVoid) / 0.55, 0.34, 1.0);
         const aZone = ((archIdx % 4) + 4) % 4;
         const bandVals = [b0, b1, b2, b3];
         const aEnergy = bandVals[aZone];
 
         if (isArchRib) {
-          density = (0.52 + aEnergy * 0.46) * depthVis;
+          density = (0.56 + aEnergy * 0.44) * depthVis;
           zone = aZone;
-          peak = (archFrac < 0.08) && (aEnergy > 0.58 || b0 > 0.65);
+          peak = (archFrac < 0.09) && (aEnergy > 0.56 || b0 > 0.64);
         } else if (isMiter) {
-          density = (0.44 + b3 * 0.48) * depthVis;
+          density = (0.48 + b3 * 0.46) * depthVis;
           zone = 3;
-          peak = b3 > 0.60;
-        } else if (isCofferStrut && (archFrac > 0.48 && archFrac < 0.66)) {
-          density = (0.24 + b1 * 0.36 + b2 * 0.26) * depthVis;
+          peak = b3 > 0.58;
+        } else if (isCofferStrut && (archFrac > 0.45 && archFrac < 0.68)) {
+          density = (0.28 + b1 * 0.36 + b2 * 0.26) * depthVis;
           zone = onCeilingFloor ? 2 : 1;
         }
       }
     }
 
     // -------------------------------------------------------------------------
-    // PROGRESSIVE STONE EROSION (Strictly 0.00 = Pristine, Crisp Architecture)
+    // CRUMBLING STONE EROSION (Granulates dense glyphs into lighter rubble
+    // rather than leaving empty holes in the architecture)
     // -------------------------------------------------------------------------
     if (density > 0 && erosion > 0.005) {
       const nPit = hash2(col * 0.91 + seed * 3.1, row * 0.91 - seed * 2.3);
-      // Weather away softer edges first, progressively carving mineral pits into stone
-      const pitChance = erosion * (0.78 - density * 0.42);
+      const pitChance = erosion * (0.82 - density * 0.35);
       if (nPit < pitChance) {
-        // Leave sparse weathered dust specks on intermediate hits, full void on deeper pits
-        if (nPit > pitChance * 0.74) {
-          density = 0.10;
+        if (nPit > pitChance * 0.32) {
+          // Crumble down to lighter mineral dust/rubble glyph instead of erasing
+          density = Math.max(0.08, density * (0.25 + 0.35 * (1.0 - erosion)));
           peak = false;
         } else {
           density = 0;
@@ -1734,6 +1713,10 @@
     atelierOpen: true,
     scopeMode: 0,         // 0 = green waveform, 1 = red peak seismograph
 
+    // 4 Visual Layer Engagement Toggles [I. STRATA, II. EROSION, III. SILICA, IV. LETHE]
+    // Default: all disengaged (false) for live performance build-ups
+    lanesActive: [false, false, false, false],
+
     // Audio Source & Transport
     selectedMicId: '',
     fileLoaded: false,
@@ -1750,10 +1733,10 @@
 
     // 4-Band Biquad Crossover Envelopes (peakamp~)
     bands: [
-      { env: 0, prevAbove: false, lastFire: 0, ledUntil: 0 }, // I. STRATA  (LP 140Hz)
-      { env: 0, prevAbove: false, lastFire: 0, ledUntil: 0 }, // II. EROSION (BP 420Hz)
-      { env: 0, prevAbove: false, lastFire: 0, ledUntil: 0 }, // III. SILICA (BP 1800Hz)
-      { env: 0, prevAbove: false, lastFire: 0, ledUntil: 0 }  // IV. LETHE  (HP 4200Hz)
+      { env: 0, prevAbove: false, lastFire: 0 }, // I. STRATA  (LP 140Hz)
+      { env: 0, prevAbove: false, lastFire: 0 }, // II. EROSION (BP 420Hz)
+      { env: 0, prevAbove: false, lastFire: 0 }, // III. SILICA (BP 1800Hz)
+      { env: 0, prevAbove: false, lastFire: 0 }  // IV. LETHE  (HP 4200Hz)
     ],
 
     // 0ms Stochastic Fracture / Glitch Gates (Band III & IV transients, scaled by FRACTURE)
@@ -1766,20 +1749,94 @@
     seismoHistory: new Array(156).fill(0)
   };
 
-  /**
-   * Exact unity GAIN scaling:
-   *   val = 0.00 -> 0.25x
-   *   val = 0.50 -> 1.00x (EXACT UNITY DEFAULT)
-   *   val = 1.00 -> 4.00x
-   */
+  /* ===========================================================================
+     SECTION B2: LAYER II (ASPERITAS) GEOMETRY-AWARE SMOKE & DUST PARTICLE ENGINE
+     =========================================================================== */
+  const PARTICLE_COUNT = 240;
+  const dustParticles = [];
+
+  function spawnParticleOnFormation(p, fIdx, aspect, seed, resetLife) {
+    const r1 = Math.random();
+    const r2 = Math.random();
+    const sign = Math.random() < 0.5 ? -1 : 1;
+
+    if (fIdx === 0) {
+      // I. MONOLITH: Pool along stepped plinth floor or rise out of central sanctum doorway
+      if (r1 < 0.58) {
+        p.nx = (r2 * 2 - 1) * 0.78;
+        p.ny = 0.78 + (Math.random() - 0.5) * 0.12;
+        p.vx = (Math.random() - 0.5) * 0.12;
+        p.vy = -0.06 - Math.random() * 0.14;
+      } else {
+        p.nx = (r2 * 2 - 1) * 0.22;
+        p.ny = -0.22 + Math.random() * 1.02;
+        p.vx = sign * (0.04 + Math.random() * 0.10);
+        p.vy = -0.10 - Math.random() * 0.18;
+      }
+    } else if (fIdx === 1) {
+      // II. SEAL: Orbit along the engraved outer ritual circle and fling tangentially
+      const ang = r1 * TAU;
+      const rad = 0.72 + (r2 - 0.5) * 0.14;
+      p.nx = Math.cos(ang) * rad;
+      p.ny = Math.sin(ang) * rad;
+      p.vx = -Math.sin(ang) * 0.16 + Math.cos(ang) * 0.05;
+      p.vy = Math.cos(ang) * 0.16 + Math.sin(ang) * 0.05;
+    } else if (fIdx === 2) {
+      // III. MOSAIC: Sift downward out of horizontal coffered grout seams
+      p.nx = (r1 * 2 - 1) * aspect * 0.84;
+      const rowBand = Math.floor(r2 * 7) - 3;
+      p.ny = clamp(rowBand * 0.24 + (Math.random() - 0.5) * 0.04, -0.84, 0.84);
+      p.vx = (Math.random() - 0.5) * 0.08;
+      p.vy = 0.07 + Math.random() * 0.16;
+    } else if (fIdx === 3) {
+      // IV. STRATA: Blast outward from the central horizontal seismic fault rift
+      p.nx = (r1 * 2 - 1) * aspect * 0.92;
+      p.ny = Math.sin(p.nx * 2.8 + seed) * 0.11 + (r2 - 0.5) * 0.08;
+      p.vx = (Math.random() - 0.5) * 0.14;
+      p.vy = sign * (0.09 + Math.random() * 0.22);
+    } else if (fIdx === 4) {
+      // V. OBELISK: Rise symmetrically along the outer plumb lines & pyramidion tip
+      if (r1 < 0.72) {
+        p.nx = sign * (0.34 + (r2 < 0.5 ? 0 : 0.18) + (Math.random() - 0.5) * 0.04);
+        p.ny = -0.55 + Math.random() * 1.38;
+        p.vx = sign * (0.02 + Math.random() * 0.06);
+        p.vy = -0.11 - Math.random() * 0.18;
+      } else {
+        p.nx = (r2 - 0.5) * 0.16;
+        p.ny = -0.86 + (Math.random() - 0.5) * 0.08;
+        p.vx = sign * (0.08 + Math.random() * 0.14);
+        p.vy = -0.14 - Math.random() * 0.20;
+      }
+    } else {
+      // VI. VAULT: Erupt outward from the dead-center vanishing void along corridor diagonals
+      const ang = r1 * TAU;
+      const rad = 0.11 + r2 * 0.12;
+      p.nx = Math.cos(ang) * rad * 1.25;
+      p.ny = Math.sin(ang) * rad;
+      p.vx = Math.cos(ang) * (0.14 + Math.random() * 0.22);
+      p.vy = Math.sin(ang) * (0.14 + Math.random() * 0.22);
+    }
+
+    p.phase = Math.random() * TAU;
+    p.weight = 0.15 + Math.random() * 0.85;
+    p.maxLife = 1.4 + Math.random() * 2.8;
+    p.life = resetLife ? Math.random() * p.maxLife : p.maxLife;
+  }
+
+  function initDustParticles() {
+    dustParticles.length = 0;
+    const aspect = cols / Math.max(1, rows);
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const p = { nx: 0, ny: 0, vx: 0, vy: 0, phase: 0, weight: 0.5, life: 1, maxLife: 2 };
+      spawnParticleOnFormation(p, state.formationIdx, aspect, state.morphSeed, true);
+      dustParticles.push(p);
+    }
+  }
+
   function gainDialToMult(val) {
     return Math.pow(4, clamp(val, 0, 1) * 2 - 1);
   }
 
-  /**
-   * Appends Unicode Text Variation Selector (U+FE0E) to non-ASCII geometric
-   * symbols so macOS/Safari never substitutes Apple Color Emoji.
-   */
   function toMonoChar(ch) {
     if (!ch || ch === ' ') return ' ';
     const cp = ch.codePointAt(0);
@@ -1833,11 +1890,17 @@
       document.getElementById('meter-2'),
       document.getElementById('meter-3')
     ],
-    leds: [
-      document.getElementById('led-0'),
-      document.getElementById('led-1'),
-      document.getElementById('led-2'),
-      document.getElementById('led-3')
+    mrows: [
+      document.getElementById('mrow-0'),
+      document.getElementById('mrow-1'),
+      document.getElementById('mrow-2'),
+      document.getElementById('mrow-3')
+    ],
+    laneBtns: [
+      document.getElementById('lane-btn-0'),
+      document.getElementById('lane-btn-1'),
+      document.getElementById('lane-btn-2'),
+      document.getElementById('lane-btn-3')
     ],
 
     btnAtelier: document.getElementById('btn-atelier'),
@@ -1876,16 +1939,6 @@
   let cols = 0;
   let rows = 0;
 
-  /**
-   * Rebuilds the 7-row GPU-cached sprite sheet for activeGlyphs & active palette:
-   *   Row 0: Resting mineral ink
-   *   Row 1: Domain 0 (I. STRATA)
-   *   Row 2: Domain 1 (II. EROSION)
-   *   Row 3: Domain 2 (III. SILICA)
-   *   Row 4: Domain 3 (IV. LETHE)
-   *   Row 5: Transient Highlight peak
-   *   Row 6: Inverted polarity ink
-   */
   function rebuildGlyphAtlas() {
     const pal = PALETTES[state.paletteIdx];
     const ramp = state.activeGlyphs.length > 0 ? state.activeGlyphs : ['·'];
@@ -1933,8 +1986,12 @@
     cellCss = clamp(Math.round(Math.min(w, h) / 56), 13, 18);
     rebuildGlyphAtlas();
 
+    const prevCols = cols;
     cols = Math.max(28, Math.ceil(visCanvas.width / cellPx));
     rows = Math.max(20, Math.ceil(visCanvas.height / cellPx));
+    if (prevCols === 0 || dustParticles.length === 0) {
+      initDustParticles();
+    }
   }
 
   /* ===========================================================================
@@ -1953,13 +2010,6 @@
   let micSourceNode = null;
   let fileSourceNode = null;
 
-  /**
-   * Builds the Web Audio 4-band BiquadFilterNode crossover:
-   *   Band I   (STRATA / Lows)     : Lowpass 140Hz
-   *   Band II  (EROSION / Low-Mid) : Bandpass 420Hz
-   *   Band III (SILICA / Hi-Mid)   : Bandpass 1800Hz
-   *   Band IV  (LETHE / Highs)     : Highpass 4200Hz
-   */
   async function initOrResumeAudio() {
     try {
       if (!audioCtx) {
@@ -1969,18 +2019,16 @@
         inputGain = audioCtx.createGain();
         inputGain.gain.value = gainDialToMult(state.params.gain);
 
-        // Speaker monitor gain (ONLY FILE routes here; MIC is isolated for zero feedback)
         monitorGain = audioCtx.createGain();
         monitorGain.gain.value = state.monitorOn ? 0.9 : 0.0;
         monitorGain.connect(audioCtx.destination);
 
-        // OLED Scope Analyser
         scopeAnalyser = audioCtx.createAnalyser();
         scopeAnalyser.fftSize = 512;
         scopeBytes = new Uint8Array(scopeAnalyser.frequencyBinCount);
         inputGain.connect(scopeAnalyser);
 
-        // Band I: Lowpass 140Hz (cascaded 2nd-order for tight sub isolation)
+        // Band I: Lowpass 140Hz
         const lp1 = audioCtx.createBiquadFilter();
         lp1.type = 'lowpass'; lp1.frequency.value = 140; lp1.Q.value = 0.707;
         const lp2 = audioCtx.createBiquadFilter();
@@ -2142,7 +2190,6 @@
 
       micStream = await navigator.mediaDevices.getUserMedia(constraints);
       micSourceNode = audioCtx.createMediaStreamSource(micStream);
-      // Strictly isolated: MIC connects ONLY to inputGain, never to monitorGain / destination
       micSourceNode.connect(inputGain);
 
       state.sourceMode = 'mic';
@@ -2227,7 +2274,6 @@
         const b = state.bands[i];
         an.getFloatTimeDomainData(buf);
 
-        // True peakamp~: absolute maximum sample in the time buffer
         let peak = 0;
         for (let s = 0; s < buf.length; s++) {
           const v = Math.abs(buf[s]);
@@ -2236,16 +2282,10 @@
 
         const level = clamp(Math.pow(peak * spectralComp[i], 0.85), 0, 1);
 
-        // Fast attack / musical decay envelope
         if (level > b.env) {
           b.env = level;
         } else {
           b.env = Math.max(0, b.env - decayPerSec[i] * dtSec);
-        }
-
-        // Band I & II LED feedback on strong hits
-        if ((i === 0 || i === 1) && level > 0.62) {
-          b.ledUntil = nowMs + 85;
         }
       }
     } else {
@@ -2254,15 +2294,12 @@
       }
     }
 
-    // Stochastic 0ms fracture/glitch gates driven by Band III & IV transients
-    // Strictly inactive when FRACTURE === 0.00 so default state stays razor-clean
     const frac = state.params.fracture;
     if (audioRunning && frac > 0.005) {
       const prob = clamp(0.15 + frac * 0.80, 0.15, 0.95);
       const thr3 = clamp(0.62 - frac * 0.30, 0.28, 0.62);
       const thr4 = clamp(0.56 - frac * 0.28, 0.24, 0.56);
 
-      // Band III (SILICA) -> 0ms Shear Tear & Row Shift
       const b3 = state.bands[2];
       const above3 = b3.env > thr3;
       if (above3 && !b3.prevAbove && (nowMs - b3.lastFire > 90)) {
@@ -2271,12 +2308,10 @@
           state.gates.shear.env = 1.0;
           state.gates.shear.start = nowMs;
           state.gates.shear.seed = Math.floor(Math.random() * 9973) + 1;
-          b3.ledUntil = nowMs + 115;
         }
       }
       b3.prevAbove = above3;
 
-      // Band IV (LETHE) -> 0ms Dropout / Shatter & occasional Polarity Inversion
       const b4 = state.bands[3];
       const above4 = b4.env > thr4;
       if (above4 && !b4.prevAbove && (nowMs - b4.lastFire > 90)) {
@@ -2285,7 +2320,6 @@
           state.gates.drop.env = 1.0;
           state.gates.drop.start = nowMs;
           state.gates.drop.seed = Math.floor(Math.random() * 9973) + 1;
-          b4.ledUntil = nowMs + 115;
 
           if (frac > 0.35 && b4.env > thr4 + 0.12 && (nowMs - state.gates.cut.lastCut > 260) && Math.random() < frac * 0.55) {
             state.gates.cut.env = 1.0;
@@ -2301,7 +2335,6 @@
       state.bands[3].prevAbove = false;
     }
 
-    // Advance linear recovery envelopes
     const gateKeys = ['shear', 'drop', 'cut'];
     for (let k = 0; k < gateKeys.length; k++) {
       const g = state.gates[gateKeys[k]];
@@ -2313,7 +2346,12 @@
   }
 
   /* ===========================================================================
-     SECTION G: 60FPS CRISP ARCHITECTURAL ASCII RENDERER
+     SECTION G: 4-LAYER QUIET MACHINERY ASCII RENDERER (60FPS ATLAS BLIT)
+     ---------------------------------------------------------------------------
+     Layer 1 (lanesActive[0]): I. STRATA  — Karst/Kamen Lithic Architecture
+     Layer 2 (lanesActive[1]): II. EROSION — Asperitas Smoke & Dust Particles
+     Layer 3 (lanesActive[2]): III. SILICA — Mnemosyne Patina & Interference
+     Layer 4 (lanesActive[3]): IV. LETHE   — Occult Marginalia & Caustic Runes
      =========================================================================== */
   function renderVisualiser(nowMs, dtSec) {
     const pal = PALETTES[state.paletteIdx];
@@ -2330,7 +2368,6 @@
       state.morphTime += dtSec * cadence;
     }
 
-    // Under FREEZE, lock base architectural frame while EROSION & FRACTURE weather it live
     const t = state.frozen ? state.frozenTime : state.morphTime;
     const seed = state.frozen ? state.frozenSeed : state.morphSeed;
     const b0 = state.frozen ? state.frozenBands[0] : liveB0;
@@ -2346,25 +2383,27 @@
     const gateDrop = state.gates.drop.env * fracture;
     const gateCut = state.gates.cut.env;
 
-    // Brief 52ms Blackout or Polarity Inversion on high-FRACTURE Band IV peaks
-    if (gateCut > 0 && state.gates.cut.mode === 'blackout') {
+    const anyLaneOn = state.lanesActive[0] || state.lanesActive[1] || state.lanesActive[2] || state.lanesActive[3];
+
+    if (anyLaneOn && gateCut > 0 && state.gates.cut.mode === 'blackout') {
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, visCanvas.width, visCanvas.height);
       return;
     }
-    const isInverted = gateCut > 0 && state.gates.cut.mode === 'invert';
+    const isInverted = anyLaneOn && gateCut > 0 && state.gates.cut.mode === 'invert';
 
     // Fill crisp dark (or archival vellum) void
     ctx.fillStyle = isInverted ? pal.invertBg : pal.bg;
     ctx.fillRect(0, 0, visCanvas.width, visCanvas.height);
 
+    if (!anyLaneOn) return;
+
     const cx = (cols - 1) * 0.5;
     const cy = (rows - 1) * 0.5;
     const halfScale = Math.min(cols, rows) * 0.48;
     const invScale = 1.0 / Math.max(1, halfScale);
+    const aspect = cols / Math.max(1, rows);
     const frameTick = Math.floor(nowMs * 0.04);
-
-    // Subtle idle stone breathing so static architecture feels alive without noise
     const idleBreath = 0.94 + Math.sin(t * 0.9) * 0.06;
 
     const bandEnvs = [b0, b1, b2, b3];
@@ -2379,58 +2418,208 @@
     const dropSeed = state.gates.drop.seed;
     const fIdx = state.formationIdx;
 
-    for (let r = 0; r < rows; r++) {
-      const ny = (r - cy) * invScale;
-      const drawY = r * cellPx;
+    // -------------------------------------------------------------------------
+    // LAYER 1 (I. STRATA): LITHIC ARCHITECTURE & OCCULT MONUMENT
+    // -------------------------------------------------------------------------
+    if (state.lanesActive[0]) {
+      for (let r = 0; r < rows; r++) {
+        const ny = (r - cy) * invScale;
+        const drawY = r * cellPx;
 
-      // Coherent horizontal row-band shear shift on Band III FRACTURE transients
-      let rowShiftCols = 0;
-      if (gateShear > 0.04) {
-        const bandBand = Math.floor(r / 3);
-        const h = hash2(bandBand + shearSeed, frameTick * 0.25);
-        if (h > (1.0 - gateShear * 0.65)) {
-          const dir = (bandBand % 2 === 0) ? 1 : -1;
-          rowShiftCols = Math.round(dir * (2 + gateShear * 9));
+        let rowShiftCols = 0;
+        if (gateShear > 0.04) {
+          const bandBand = Math.floor(r / 3);
+          const h = hash2(bandBand + shearSeed, frameTick * 0.25);
+          if (h > (1.0 - gateShear * 0.65)) {
+            const dir = (bandBand % 2 === 0) ? 1 : -1;
+            rowShiftCols = Math.round(dir * (2 + gateShear * 9));
+          }
+        }
+
+        for (let c = 0; c < cols; c++) {
+          const srcCol = c + rowShiftCols;
+          const nx = (srcCol - cx) * invScale;
+
+          const cell = computeFormationCell(fIdx, nx, ny, srcCol, r, fCtx);
+          if (cell.density <= 0.02) continue;
+
+          if (gateDrop > 0.06 && fIdx !== 2) {
+            const dh = hash2(Math.floor(c / 4) + dropSeed, Math.floor(r / 2) + dropSeed);
+            if (dh < gateDrop * 0.55) continue;
+          }
+
+          const finalDensity = clamp(cell.density * idleBreath, 0, 1);
+          const gIdx = clamp(Math.floor(finalDensity * maxGlyphIdx + 0.25), 0, maxGlyphIdx);
+
+          let atlasRow = 0;
+          if (isInverted) {
+            atlasRow = 6;
+          } else {
+            const zoneEnergy = bandEnvs[cell.zone];
+            if (cell.peak && zoneEnergy > 0.42) {
+              atlasRow = 5;
+            } else if (zoneEnergy > 0.14 || (state.frozen && zoneEnergy > 0.10)) {
+              atlasRow = 1 + cell.zone;
+            } else {
+              atlasRow = 0;
+            }
+          }
+
+          ctx.drawImage(
+            atlasCanvas,
+            gIdx * cellPx, atlasRow * cellPx, cellPx, cellPx,
+            c * cellPx, drawY, cellPx, cellPx
+          );
         }
       }
+    }
 
-      for (let c = 0; c < cols; c++) {
-        const srcCol = c + rowShiftCols;
-        const nx = (srcCol - cx) * invScale;
+    // -------------------------------------------------------------------------
+    // LAYER 3 (III. SILICA): MNEMOSYNE WEATHERING PATINA & INTERFERENCE BANDS
+    // -------------------------------------------------------------------------
+    if (state.lanesActive[2]) {
+      const silicaEnergy = clamp(b2 * 1.15 + erosion * 0.35 + (state.driftActive ? 0.18 : 0.06), 0.06, 1.0);
+      const bandDensity = 7.0 + tess * 11.0;
+      const sweepSpeed = t * (0.65 + b2 * 2.2) + seed;
+      const patinaGlyphLo = Math.min(1, maxGlyphIdx);
+      const patinaGlyphMid = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.38)), maxGlyphIdx);
+      const patinaGlyphHi = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.65)), maxGlyphIdx);
 
-        const cell = computeFormationCell(fIdx, nx, ny, srcCol, r, fCtx);
-        if (cell.density <= 0.02) continue;
+      for (let r = 0; r < rows; r++) {
+        const ny = (r - cy) * invScale;
+        // Horizontal and diagonal oxidation striations
+        const waveH = Math.sin(ny * bandDensity + sweepSpeed);
+        const diagRipple = Math.cos(ny * (bandDensity * 1.7) - sweepSpeed * 1.4);
 
-        // Coherent transient dropouts on Band IV FRACTURE bursts
-        if (gateDrop > 0.06 && fIdx !== 2) {
-          const dh = hash2(Math.floor(c / 4) + dropSeed, Math.floor(r / 2) + dropSeed);
-          if (dh < gateDrop * 0.55) continue;
+        if (waveH < (0.68 - silicaEnergy * 0.52) && diagRipple < (0.82 - b2 * 0.45)) continue;
+
+        const drawY = r * cellPx;
+        const stepStride = b2 > 0.45 ? 1 : 2;
+
+        for (let c = (r % stepStride); c < cols; c += stepStride) {
+          const nx = (c - cx) * invScale;
+          const interference = Math.sin(nx * (6.0 + tess * 8.0) + ny * 4.0 - sweepSpeed * 0.8);
+          const grain = hash2(c * 0.63 + frameTick * 0.12, r * 0.77 + seed);
+
+          if (interference + grain * 0.55 < (1.05 - silicaEnergy * 0.75)) continue;
+
+          const isHot = (b2 > 0.52 && grain > 0.82);
+          const gIdx = isHot ? patinaGlyphHi : (interference > 0.45 ? patinaGlyphMid : patinaGlyphLo);
+          const atlasRow = isInverted ? 6 : (isHot ? 5 : (b2 > 0.22 ? 3 : 0));
+
+          ctx.drawImage(
+            atlasCanvas,
+            gIdx * cellPx, atlasRow * cellPx, cellPx, cellPx,
+            c * cellPx, drawY, cellPx, cellPx
+          );
+        }
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // LAYER 2 (II. EROSION): ASPERITAS GEOMETRY-AWARE SMOKE & DUST PARTICLES
+    // -------------------------------------------------------------------------
+    if (state.lanesActive[1]) {
+      // Escalates gently at rest, violently as high-end (SILICA / LETHE) & GAIN climb
+      const highPresence = clamp(b2 * 0.65 + b3 * 0.95 + b1 * 0.35 + erosion * 0.30, 0, 1.5);
+      const speedScale = 0.28 + Math.pow(highPresence, 1.45) * 3.4 + gateShear * 2.2;
+      const activeCount = Math.floor(PARTICLE_COUNT * clamp(0.32 + highPresence * 0.68, 0.32, 1.0));
+
+      const dustLo = 0;
+      const dustMid = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.28)), maxGlyphIdx);
+      const dustHi = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.55)), maxGlyphIdx);
+
+      for (let i = 0; i < activeCount; i++) {
+        const p = dustParticles[i];
+        if (!state.frozen) {
+          p.life -= dtSec * (0.45 + highPresence * 0.95);
+          if (p.life <= 0 || Math.abs(p.nx) > aspect * 1.15 || Math.abs(p.ny) > 1.15) {
+            spawnParticleOnFormation(p, fIdx, aspect, seed, false);
+          }
+
+          // Curl-like atmospheric swirl + violent high-end blast
+          const swirlX = Math.sin(p.ny * 5.5 + t * 1.6 + p.phase) * (0.08 + highPresence * 0.45);
+          const swirlY = Math.cos(p.nx * 5.5 - t * 1.4 + p.phase) * (0.08 + highPresence * 0.45);
+          p.nx += (p.vx * speedScale + swirlX) * dtSec;
+          p.ny += (p.vy * speedScale + swirlY) * dtSec;
         }
 
-        const finalDensity = clamp(cell.density * idleBreath, 0, 1);
-        const gIdx = clamp(Math.floor(finalDensity * maxGlyphIdx + 0.25), 0, maxGlyphIdx);
+        const col = Math.round(cx + p.nx * halfScale);
+        const row = Math.round(cy + p.ny * halfScale);
+        if (col < 0 || col >= cols || row < 0 || row >= rows) continue;
 
-        // Coherent color assignment by structural zone & its band energy:
-        // Resting mineral ink at low energy -> smooth pollution into domain ink as band rises
+        const lifeNorm = clamp(p.life / p.maxLife, 0, 1);
+        const energy = clamp(lifeNorm * (0.35 + highPresence * 0.75) * p.weight, 0, 1);
+        const gIdx = energy > 0.68 ? dustHi : (energy > 0.32 ? dustMid : dustLo);
+
         let atlasRow = 0;
         if (isInverted) {
           atlasRow = 6;
-        } else {
-          const zoneEnergy = bandEnvs[cell.zone];
-          if (cell.peak && zoneEnergy > 0.42) {
-            atlasRow = 5; // Stark transient highlight peak
-          } else if (zoneEnergy > 0.14 || (state.frozen && zoneEnergy > 0.10)) {
-            atlasRow = 1 + cell.zone; // Domain mineral patina ink
-          } else {
-            atlasRow = 0; // Austere resting stone ink
-          }
+        } else if (energy > 0.76 && highPresence > 0.55) {
+          atlasRow = 5; // Bright ash spark on violent high-end bursts
+        } else if (b3 > 0.35 && p.weight > 0.6) {
+          atlasRow = 4; // Lethe ember tint
+        } else if (highPresence > 0.18) {
+          atlasRow = 2; // Erosion amber dust tint
         }
 
         ctx.drawImage(
           atlasCanvas,
           gIdx * cellPx, atlasRow * cellPx, cellPx, cellPx,
-          c * cellPx, drawY, cellPx, cellPx
+          col * cellPx, row * cellPx, cellPx, cellPx
         );
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // LAYER 4 (IV. LETHE): OCCULT MARGINALIA, PLUMB-LINES & CAUSTIC WATERMARKS
+    // -------------------------------------------------------------------------
+    if (state.lanesActive[3]) {
+      const letheEnergy = clamp(b3 * 1.2 + b0 * 0.25 + 0.14, 0.14, 1.0);
+      const marginColL = Math.max(2, Math.floor(cols * 0.05));
+      const marginColR = Math.min(cols - 3, Math.ceil(cols * 0.95));
+      const innerRailL = Math.max(5, Math.floor(cols * 0.11));
+      const innerRailR = Math.min(cols - 6, Math.ceil(cols * 0.89));
+
+      const runeIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.52)), maxGlyphIdx);
+      const sigilIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.74)), maxGlyphIdx);
+      const tickIdx = Math.min(1, maxGlyphIdx);
+
+      // 1. Vertical Astrolabe Plumb Rails & Graduated Ticks framing the dark margins
+      for (let r = 2; r < rows - 2; r++) {
+        const drawY = r * cellPx;
+        const ny = (r - cy) * invScale;
+        const wave = Math.sin(ny * (8.0 + tess * 10.0) - t * (1.2 + b3 * 3.0) + seed);
+
+        // Outer graduated ruler ticks
+        if (r % 3 === 0 || (b3 > 0.35 && wave > 0.35)) {
+          const isMajor = (r % 9 === 0);
+          const gIdx = isMajor ? sigilIdx : tickIdx;
+          const aRow = isInverted ? 6 : (isMajor && b3 > 0.35 ? 5 : (b3 > 0.16 ? 4 : 0));
+
+          ctx.drawImage(atlasCanvas, gIdx * cellPx, aRow * cellPx, cellPx, cellPx, marginColL * cellPx, drawY, cellPx, cellPx);
+          ctx.drawImage(atlasCanvas, gIdx * cellPx, aRow * cellPx, cellPx, cellPx, marginColR * cellPx, drawY, cellPx, cellPx);
+        }
+
+        // Inner intermittent occult sigil nodes
+        if (wave > (0.76 - letheEnergy * 0.42)) {
+          const aRow = isInverted ? 6 : (b3 > 0.48 ? 5 : 4);
+          ctx.drawImage(atlasCanvas, runeIdx * cellPx, aRow * cellPx, cellPx, cellPx, innerRailL * cellPx, drawY, cellPx, cellPx);
+          ctx.drawImage(atlasCanvas, runeIdx * cellPx, aRow * cellPx, cellPx, cellPx, innerRailR * cellPx, drawY, cellPx, cellPx);
+        }
+      }
+
+      // 2. Top & Bottom Alchemical Corner Brackets
+      const topRow = 1;
+      const botRow = rows - 2;
+      const bracketSpan = Math.min(10, Math.floor(cols * 0.08));
+      const bRowColor = isInverted ? 6 : (b3 > 0.32 ? 4 : 0);
+      for (let k = 0; k < bracketSpan; k++) {
+        const gIdx = (k === 0) ? sigilIdx : tickIdx;
+        ctx.drawImage(atlasCanvas, gIdx * cellPx, bRowColor * cellPx, cellPx, cellPx, (marginColL + k) * cellPx, topRow * cellPx, cellPx, cellPx);
+        ctx.drawImage(atlasCanvas, gIdx * cellPx, bRowColor * cellPx, cellPx, cellPx, (marginColR - k) * cellPx, topRow * cellPx, cellPx, cellPx);
+        ctx.drawImage(atlasCanvas, gIdx * cellPx, bRowColor * cellPx, cellPx, cellPx, (marginColL + k) * cellPx, botRow * cellPx, cellPx, cellPx);
+        ctx.drawImage(atlasCanvas, gIdx * cellPx, bRowColor * cellPx, cellPx, cellPx, (marginColR - k) * cellPx, botRow * cellPx, cellPx, cellPx);
       }
     }
   }
@@ -2446,7 +2635,6 @@
     scopeCtx.fillStyle = '#040404';
     scopeCtx.fillRect(0, 0, w, h);
 
-    // Subtle centerline graticule
     scopeCtx.strokeStyle = '#181818';
     scopeCtx.lineWidth = 1;
     scopeCtx.beginPath();
@@ -2474,7 +2662,6 @@
     scopeAnalyser.getByteTimeDomainData(scopeBytes);
 
     if (state.scopeMode === 0) {
-      // Green Live Waveform Trace
       scopeCtx.lineWidth = 1.5;
       scopeCtx.strokeStyle = state.frozen ? '#00aaff' : '#00ff44';
       scopeCtx.beginPath();
@@ -2490,7 +2677,6 @@
       scopeCtx.lineTo(w, h * 0.5);
       scopeCtx.stroke();
     } else {
-      // Red Peak Seismograph History
       let peak = 0;
       for (let i = 0; i < scopeBytes.length; i++) {
         const v = Math.abs(scopeBytes[i] - 128) / 128.0;
@@ -2506,24 +2692,12 @@
     }
   }
 
-  function updateTelemetry(nowMs) {
+  function updateTelemetry() {
     if (!state.hudVisible) return;
 
-    const ledColors = ['#00ff44', '#ff9d00', '#00aaff', '#ff4444'];
     for (let i = 0; i < 4; i++) {
       const b = state.bands[i];
       dom.meters[i].style.width = `${Math.round(clamp(b.env, 0, 1) * 100)}%`;
-
-      const led = dom.leds[i];
-      if (nowMs < b.ledUntil) {
-        led.style.backgroundColor = '#ffffff';
-        led.style.borderColor = ledColors[i];
-        led.style.boxShadow = `0 0 6px ${ledColors[i]}`;
-      } else {
-        led.style.backgroundColor = '#161616';
-        led.style.borderColor = '#333333';
-        led.style.boxShadow = 'none';
-      }
     }
 
     if (state.fileLoaded && !state.isScrubbing && Number.isFinite(dom.audioPlayer.duration) && dom.audioPlayer.duration > 0) {
@@ -2535,8 +2709,40 @@
   }
 
   /* ===========================================================================
-     SECTION I: ATELIER SHELF BUILDERS (FORMATIONS, LIVE GLYPH STRIP, PALETTES)
+     SECTION I: LANE ENGAGEMENT & ATELIER SHELF BUILDERS
      =========================================================================== */
+  const LANE_NAMES = [
+    'I. STRATA // LITHIC ARCHITECTURE',
+    'II. EROSION // SMOKE & DUST',
+    'III. SILICA // PATINA INTERFERENCE',
+    'IV. LETHE // OCCULT MARGINALIA'
+  ];
+
+  function syncLaneEngagementUI() {
+    for (let i = 0; i < 4; i++) {
+      const on = state.lanesActive[i];
+      dom.laneBtns[i].classList.toggle('active', on);
+      dom.laneBtns[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+      dom.mrows[i].classList.toggle('disengaged', !on);
+    }
+  }
+
+  function toggleVisualLane(idx, silent = false) {
+    state.lanesActive[idx] = !state.lanesActive[idx];
+    syncLaneEngagementUI();
+    if (!silent) {
+      showToast(`${LANE_NAMES[idx]}: ${state.lanesActive[idx] ? 'ENGAGED' : 'OFF'}`);
+    }
+  }
+
+  function toggleAllVisualLanes() {
+    const anyOn = state.lanesActive.some(Boolean);
+    const target = !anyOn;
+    state.lanesActive = [target, target, target, target];
+    syncLaneEngagementUI();
+    showToast(`ALL VISUAL LAYERS: ${target ? 'ENGAGED' : 'DISENGAGED'}`);
+  }
+
   function buildFormationButtons() {
     dom.formationButtons.innerHTML = '';
     FORMATIONS.forEach((fm, idx) => {
@@ -2556,6 +2762,7 @@
     btns.forEach((b, i) => b.classList.toggle('active', i === state.formationIdx));
     const fm = FORMATIONS[state.formationIdx];
     dom.formationSubtitle.textContent = fm.subtitle;
+    initDustParticles();
     showToast(`FORMATION // ${fm.label} — ${fm.subtitle}`);
   }
 
@@ -2577,7 +2784,6 @@
       tile.textContent = toMonoChar(ch);
       tile.title = state.mutedFlags[idx] ? 'Click to unmute glyph' : 'Click to mute glyph';
       tile.addEventListener('click', () => {
-        // Always retain at least 1 unmuted glyph
         const activeCount = state.mutedFlags.filter((m) => !m).length;
         if (!state.mutedFlags[idx] && activeCount <= 1) {
           showToast('AT LEAST ONE GLYPH MUST REMAIN ACTIVE');
@@ -2671,7 +2877,6 @@
     knobEl.dataset.val = val.toFixed(4);
     state.params[param] = val;
 
-    // Exact MNEMOSYNE -135deg .. +135deg rotation
     const angle = -135 + val * 270;
     const ind = knobEl.querySelector('.knob-indicator');
     if (ind) {
@@ -2734,10 +2939,6 @@
     });
   }
 
-  /**
-   * SCATTER: Randomizes ONLY EROSION, TESSELLATION, FRACTURE & structural seed.
-   * Strictly NEVER touches GAIN.
-   */
   function triggerScatter() {
     knobEls.forEach((knob) => {
       if (knob.dataset.param === 'gain') return;
@@ -2747,13 +2948,10 @@
     if (state.frozen) {
       state.frozenSeed = state.morphSeed;
     }
+    initDustParticles();
     showToast('SCATTER // DIALS & STRUCTURAL SEED ROLLED');
   }
 
-  /**
-   * DRIFT: Slow organic random-walk on EROSION, TESSELLATION, FRACTURE.
-   * Strictly NEVER touches GAIN.
-   */
   function toggleDrift() {
     state.driftActive = !state.driftActive;
     dom.btnDrift.classList.toggle('active', state.driftActive);
@@ -2771,10 +2969,6 @@
     });
   }, 60);
 
-  /**
-   * FREEZE: Locks current architectural frame in mortar while allowing
-   * EROSION and FRACTURE to weather and shatter the frozen ruin live.
-   */
   function toggleFreeze() {
     state.frozen = !state.frozen;
     dom.btnFreeze.classList.toggle('active', state.frozen);
@@ -2843,7 +3037,6 @@
   }
 
   function wireControls() {
-    // OLED Scope click toggle (green waveform <-> red seismograph)
     scopeCanvas.addEventListener('click', () => {
       state.scopeMode = 1 - state.scopeMode;
       showToast(state.scopeMode === 0 ? 'OLED // WAVEFORM' : 'OLED // SEISMOGRAPH');
@@ -2898,7 +3091,14 @@
     dom.fileScrub.addEventListener('pointerup', endScrub);
     dom.fileScrub.addEventListener('change', endScrub);
 
-    // Upper Deck Column 4: View Controls
+    // Upper Deck Column 4: Lane Engagement Toggles & View Controls
+    for (let i = 0; i < 4; i++) {
+      dom.laneBtns[i].addEventListener('click', () => toggleVisualLane(i));
+      const lbl = dom.mrows[i].querySelector('.meter-label');
+      if (lbl) lbl.addEventListener('click', () => toggleVisualLane(i));
+    }
+    syncLaneEngagementUI();
+
     dom.btnAtelier.addEventListener('click', toggleAtelier);
     dom.btnFullscreen.addEventListener('click', toggleFullscreen);
     dom.btnHide.addEventListener('click', toggleHud);
@@ -2954,7 +3154,7 @@
       }
     });
 
-    // Global Keyboard Shortcuts (strictly ignored when focus is inside <input> or <select>)
+    // Global Keyboard Shortcuts (non-overlapping, left-hand home-row ergonomic)
     window.addEventListener('keydown', (e) => {
       const tag = e.target ? e.target.tagName : '';
       if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') {
@@ -2963,7 +3163,17 @@
       }
 
       const key = e.key.toLowerCase();
-      if (key >= '1' && key <= '6') {
+      if (key === 'q') {
+        toggleVisualLane(0);
+      } else if (key === 'w') {
+        toggleVisualLane(1);
+      } else if (key === 'e') {
+        toggleVisualLane(2);
+      } else if (key === 'r') {
+        toggleVisualLane(3);
+      } else if (key === 'a') {
+        toggleAllVisualLanes();
+      } else if (key >= '1' && key <= '6') {
         selectFormation(Number(key) - 1);
       } else if (key === 'm') {
         selectFormation(state.formationIdx + 1);
@@ -3004,7 +3214,7 @@
     processAudioAndGates(nowMs, dtSec);
     renderVisualiser(nowMs, dtSec);
     renderScope();
-    updateTelemetry(nowMs);
+    updateTelemetry();
 
     requestAnimationFrame(animate);
   }
