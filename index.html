@@ -960,7 +960,7 @@
               <!-- EROSION: Default 0.00 (Clean pristine edges) -->
               <div class="knob-container d-amber">
                 <div class="knob-label">EROSION</div>
-                <svg class="knob-svg" id="knob-erosion" data-param="erosion" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Stone Weathering &amp; Pitted Dust | Default: 0.00">
+                <svg class="knob-svg" id="knob-erosion" data-param="erosion" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Stone Weathering &amp; Gale Gusts | Default: 0.00">
                   <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
                   <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
                 </svg>
@@ -980,7 +980,7 @@
               <!-- FRACTURE: Default 0.00 (Zero random glitch clutter) -->
               <div class="knob-container d-red">
                 <div class="knob-label">FRACTURE</div>
-                <svg class="knob-svg" id="knob-fracture" data-param="fracture" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="0ms Transient Shear, Row Shifts &amp; Dropouts | Default: 0.00">
+                <svg class="knob-svg" id="knob-fracture" data-param="fracture" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="0ms Transient Shear, Masonry Calving &amp; Dropouts | Default: 0.00">
                   <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
                   <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
                 </svg>
@@ -998,22 +998,22 @@
                 <div class="meter-row disengaged" id="mrow-0">
                   <span class="meter-label" data-lane="0" style="color: var(--c-green-dim);">I. STRATA [Q]</span>
                   <div class="meter-track"><div class="meter-fill" id="meter-0" style="background: var(--c-green-dim);"></div></div>
-                  <button type="button" class="lane-toggle-sq" id="lane-btn-0" data-lane="0" aria-pressed="false" title="Engage Layer I: Lithic Architecture [Q]"></button>
+                  <button type="button" class="lane-toggle-sq" id="lane-btn-0" data-lane="0" aria-pressed="false" title="Engage Z-1 Midground: Lithic Architecture [Q]"></button>
                 </div>
                 <div class="meter-row disengaged" id="mrow-1">
                   <span class="meter-label" data-lane="1" style="color: var(--c-amber-dim);">II. EROSION [W]</span>
                   <div class="meter-track"><div class="meter-fill" id="meter-1" style="background: var(--c-amber-dim);"></div></div>
-                  <button type="button" class="lane-toggle-sq" id="lane-btn-1" data-lane="1" aria-pressed="false" title="Engage Layer II: Smoke &amp; Dust Particles [W]"></button>
+                  <button type="button" class="lane-toggle-sq" id="lane-btn-1" data-lane="1" aria-pressed="false" title="Engage Z-2 Foreground: Gale Dust &amp; Calved Debris [W]"></button>
                 </div>
                 <div class="meter-row disengaged" id="mrow-2">
                   <span class="meter-label" data-lane="2" style="color: var(--c-cyan-dim);">III. SILICA [E]</span>
                   <div class="meter-track"><div class="meter-fill" id="meter-2" style="background: var(--c-cyan-dim);"></div></div>
-                  <button type="button" class="lane-toggle-sq" id="lane-btn-2" data-lane="2" aria-pressed="false" title="Engage Layer III: Patina &amp; Interference [E]"></button>
+                  <button type="button" class="lane-toggle-sq" id="lane-btn-2" data-lane="2" aria-pressed="false" title="Engage Z-0 Deep Background: Patina Wall &amp; Wake Erosion [E]"></button>
                 </div>
                 <div class="meter-row disengaged" id="mrow-3">
                   <span class="meter-label" data-lane="3" style="color: var(--c-red-dim);">IV. LETHE [R]</span>
                   <div class="meter-track"><div class="meter-fill" id="meter-3" style="background: var(--c-red-dim);"></div></div>
-                  <button type="button" class="lane-toggle-sq" id="lane-btn-3" data-lane="3" aria-pressed="false" title="Engage Layer IV: Peripheral Occult Marginalia [R]"></button>
+                  <button type="button" class="lane-toggle-sq" id="lane-btn-3" data-lane="3" aria-pressed="false" title="Engage Z-0 Peripheral Occult Marginalia [R]"></button>
                 </div>
               </div>
 
@@ -1078,7 +1078,7 @@
      SECTION A: HACKABLE CODEBOX (EDIT DIRECTLY LIKE A gen~ CODEBOX)
      ---------------------------------------------------------------------------
      All architectural silhouettes, occult symbol ramps, mineral palettes, and
-     4-layer field equations live right here for direct authorship.
+     3-Z-plane parallax + collision equations live here for direct authorship.
      =========================================================================== */
 
   // 1. SIX UNMISTAKABLE ARCHITECTURAL / MOSAIC FORMATIONS
@@ -1104,7 +1104,6 @@
   ];
 
   // 3. TEN PURE QUIET MACHINERY MINERAL & ARCHIVAL PALETTES
-  //    domains[0..3] map coherently to Bands I-IV (STRATA, EROSION, SILICA, LETHE)
   const PALETTES = [
     {
       name: 'MNEMOSYNE',
@@ -1220,12 +1219,10 @@
   }
 
   /**
-   * 4. LAYER I EVALUATOR: KARST / KAMEN LITHIC ARCHITECTURE
-   *    Evaluates one grid cell (nx, ny) in true aspect-corrected coordinates.
-   *    High EROSION crumbles dense stone glyphs down the ramp into rubble glyphs
-   *    rather than carving sparse empty holes in the monument.
+   * 4. Z-PLANE 1 EVALUATOR: KARST / KAMEN LITHIC ARCHITECTURE
+   *    Includes cross-layer wake erosion (wakeScar) carved by gusts & patina waves.
    */
-  function computeFormationCell(fIdx, nx, ny, col, row, f) {
+  function computeFormationCell(fIdx, nx, ny, col, row, f, wakeScar) {
     const {
       t, seed, b0, b1, b2, b3,
       tess, erosion, fracture,
@@ -1656,21 +1653,23 @@
     }
 
     // -------------------------------------------------------------------------
-    // CRUMBLING STONE EROSION (Granulates dense glyphs into lighter rubble
-    // rather than leaving empty holes in the architecture)
+    // CRUMBLING STONE EROSION + CROSS-LAYER WAKE COLLISION SCAR
     // -------------------------------------------------------------------------
-    if (density > 0 && erosion > 0.005) {
+    const totalWear = clamp(erosion + wakeScar * 0.85, 0, 1.2);
+    if (density > 0 && totalWear > 0.005) {
       const nPit = hash2(col * 0.91 + seed * 3.1, row * 0.91 - seed * 2.3);
-      const pitChance = erosion * (0.82 - density * 0.35);
+      const pitChance = totalWear * (0.82 - density * 0.32);
       if (nPit < pitChance) {
-        if (nPit > pitChance * 0.32) {
-          // Crumble down to lighter mineral dust/rubble glyph instead of erasing
-          density = Math.max(0.08, density * (0.25 + 0.35 * (1.0 - erosion)));
+        if (nPit > pitChance * 0.34) {
+          density = Math.max(0.08, density * (0.24 + 0.34 * (1.0 - clamp(totalWear, 0, 1))));
           peak = false;
         } else {
           density = 0;
           peak = false;
         }
+      } else if (wakeScar > 0.35) {
+        // Stain edge of carved wake with patina/red fault tint
+        zone = 3;
       }
     }
 
@@ -1685,74 +1684,71 @@
      SECTION B: APPLICATION STATE & EXACT CALIBRATION
      =========================================================================== */
   const state = {
-    // 4 Domain Dials — Exact Neutral Defaults
     params: {
-      gain: 0.50,         // Exact unity 1.00x via Math.pow(4, val * 2 - 1) -> [0.25x..4.00x]
-      erosion: 0.00,      // Zero artificial weathering at rest
-      tessellation: 0.50, // Balanced geometric subdivision
-      fracture: 0.00      // Zero random shear/glitch clutter at rest
+      gain: 0.50,
+      erosion: 0.00,
+      tessellation: 0.50,
+      fracture: 0.00
     },
 
-    // Active Atelier Selections
     formationIdx: 0,
     lexiconIdx: 0,
     paletteIdx: 0,
 
-    // Active Symbol Ramp & Per-Glyph Mute Array
-    rawGlyphs: [],        // Array of characters in active/custom ramp
-    mutedFlags: [],       // Boolean per glyph (true = muted)
-    activeGlyphs: [],     // Filtered non-muted glyphs used by renderer
+    rawGlyphs: [],
+    mutedFlags: [],
+    activeGlyphs: [],
 
-    // Hardware System State
     activated: false,
-    sourceMode: 'none',   // 'none' | 'mic' | 'file'
+    sourceMode: 'none',
     monitorOn: true,
     driftActive: false,
     frozen: false,
     hudVisible: true,
     atelierOpen: true,
-    scopeMode: 0,         // 0 = green waveform, 1 = red peak seismograph
+    scopeMode: 0,
 
     // 4 Visual Layer Engagement Toggles [I. STRATA, II. EROSION, III. SILICA, IV. LETHE]
-    // Default: all disengaged (false) for live performance build-ups
     lanesActive: [false, false, false, false],
 
-    // Audio Source & Transport
     selectedMicId: '',
     fileLoaded: false,
     fileUrl: null,
     wasPlayingBeforeSuspend: false,
     isScrubbing: false,
 
-    // Time, Seed & FREEZE Mortar Snapshot
     morphTime: 0,
     morphSeed: 1.0,
     frozenTime: 0,
     frozenSeed: 1.0,
     frozenBands: [0, 0, 0, 0],
 
-    // 4-Band Biquad Crossover Envelopes (peakamp~)
     bands: [
-      { env: 0, prevAbove: false, lastFire: 0 }, // I. STRATA  (LP 140Hz)
-      { env: 0, prevAbove: false, lastFire: 0 }, // II. EROSION (BP 420Hz)
-      { env: 0, prevAbove: false, lastFire: 0 }, // III. SILICA (BP 1800Hz)
-      { env: 0, prevAbove: false, lastFire: 0 }  // IV. LETHE  (HP 4200Hz)
+      { env: 0, prevAbove: false, lastFire: 0 },
+      { env: 0, prevAbove: false, lastFire: 0 },
+      { env: 0, prevAbove: false, lastFire: 0 },
+      { env: 0, prevAbove: false, lastFire: 0 }
     ],
 
-    // 0ms Stochastic Fracture / Glitch Gates (Band III & IV transients, scaled by FRACTURE)
     gates: {
-      shear: { env: 0, start: 0, dur: 75, seed: 1 },
-      drop:  { env: 0, start: 0, dur: 90, seed: 1 },
+      shear: { env: 0, start: 0, dur: 85, seed: 1 },
+      drop:  { env: 0, start: 0, dur: 95, seed: 1 },
       cut:   { env: 0, start: 0, dur: 52, mode: 'invert', lastCut: 0 }
     },
+
+    // Cross-Layer Collision & Shockwave Physics State
+    shockwaves: [],      // Radial pressure rings emitted by Band I peaks
+    calvedChunks: [],    // 3x3 masonry blocks torn off monument on FRACTURE peaks
+    windAngle: -0.45,    // Directional gale angle (radians)
+    windGust: 0.0,       // Current gale intensity
 
     seismoHistory: new Array(156).fill(0)
   };
 
   /* ===========================================================================
-     SECTION B2: LAYER II (ASPERITAS) GEOMETRY-AWARE SMOKE & DUST PARTICLE ENGINE
+     SECTION B2: LAYER II (ASPERITAS) GEOMETRY-AWARE SMOKE & GALE PARTICLE ENGINE
      =========================================================================== */
-  const PARTICLE_COUNT = 240;
+  const PARTICLE_COUNT = 260;
   const dustParticles = [];
 
   function spawnParticleOnFormation(p, fIdx, aspect, seed, resetLife) {
@@ -1761,65 +1757,61 @@
     const sign = Math.random() < 0.5 ? -1 : 1;
 
     if (fIdx === 0) {
-      // I. MONOLITH: Pool along stepped plinth floor or rise out of central sanctum doorway
       if (r1 < 0.58) {
         p.nx = (r2 * 2 - 1) * 0.78;
         p.ny = 0.78 + (Math.random() - 0.5) * 0.12;
-        p.vx = (Math.random() - 0.5) * 0.12;
-        p.vy = -0.06 - Math.random() * 0.14;
+        p.vx = (Math.random() - 0.5) * 0.14;
+        p.vy = -0.06 - Math.random() * 0.16;
       } else {
         p.nx = (r2 * 2 - 1) * 0.22;
         p.ny = -0.22 + Math.random() * 1.02;
-        p.vx = sign * (0.04 + Math.random() * 0.10);
-        p.vy = -0.10 - Math.random() * 0.18;
+        p.vx = sign * (0.05 + Math.random() * 0.12);
+        p.vy = -0.10 - Math.random() * 0.20;
       }
     } else if (fIdx === 1) {
-      // II. SEAL: Orbit along the engraved outer ritual circle and fling tangentially
       const ang = r1 * TAU;
       const rad = 0.72 + (r2 - 0.5) * 0.14;
       p.nx = Math.cos(ang) * rad;
       p.ny = Math.sin(ang) * rad;
-      p.vx = -Math.sin(ang) * 0.16 + Math.cos(ang) * 0.05;
-      p.vy = Math.cos(ang) * 0.16 + Math.sin(ang) * 0.05;
+      p.vx = -Math.sin(ang) * 0.18 + Math.cos(ang) * 0.06;
+      p.vy = Math.cos(ang) * 0.18 + Math.sin(ang) * 0.06;
     } else if (fIdx === 2) {
-      // III. MOSAIC: Sift downward out of horizontal coffered grout seams
       p.nx = (r1 * 2 - 1) * aspect * 0.84;
       const rowBand = Math.floor(r2 * 7) - 3;
       p.ny = clamp(rowBand * 0.24 + (Math.random() - 0.5) * 0.04, -0.84, 0.84);
-      p.vx = (Math.random() - 0.5) * 0.08;
-      p.vy = 0.07 + Math.random() * 0.16;
+      p.vx = (Math.random() - 0.5) * 0.10;
+      p.vy = 0.08 + Math.random() * 0.18;
     } else if (fIdx === 3) {
-      // IV. STRATA: Blast outward from the central horizontal seismic fault rift
       p.nx = (r1 * 2 - 1) * aspect * 0.92;
       p.ny = Math.sin(p.nx * 2.8 + seed) * 0.11 + (r2 - 0.5) * 0.08;
-      p.vx = (Math.random() - 0.5) * 0.14;
-      p.vy = sign * (0.09 + Math.random() * 0.22);
+      p.vx = (Math.random() - 0.5) * 0.16;
+      p.vy = sign * (0.10 + Math.random() * 0.24);
     } else if (fIdx === 4) {
-      // V. OBELISK: Rise symmetrically along the outer plumb lines & pyramidion tip
       if (r1 < 0.72) {
         p.nx = sign * (0.34 + (r2 < 0.5 ? 0 : 0.18) + (Math.random() - 0.5) * 0.04);
         p.ny = -0.55 + Math.random() * 1.38;
-        p.vx = sign * (0.02 + Math.random() * 0.06);
-        p.vy = -0.11 - Math.random() * 0.18;
+        p.vx = sign * (0.03 + Math.random() * 0.08);
+        p.vy = -0.12 - Math.random() * 0.20;
       } else {
         p.nx = (r2 - 0.5) * 0.16;
         p.ny = -0.86 + (Math.random() - 0.5) * 0.08;
-        p.vx = sign * (0.08 + Math.random() * 0.14);
-        p.vy = -0.14 - Math.random() * 0.20;
+        p.vx = sign * (0.09 + Math.random() * 0.16);
+        p.vy = -0.15 - Math.random() * 0.22;
       }
     } else {
-      // VI. VAULT: Erupt outward from the dead-center vanishing void along corridor diagonals
       const ang = r1 * TAU;
       const rad = 0.11 + r2 * 0.12;
       p.nx = Math.cos(ang) * rad * 1.25;
       p.ny = Math.sin(ang) * rad;
-      p.vx = Math.cos(ang) * (0.14 + Math.random() * 0.22);
-      p.vy = Math.sin(ang) * (0.14 + Math.random() * 0.22);
+      p.vx = Math.cos(ang) * (0.16 + Math.random() * 0.24);
+      p.vy = Math.sin(ang) * (0.16 + Math.random() * 0.24);
     }
 
     p.phase = Math.random() * TAU;
     p.weight = 0.15 + Math.random() * 0.85;
-    p.maxLife = 1.4 + Math.random() * 2.8;
+    // Z-depth plane: 0.45 (deep background motes) .. 1.35 (close foreground debris)
+    p.zDepth = 0.45 + Math.pow(Math.random(), 1.3) * 0.95;
+    p.maxLife = 1.2 + Math.random() * 2.4;
     p.life = resetLife ? Math.random() * p.maxLife : p.maxLife;
   }
 
@@ -1827,7 +1819,7 @@
     dustParticles.length = 0;
     const aspect = cols / Math.max(1, rows);
     for (let i = 0; i < PARTICLE_COUNT; i++) {
-      const p = { nx: 0, ny: 0, vx: 0, vy: 0, phase: 0, weight: 0.5, life: 1, maxLife: 2 };
+      const p = { nx: 0, ny: 0, vx: 0, vy: 0, phase: 0, weight: 0.5, zDepth: 1.0, life: 1, maxLife: 2 };
       spawnParticleOnFormation(p, state.formationIdx, aspect, state.morphSeed, true);
       dustParticles.push(p);
     }
@@ -1936,13 +1928,18 @@
   let dpr = Math.min(window.devicePixelRatio || 1, 2);
   let cellCss = 16;
   let cellPx = 16;
+  let bgCellPx = 10;   // Z-Plane 0 deep background scale (0.65x)
+  let fgCellPx = 22;   // Z-Plane 2 foreground gust scale (1.35x)
   let cols = 0;
   let rows = 0;
+  let wakeGrid = new Float32Array(1);
 
   function rebuildGlyphAtlas() {
     const pal = PALETTES[state.paletteIdx];
     const ramp = state.activeGlyphs.length > 0 ? state.activeGlyphs : ['·'];
     cellPx = Math.max(12, Math.round(cellCss * dpr));
+    bgCellPx = Math.max(8, Math.round(cellPx * 0.65));
+    fgCellPx = Math.max(15, Math.round(cellPx * 1.35));
 
     atlasCanvas.width = Math.max(cellPx, ramp.length * cellPx);
     atlasCanvas.height = 7 * cellPx;
@@ -1989,6 +1986,7 @@
     const prevCols = cols;
     cols = Math.max(28, Math.ceil(visCanvas.width / cellPx));
     rows = Math.max(20, Math.ceil(visCanvas.height / cellPx));
+    wakeGrid = new Float32Array(cols * rows);
     if (prevCols === 0 || dustParticles.length === 0) {
       initDustParticles();
     }
@@ -2258,7 +2256,7 @@
   }
 
   /* ===========================================================================
-     SECTION F: TRUE PEAKAMP~ ANALYSIS & STOCHASTIC 0ms FRACTURE GATES
+     SECTION F: TRUE PEAKAMP~ ANALYSIS, SHOCKWAVES & MASONRY CALVING
      =========================================================================== */
   function processAudioAndGates(nowMs, dtSec) {
     const decayPerSec = [3.0, 3.8, 4.5, 5.8];
@@ -2294,6 +2292,36 @@
       }
     }
 
+    // Band I (STRATA) sub-bass shockwave impulse emission
+    const b1 = state.bands[0];
+    const above1 = b1.env > 0.56;
+    if (audioRunning && above1 && !b1.prevAbove && (nowMs - b1.lastFire > 160)) {
+      b1.lastFire = nowMs;
+      state.shockwaves.push({
+        r: 0.08,
+        speed: 1.4 + b1.env * 2.2,
+        strength: b1.env
+      });
+      if (state.shockwaves.length > 5) state.shockwaves.shift();
+    }
+    b1.prevAbove = above1;
+
+    // Advance active shockwaves
+    for (let i = state.shockwaves.length - 1; i >= 0; i--) {
+      const sw = state.shockwaves[i];
+      sw.r += sw.speed * dtSec;
+      sw.strength *= Math.pow(0.32, dtSec);
+      if (sw.r > 2.2 || sw.strength < 0.04) {
+        state.shockwaves.splice(i, 1);
+      }
+    }
+
+    // Directional gale gust dynamics driven by Band II + Band III + EROSION
+    const targetGust = clamp(state.bands[1].env * 0.55 + state.bands[2].env * 0.75 + state.params.erosion * 0.45, 0, 1.6);
+    state.windGust += (targetGust - state.windGust) * Math.min(1, dtSec * 6.5);
+    state.windAngle += Math.sin(nowMs * 0.0007) * 0.35 * dtSec;
+
+    // Stochastic 0ms fracture/glitch gates + Masonry Calving
     const frac = state.params.fracture;
     if (audioRunning && frac > 0.005) {
       const prob = clamp(0.15 + frac * 0.80, 0.15, 0.95);
@@ -2321,6 +2349,19 @@
           state.gates.drop.start = nowMs;
           state.gates.drop.seed = Math.floor(Math.random() * 9973) + 1;
 
+          // Calve off a 3x3 masonry chunk from the monument on strong FRACTURE hits
+          if (state.lanesActive[0] && frac > 0.25 && state.calvedChunks.length < 14) {
+            const sign = Math.random() < 0.5 ? -1 : 1;
+            state.calvedChunks.push({
+              nx: sign * (0.12 + Math.random() * 0.35),
+              ny: -0.45 + Math.random() * 0.75,
+              vx: sign * (0.18 + Math.random() * 0.35) + Math.cos(state.windAngle) * 0.25,
+              vy: 0.25 + Math.random() * 0.45,
+              size: 2 + Math.floor(Math.random() * 2),
+              life: 1.4
+            });
+          }
+
           if (frac > 0.35 && b4.env > thr4 + 0.12 && (nowMs - state.gates.cut.lastCut > 260) && Math.random() < frac * 0.55) {
             state.gates.cut.env = 1.0;
             state.gates.cut.start = nowMs;
@@ -2346,12 +2387,15 @@
   }
 
   /* ===========================================================================
-     SECTION G: 4-LAYER QUIET MACHINERY ASCII RENDERER (60FPS ATLAS BLIT)
+     SECTION G: 3-Z-PLANE PARALLAX & CROSS-LAYER COLLISION ASCII RENDERER
      ---------------------------------------------------------------------------
-     Layer 1 (lanesActive[0]): I. STRATA  — Karst/Kamen Lithic Architecture
-     Layer 2 (lanesActive[1]): II. EROSION — Asperitas Smoke & Dust Particles
-     Layer 3 (lanesActive[2]): III. SILICA — Mnemosyne Patina & Interference
-     Layer 4 (lanesActive[3]): IV. LETHE   — Occult Marginalia & Caustic Runes
+     Z-Plane 0 (Deep Background, 0.65x scale):
+       - Layer III (III. SILICA): Tucked oxidation wall + wake carving
+       - Layer IV  (IV. LETHE):   Peripheral occult marginalia & plumb rails
+     Z-Plane 1 (Midground, 1.0x scale):
+       - Layer I   (I. STRATA):   Karst/Kamen monument + calved masonry chunks
+     Z-Plane 2 (Foreground, 1.35x scale):
+       - Layer II  (II. EROSION): Asperitas gale gusts, shockwave debris & dust
      =========================================================================== */
   function renderVisualiser(nowMs, dtSec) {
     const pal = PALETTES[state.paletteIdx];
@@ -2398,6 +2442,13 @@
 
     if (!anyLaneOn) return;
 
+    // Heal cross-layer collision wake scars gradually (~1.5s recovery)
+    const wakeHeal = Math.pow(0.38, dtSec);
+    for (let i = 0; i < wakeGrid.length; i++) {
+      if (wakeGrid[i] > 0.005) wakeGrid[i] *= wakeHeal;
+      else wakeGrid[i] = 0;
+    }
+
     const cx = (cols - 1) * 0.5;
     const cy = (rows - 1) * 0.5;
     const halfScale = Math.min(cols, rows) * 0.48;
@@ -2418,9 +2469,117 @@
     const dropSeed = state.gates.drop.seed;
     const fIdx = state.formationIdx;
 
-    // -------------------------------------------------------------------------
-    // LAYER 1 (I. STRATA): LITHIC ARCHITECTURE & OCCULT MONUMENT
-    // -------------------------------------------------------------------------
+    // =========================================================================
+    // Z-PLANE 0: DEEP BACKGROUND (0.65x SCALE — LAYER III PATINA & LAYER IV MARGINALIA)
+    // =========================================================================
+
+    // LAYER 3 (III. SILICA): Tucked deep background patina wall + cross-ducking on Band IV peaks
+    if (state.lanesActive[2]) {
+      // Acoustic cross-ducking: violent Band IV (LETHE) transients momentarily duck background patina
+      const duckMult = clamp(1.0 - b3 * 0.95 - gateDrop * 0.8, 0.05, 1.0);
+      const silicaEnergy = clamp((b2 * 0.85 + erosion * 0.25 + 0.08) * duckMult, 0.03, 0.85);
+
+      const bgCols = Math.ceil(visCanvas.width / bgCellPx);
+      const bgRows = Math.ceil(visCanvas.height / bgCellPx);
+      const bgCx = (bgCols - 1) * 0.5;
+      const bgCy = (bgRows - 1) * 0.5;
+      const bgInvScale = 1.0 / Math.max(1, Math.min(bgCols, bgRows) * 0.48);
+
+      // Slow parallax drift opposite to wind angle
+      const panX = Math.cos(state.windAngle) * t * 0.06;
+      const panY = Math.sin(state.windAngle) * t * 0.04;
+      const bandDensity = 6.0 + tess * 9.0;
+      const sweepSpeed = t * (0.45 + b2 * 1.6) + seed;
+
+      const patLo = 0;
+      const patMid = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.28)), maxGlyphIdx);
+      const patHi = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.48)), maxGlyphIdx);
+
+      for (let r = 0; r < bgRows; r += 2) {
+        const ny = (r - bgCy) * bgInvScale + panY;
+        const waveH = Math.sin(ny * bandDensity + sweepSpeed);
+        if (waveH < (0.76 - silicaEnergy * 0.48)) continue;
+
+        const drawY = r * bgCellPx;
+        for (let c = (r % 4); c < bgCols; c += 2) {
+          const nx = (c - bgCx) * bgInvScale + panX;
+          const interference = Math.sin(nx * (5.0 + tess * 7.0) + ny * 3.5 - sweepSpeed * 0.7);
+          const grain = hash2(c * 0.51 + frameTick * 0.08, r * 0.67 + seed);
+          if (interference + grain * 0.5 < (1.12 - silicaEnergy * 0.68)) continue;
+
+          // Carve collision wake into Z-Plane 1 monument where patina wave hits strongly
+          if (b2 > 0.24) {
+            const mCol = Math.round(cx + (nx - panX) * halfScale);
+            const mRow = Math.round(cy + (ny - panY) * halfScale);
+            if (mCol >= 0 && mCol < cols && mRow >= 0 && mRow < rows) {
+              const wIdx = mRow * cols + mCol;
+              wakeGrid[wIdx] = Math.min(1.0, wakeGrid[wIdx] + b2 * 0.14);
+            }
+          }
+
+          const isSpark = (b2 > 0.58 && grain > 0.88);
+          const gIdx = isSpark ? patHi : (interference > 0.45 ? patMid : patLo);
+          // Tucked behind in dim resting stone ink (row 0), only tinting cyan (row 3) on strong hi-mid swells
+          const atlasRow = isInverted ? 6 : (isSpark ? 3 : 0);
+
+          ctx.drawImage(
+            atlasCanvas,
+            gIdx * cellPx, atlasRow * cellPx, cellPx, cellPx,
+            c * bgCellPx, drawY, bgCellPx, bgCellPx
+          );
+        }
+      }
+    }
+
+    // LAYER 4 (IV. LETHE): Peripheral occult marginalia & astrolabe plumb rails
+    if (state.lanesActive[3]) {
+      const letheEnergy = clamp(b3 * 1.2 + b0 * 0.25 + 0.14, 0.14, 1.0);
+      const marginColL = Math.max(2, Math.floor(cols * 0.05));
+      const marginColR = Math.min(cols - 3, Math.ceil(cols * 0.95));
+      const innerRailL = Math.max(5, Math.floor(cols * 0.11));
+      const innerRailR = Math.min(cols - 6, Math.ceil(cols * 0.89));
+
+      const runeIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.52)), maxGlyphIdx);
+      const sigilIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.74)), maxGlyphIdx);
+      const tickIdx = Math.min(1, maxGlyphIdx);
+
+      for (let r = 2; r < rows - 2; r++) {
+        const drawY = r * cellPx;
+        const ny = (r - cy) * invScale;
+        const wave = Math.sin(ny * (8.0 + tess * 10.0) - t * (1.2 + b3 * 3.0) + seed);
+
+        if (r % 3 === 0 || (b3 > 0.35 && wave > 0.35)) {
+          const isMajor = (r % 9 === 0);
+          const gIdx = isMajor ? sigilIdx : tickIdx;
+          const aRow = isInverted ? 6 : (isMajor && b3 > 0.35 ? 5 : (b3 > 0.16 ? 4 : 0));
+
+          ctx.drawImage(atlasCanvas, gIdx * cellPx, aRow * cellPx, cellPx, cellPx, marginColL * cellPx, drawY, cellPx, cellPx);
+          ctx.drawImage(atlasCanvas, gIdx * cellPx, aRow * cellPx, cellPx, cellPx, marginColR * cellPx, drawY, cellPx, cellPx);
+        }
+
+        if (wave > (0.76 - letheEnergy * 0.42)) {
+          const aRow = isInverted ? 6 : (b3 > 0.48 ? 5 : 4);
+          ctx.drawImage(atlasCanvas, runeIdx * cellPx, aRow * cellPx, cellPx, cellPx, innerRailL * cellPx, drawY, cellPx, cellPx);
+          ctx.drawImage(atlasCanvas, runeIdx * cellPx, aRow * cellPx, cellPx, cellPx, innerRailR * cellPx, drawY, cellPx, cellPx);
+        }
+      }
+
+      const topRow = 1;
+      const botRow = rows - 2;
+      const bracketSpan = Math.min(10, Math.floor(cols * 0.08));
+      const bRowColor = isInverted ? 6 : (b3 > 0.32 ? 4 : 0);
+      for (let k = 0; k < bracketSpan; k++) {
+        const gIdx = (k === 0) ? sigilIdx : tickIdx;
+        ctx.drawImage(atlasCanvas, gIdx * cellPx, bRowColor * cellPx, cellPx, cellPx, (marginColL + k) * cellPx, topRow * cellPx, cellPx, cellPx);
+        ctx.drawImage(atlasCanvas, gIdx * cellPx, bRowColor * cellPx, cellPx, cellPx, (marginColR - k) * cellPx, topRow * cellPx, cellPx, cellPx);
+        ctx.drawImage(atlasCanvas, gIdx * cellPx, bRowColor * cellPx, cellPx, cellPx, (marginColL + k) * cellPx, botRow * cellPx, cellPx, cellPx);
+        ctx.drawImage(atlasCanvas, gIdx * cellPx, bRowColor * cellPx, cellPx, cellPx, (marginColR - k) * cellPx, botRow * cellPx, cellPx, cellPx);
+      }
+    }
+
+    // =========================================================================
+    // Z-PLANE 1: MIDGROUND MONUMENT (1.0x SCALE — LAYER I STRATA + CALVING)
+    // =========================================================================
     if (state.lanesActive[0]) {
       for (let r = 0; r < rows; r++) {
         const ny = (r - cy) * invScale;
@@ -2439,8 +2598,9 @@
         for (let c = 0; c < cols; c++) {
           const srcCol = c + rowShiftCols;
           const nx = (srcCol - cx) * invScale;
+          const wakeScar = wakeGrid[r * cols + c] || 0;
 
-          const cell = computeFormationCell(fIdx, nx, ny, srcCol, r, fCtx);
+          const cell = computeFormationCell(fIdx, nx, ny, srcCol, r, fCtx, wakeScar);
           if (cell.density <= 0.02) continue;
 
           if (gateDrop > 0.06 && fIdx !== 2) {
@@ -2472,154 +2632,138 @@
           );
         }
       }
-    }
 
-    // -------------------------------------------------------------------------
-    // LAYER 3 (III. SILICA): MNEMOSYNE WEATHERING PATINA & INTERFERENCE BANDS
-    // -------------------------------------------------------------------------
-    if (state.lanesActive[2]) {
-      const silicaEnergy = clamp(b2 * 1.15 + erosion * 0.35 + (state.driftActive ? 0.18 : 0.06), 0.06, 1.0);
-      const bandDensity = 7.0 + tess * 11.0;
-      const sweepSpeed = t * (0.65 + b2 * 2.2) + seed;
-      const patinaGlyphLo = Math.min(1, maxGlyphIdx);
-      const patinaGlyphMid = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.38)), maxGlyphIdx);
-      const patinaGlyphHi = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.65)), maxGlyphIdx);
+      // Render tumbling 3x3 calved masonry blocks torn off during FRACTURE hits
+      const chunkGlyph = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.72)), maxGlyphIdx);
+      for (let i = state.calvedChunks.length - 1; i >= 0; i--) {
+        const ch = state.calvedChunks[i];
+        if (!state.frozen) {
+          ch.life -= dtSec;
+          ch.vy += 0.95 * dtSec; // Gravity pull
+          ch.nx += ch.vx * dtSec;
+          ch.ny += ch.vy * dtSec;
+        }
+        // Shatter into dust particles upon hitting bottom floor or expiring
+        if (ch.life <= 0 || ch.ny > 0.94) {
+          if (state.lanesActive[1]) {
+            for (let k = 0; k < 6; k++) {
+              const p = dustParticles[Math.floor(Math.random() * dustParticles.length)];
+              if (p) {
+                p.nx = ch.nx + (Math.random() - 0.5) * 0.12;
+                p.ny = Math.min(0.92, ch.ny);
+                p.vx = (Math.random() - 0.5) * 0.65;
+                p.vy = -0.15 - Math.random() * 0.45;
+                p.zDepth = 1.25;
+                p.life = p.maxLife;
+              }
+            }
+          }
+          state.calvedChunks.splice(i, 1);
+          continue;
+        }
 
-      for (let r = 0; r < rows; r++) {
-        const ny = (r - cy) * invScale;
-        // Horizontal and diagonal oxidation striations
-        const waveH = Math.sin(ny * bandDensity + sweepSpeed);
-        const diagRipple = Math.cos(ny * (bandDensity * 1.7) - sweepSpeed * 1.4);
-
-        if (waveH < (0.68 - silicaEnergy * 0.52) && diagRipple < (0.82 - b2 * 0.45)) continue;
-
-        const drawY = r * cellPx;
-        const stepStride = b2 > 0.45 ? 1 : 2;
-
-        for (let c = (r % stepStride); c < cols; c += stepStride) {
-          const nx = (c - cx) * invScale;
-          const interference = Math.sin(nx * (6.0 + tess * 8.0) + ny * 4.0 - sweepSpeed * 0.8);
-          const grain = hash2(c * 0.63 + frameTick * 0.12, r * 0.77 + seed);
-
-          if (interference + grain * 0.55 < (1.05 - silicaEnergy * 0.75)) continue;
-
-          const isHot = (b2 > 0.52 && grain > 0.82);
-          const gIdx = isHot ? patinaGlyphHi : (interference > 0.45 ? patinaGlyphMid : patinaGlyphLo);
-          const atlasRow = isInverted ? 6 : (isHot ? 5 : (b2 > 0.22 ? 3 : 0));
-
-          ctx.drawImage(
-            atlasCanvas,
-            gIdx * cellPx, atlasRow * cellPx, cellPx, cellPx,
-            c * cellPx, drawY, cellPx, cellPx
-          );
+        const baseC = Math.round(cx + ch.nx * halfScale);
+        const baseR = Math.round(cy + ch.ny * halfScale);
+        const aRow = isInverted ? 6 : 4;
+        for (let dy = 0; dy < ch.size; dy++) {
+          for (let dx = 0; dx < ch.size; dx++) {
+            const pc = baseC + dx;
+            const pr = baseR + dy;
+            if (pc >= 0 && pc < cols && pr >= 0 && pr < rows) {
+              ctx.drawImage(
+                atlasCanvas,
+                chunkGlyph * cellPx, aRow * cellPx, cellPx, cellPx,
+                pc * cellPx, pr * cellPx, cellPx, cellPx
+              );
+            }
+          }
         }
       }
     }
 
-    // -------------------------------------------------------------------------
-    // LAYER 2 (II. EROSION): ASPERITAS GEOMETRY-AWARE SMOKE & DUST PARTICLES
-    // -------------------------------------------------------------------------
+    // =========================================================================
+    // Z-PLANE 2: FOREGROUND GALE GUSTS, SHOCKWAVES & STREAKING DEBRIS (LAYER II)
+    // =========================================================================
     if (state.lanesActive[1]) {
-      // Escalates gently at rest, violently as high-end (SILICA / LETHE) & GAIN climb
-      const highPresence = clamp(b2 * 0.65 + b3 * 0.95 + b1 * 0.35 + erosion * 0.30, 0, 1.5);
-      const speedScale = 0.28 + Math.pow(highPresence, 1.45) * 3.4 + gateShear * 2.2;
-      const activeCount = Math.floor(PARTICLE_COUNT * clamp(0.32 + highPresence * 0.68, 0.32, 1.0));
+      const highPresence = clamp(b2 * 0.70 + b3 * 1.05 + b1 * 0.35 + erosion * 0.35, 0, 1.8);
+      const speedScale = 0.32 + Math.pow(highPresence, 1.55) * 4.2 + gateShear * 2.8;
+      const activeCount = Math.floor(PARTICLE_COUNT * clamp(0.35 + highPresence * 0.65, 0.35, 1.0));
+
+      const windVx = Math.cos(state.windAngle) * state.windGust * 1.45;
+      const windVy = Math.sin(state.windAngle) * state.windGust * 0.85;
 
       const dustLo = 0;
       const dustMid = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.28)), maxGlyphIdx);
-      const dustHi = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.55)), maxGlyphIdx);
+      const dustHi = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.58)), maxGlyphIdx);
+      const streakIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.42)), maxGlyphIdx);
 
       for (let i = 0; i < activeCount; i++) {
         const p = dustParticles[i];
         if (!state.frozen) {
-          p.life -= dtSec * (0.45 + highPresence * 0.95);
-          if (p.life <= 0 || Math.abs(p.nx) > aspect * 1.15 || Math.abs(p.ny) > 1.15) {
+          p.life -= dtSec * (0.45 + highPresence * 1.05);
+          if (p.life <= 0 || Math.abs(p.nx) > aspect * 1.18 || Math.abs(p.ny) > 1.18) {
             spawnParticleOnFormation(p, fIdx, aspect, seed, false);
           }
 
-          // Curl-like atmospheric swirl + violent high-end blast
-          const swirlX = Math.sin(p.ny * 5.5 + t * 1.6 + p.phase) * (0.08 + highPresence * 0.45);
-          const swirlY = Math.cos(p.nx * 5.5 - t * 1.4 + p.phase) * (0.08 + highPresence * 0.45);
-          p.nx += (p.vx * speedScale + swirlX) * dtSec;
-          p.ny += (p.vy * speedScale + swirlY) * dtSec;
+          // Band I radial sub-bass shockwave impulse slamming into particles
+          let shockVx = 0;
+          let shockVy = 0;
+          const pr = Math.hypot(p.nx, p.ny) + 0.001;
+          for (let s = 0; s < state.shockwaves.length; s++) {
+            const sw = state.shockwaves[s];
+            const distToRing = Math.abs(pr - sw.r);
+            if (distToRing < 0.14) {
+              const impulse = (1.0 - distToRing / 0.14) * sw.strength * 2.6;
+              shockVx += (p.nx / pr) * impulse;
+              shockVy += (p.ny / pr) * impulse;
+            }
+          }
+
+          const swirlX = Math.sin(p.ny * 5.5 + t * 1.8 + p.phase) * (0.08 + highPresence * 0.55);
+          const swirlY = Math.cos(p.nx * 5.5 - t * 1.6 + p.phase) * (0.08 + highPresence * 0.55);
+
+          // Parallax velocity scaled by p.zDepth (closer foreground debris moves faster)
+          const zVel = p.zDepth;
+          p.nx += ((p.vx * speedScale + windVx + shockVx + swirlX) * zVel) * dtSec;
+          p.ny += ((p.vy * speedScale + windVy + shockVy + swirlY) * zVel) * dtSec;
         }
 
         const col = Math.round(cx + p.nx * halfScale);
         const row = Math.round(cy + p.ny * halfScale);
         if (col < 0 || col >= cols || row < 0 || row >= rows) continue;
 
+        // Carve physical wake scar into Z-Plane 1 monument when violent gust particles tear across it
+        if (highPresence > 0.45 && p.zDepth > 0.85) {
+          const wIdx = row * cols + col;
+          wakeGrid[wIdx] = Math.min(1.0, wakeGrid[wIdx] + highPresence * 0.28);
+        }
+
         const lifeNorm = clamp(p.life / p.maxLife, 0, 1);
-        const energy = clamp(lifeNorm * (0.35 + highPresence * 0.75) * p.weight, 0, 1);
-        const gIdx = energy > 0.68 ? dustHi : (energy > 0.32 ? dustMid : dustLo);
+        const energy = clamp(lifeNorm * (0.35 + highPresence * 0.80) * p.weight, 0, 1);
+        const isStreaking = (highPresence > 0.65 && p.zDepth > 1.05);
+        const gIdx = isStreaking ? streakIdx : (energy > 0.68 ? dustHi : (energy > 0.32 ? dustMid : dustLo));
 
         let atlasRow = 0;
         if (isInverted) {
           atlasRow = 6;
-        } else if (energy > 0.76 && highPresence > 0.55) {
-          atlasRow = 5; // Bright ash spark on violent high-end bursts
-        } else if (b3 > 0.35 && p.weight > 0.6) {
-          atlasRow = 4; // Lethe ember tint
-        } else if (highPresence > 0.18) {
-          atlasRow = 2; // Erosion amber dust tint
+        } else if (energy > 0.74 && highPresence > 0.55) {
+          atlasRow = 5;
+        } else if (b3 > 0.32 && p.weight > 0.55) {
+          atlasRow = 4;
+        } else if (highPresence > 0.16) {
+          atlasRow = 2;
         }
+
+        // True Z-parallax sizing: foreground particles blit at 1.35x (fgCellPx), background at 0.65x (bgCellPx)
+        const drawSize = p.zDepth > 1.05 ? fgCellPx : (p.zDepth < 0.72 ? bgCellPx : cellPx);
+        const drawX = Math.round(col * cellPx + (cellPx - drawSize) * 0.5);
+        const drawY = Math.round(row * cellPx + (cellPx - drawSize) * 0.5);
 
         ctx.drawImage(
           atlasCanvas,
           gIdx * cellPx, atlasRow * cellPx, cellPx, cellPx,
-          col * cellPx, row * cellPx, cellPx, cellPx
+          drawX, drawY, drawSize, drawSize
         );
-      }
-    }
-
-    // -------------------------------------------------------------------------
-    // LAYER 4 (IV. LETHE): OCCULT MARGINALIA, PLUMB-LINES & CAUSTIC WATERMARKS
-    // -------------------------------------------------------------------------
-    if (state.lanesActive[3]) {
-      const letheEnergy = clamp(b3 * 1.2 + b0 * 0.25 + 0.14, 0.14, 1.0);
-      const marginColL = Math.max(2, Math.floor(cols * 0.05));
-      const marginColR = Math.min(cols - 3, Math.ceil(cols * 0.95));
-      const innerRailL = Math.max(5, Math.floor(cols * 0.11));
-      const innerRailR = Math.min(cols - 6, Math.ceil(cols * 0.89));
-
-      const runeIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.52)), maxGlyphIdx);
-      const sigilIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.74)), maxGlyphIdx);
-      const tickIdx = Math.min(1, maxGlyphIdx);
-
-      // 1. Vertical Astrolabe Plumb Rails & Graduated Ticks framing the dark margins
-      for (let r = 2; r < rows - 2; r++) {
-        const drawY = r * cellPx;
-        const ny = (r - cy) * invScale;
-        const wave = Math.sin(ny * (8.0 + tess * 10.0) - t * (1.2 + b3 * 3.0) + seed);
-
-        // Outer graduated ruler ticks
-        if (r % 3 === 0 || (b3 > 0.35 && wave > 0.35)) {
-          const isMajor = (r % 9 === 0);
-          const gIdx = isMajor ? sigilIdx : tickIdx;
-          const aRow = isInverted ? 6 : (isMajor && b3 > 0.35 ? 5 : (b3 > 0.16 ? 4 : 0));
-
-          ctx.drawImage(atlasCanvas, gIdx * cellPx, aRow * cellPx, cellPx, cellPx, marginColL * cellPx, drawY, cellPx, cellPx);
-          ctx.drawImage(atlasCanvas, gIdx * cellPx, aRow * cellPx, cellPx, cellPx, marginColR * cellPx, drawY, cellPx, cellPx);
-        }
-
-        // Inner intermittent occult sigil nodes
-        if (wave > (0.76 - letheEnergy * 0.42)) {
-          const aRow = isInverted ? 6 : (b3 > 0.48 ? 5 : 4);
-          ctx.drawImage(atlasCanvas, runeIdx * cellPx, aRow * cellPx, cellPx, cellPx, innerRailL * cellPx, drawY, cellPx, cellPx);
-          ctx.drawImage(atlasCanvas, runeIdx * cellPx, aRow * cellPx, cellPx, cellPx, innerRailR * cellPx, drawY, cellPx, cellPx);
-        }
-      }
-
-      // 2. Top & Bottom Alchemical Corner Brackets
-      const topRow = 1;
-      const botRow = rows - 2;
-      const bracketSpan = Math.min(10, Math.floor(cols * 0.08));
-      const bRowColor = isInverted ? 6 : (b3 > 0.32 ? 4 : 0);
-      for (let k = 0; k < bracketSpan; k++) {
-        const gIdx = (k === 0) ? sigilIdx : tickIdx;
-        ctx.drawImage(atlasCanvas, gIdx * cellPx, bRowColor * cellPx, cellPx, cellPx, (marginColL + k) * cellPx, topRow * cellPx, cellPx, cellPx);
-        ctx.drawImage(atlasCanvas, gIdx * cellPx, bRowColor * cellPx, cellPx, cellPx, (marginColR - k) * cellPx, topRow * cellPx, cellPx, cellPx);
-        ctx.drawImage(atlasCanvas, gIdx * cellPx, bRowColor * cellPx, cellPx, cellPx, (marginColL + k) * cellPx, botRow * cellPx, cellPx, cellPx);
-        ctx.drawImage(atlasCanvas, gIdx * cellPx, bRowColor * cellPx, cellPx, cellPx, (marginColR - k) * cellPx, botRow * cellPx, cellPx, cellPx);
       }
     }
   }
@@ -2712,10 +2856,10 @@
      SECTION I: LANE ENGAGEMENT & ATELIER SHELF BUILDERS
      =========================================================================== */
   const LANE_NAMES = [
-    'I. STRATA // LITHIC ARCHITECTURE',
-    'II. EROSION // SMOKE & DUST',
-    'III. SILICA // PATINA INTERFERENCE',
-    'IV. LETHE // OCCULT MARGINALIA'
+    'I. STRATA // Z-1 LITHIC ARCHITECTURE',
+    'II. EROSION // Z-2 GALE GUSTS & DEBRIS',
+    'III. SILICA // Z-0 PATINA WALL & WAKE',
+    'IV. LETHE // Z-0 OCCULT MARGINALIA'
   ];
 
   function syncLaneEngagementUI() {
@@ -2762,6 +2906,7 @@
     btns.forEach((b, i) => b.classList.toggle('active', i === state.formationIdx));
     const fm = FORMATIONS[state.formationIdx];
     dom.formationSubtitle.textContent = fm.subtitle;
+    state.calvedChunks.length = 0;
     initDustParticles();
     showToast(`FORMATION // ${fm.label} — ${fm.subtitle}`);
   }
@@ -2945,6 +3090,7 @@
       setKnobValue(knob, Math.random() * 0.85);
     });
     state.morphSeed = 0.5 + Math.random() * 25.0;
+    state.windAngle = Math.random() * TAU;
     if (state.frozen) {
       state.frozenSeed = state.morphSeed;
     }
@@ -3042,13 +3188,11 @@
       showToast(state.scopeMode === 0 ? 'OLED // WAVEFORM' : 'OLED // SEISMOGRAPH');
     });
 
-    // Upper Deck Column 1: System
     dom.btnActivate.addEventListener('click', toggleActivate);
     dom.btnScatter.addEventListener('click', triggerScatter);
     dom.btnDrift.addEventListener('click', toggleDrift);
     dom.btnFreeze.addEventListener('click', toggleFreeze);
 
-    // Upper Deck Column 2: Ingest & Transport
     dom.btnMic.addEventListener('click', engageMicInput);
     dom.btnFile.addEventListener('click', () => dom.fileUpload.click());
 
@@ -3091,7 +3235,6 @@
     dom.fileScrub.addEventListener('pointerup', endScrub);
     dom.fileScrub.addEventListener('change', endScrub);
 
-    // Upper Deck Column 4: Lane Engagement Toggles & View Controls
     for (let i = 0; i < 4; i++) {
       dom.laneBtns[i].addEventListener('click', () => toggleVisualLane(i));
       const lbl = dom.mrows[i].querySelector('.meter-label');
@@ -3104,7 +3247,6 @@
     dom.btnHide.addEventListener('click', toggleHud);
     dom.cornerToggle.addEventListener('click', toggleHud);
 
-    // Lower Shelf: Custom Symbol Ramp SET / RST
     dom.btnCustomSet.addEventListener('click', () => {
       const val = dom.customGlyphInput.value;
       loadSymbolRampString(val, true);
@@ -3123,7 +3265,6 @@
       selectSymbolLexicon(state.lexiconIdx);
     });
 
-    // Full-window Drag & Drop Audio File Support
     let dragCounter = 0;
     window.addEventListener('dragenter', (e) => {
       e.preventDefault();
@@ -3154,7 +3295,6 @@
       }
     });
 
-    // Global Keyboard Shortcuts (non-overlapping, left-hand home-row ergonomic)
     window.addEventListener('keydown', (e) => {
       const tag = e.target ? e.target.tagName : '';
       if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') {
