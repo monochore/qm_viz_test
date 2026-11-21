@@ -3,16 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>QUIET MACHINERY // SUITE VISUALISER</title>
+<title>QUIET MACHINERY // VISUALISER</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&display=swap');
 
   /* =========================================================================
-     1. EXACT QUIET MACHINERY / MNEMOSYNE DESIGN TOKENS
+     1. QUIET MACHINERY / MNEMOSYNE HARDWARE DESIGN TOKENS
      ========================================================================= */
   :root {
     --bg: #0c0c0c;
     --panel: #111111;
+    --oled: #040404;
     --border-main: #ffffff;
     --col-div: rgba(255, 255, 255, 0.22);
     --c-green: #00ff44;
@@ -23,6 +24,7 @@
     --c-amber-dim: #bf893b;
     --c-cyan-dim: #498eb8;
     --c-red-dim: #b85454;
+    --stone-sage: #446252;
     --text-dim: #bbbbbb;
   }
 
@@ -31,7 +33,8 @@
     border-radius: 0;
   }
 
-  html, body, #ascii-canvas, #chassis, .column, .oled-container, .knob-container, button {
+  html, body, #visualiser-canvas, #chassis, .column, .oled-container,
+  .knob-container, #atelier-shelf, button, .glyph-tile {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -54,24 +57,24 @@
   /* =========================================================================
      2. FULL-SCREEN EDGE-TO-EDGE ASCII CANVAS (100vw x 100vh)
      ========================================================================= */
-  #ascii-canvas {
+  #visualiser-canvas {
     position: fixed;
     inset: 0;
     width: 100vw;
     height: 100vh;
     display: block;
-    background-color: #080808;
+    background-color: #060606;
     z-index: 1;
   }
 
-  /* Minimal corner pill button to hide/restore chassis cleanly on stage */
+  /* Subtle top-right toggle pill for clean stage projection */
   #corner-toggle {
     position: fixed;
     top: 12px;
     right: 14px;
     z-index: 40;
-    background: rgba(17, 17, 17, 0.86);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(17, 17, 17, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.45);
     color: var(--text-dim);
     font-family: 'Oswald', sans-serif;
     font-size: 10px;
@@ -94,7 +97,7 @@
     opacity: 1;
   }
 
-  /* Transient inline status toast (replaces alert()/confirm()) */
+  /* Transient inline status banner (zero alert()/confirm()) */
   #qm-toast {
     position: fixed;
     top: 12px;
@@ -102,19 +105,22 @@
     transform: translateX(-50%);
     z-index: 50;
     pointer-events: none;
-    background: rgba(12, 12, 12, 0.95);
+    background: rgba(12, 12, 12, 0.96);
     border: 1px solid var(--border-main);
-    outline: 1px solid rgba(255, 255, 255, 0.38);
+    outline: 1px solid rgba(255, 255, 255, 0.35);
     outline-offset: -4px;
     padding: 5px 15px;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Courier New', Menlo, monospace;
     font-size: 11px;
-    letter-spacing: 1.8px;
+    letter-spacing: 1.6px;
     text-transform: uppercase;
     color: #ffffff;
     opacity: 0;
-    transition: opacity 0.16s ease;
+    transition: opacity 0.15s ease;
     white-space: nowrap;
+    max-width: 90vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   #qm-toast.visible {
     opacity: 1;
@@ -128,7 +134,7 @@
     display: none;
     align-items: center;
     justify-content: center;
-    background: rgba(6, 6, 6, 0.9);
+    background: rgba(6, 6, 6, 0.92);
     pointer-events: none;
   }
   #drop-overlay.active {
@@ -153,7 +159,7 @@
   }
   .drop-sub {
     margin-top: 8px;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Courier New', Menlo, monospace;
     font-size: 11px;
     letter-spacing: 2px;
     color: var(--c-green-dim);
@@ -161,7 +167,7 @@
   }
 
   /* =========================================================================
-     3. BOTTOM-DOCKED MNEMOSYNE HARDWARE CHASSIS (COMPACT ~175px)
+     3. COMPACT TWO-TIER MNEMOSYNE HARDWARE CHASSIS (BOTTOM-CENTERED)
      ========================================================================= */
   #chassis-dock {
     position: fixed;
@@ -177,7 +183,7 @@
   }
   #chassis-dock.hidden {
     opacity: 0;
-    transform: translateY(22px);
+    transform: translateY(24px);
     pointer-events: none !important;
     visibility: hidden;
   }
@@ -185,25 +191,32 @@
   #chassis {
     pointer-events: auto;
     width: 100%;
-    max-width: 1120px;
-    min-height: 174px;
-    background: rgba(17, 17, 17, 0.94);
-    border: 2px solid #ffffff;
-    outline: 2px solid #ffffff;
+    max-width: 1180px;
+    background: rgba(17, 17, 17, 0.95);
+    border: 2px solid var(--border-main);
+    outline: 2px solid var(--border-main);
     outline-offset: -6px;
-    padding: 10px 8px;
-    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9), 0 12px 40px rgba(0, 0, 0, 0.85);
+    padding: 10px 8px 9px 8px;
+    box-shadow: inset 0 0 44px rgba(0, 0, 0, 0.92), 0 16px 48px rgba(0, 0, 0, 0.88);
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 54px);
+    overflow-y: auto;
+  }
+
+  /* Upper Deck: Side Rails + 4 Columns */
+  .upper-deck {
     display: grid;
     grid-template-columns: 28px 1fr 28px;
     align-items: stretch;
+    width: 100%;
   }
 
-  /* Left & right vertical rails */
   .vertical-text {
     writing-mode: vertical-rl;
     transform: rotate(180deg);
     text-align: center;
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 500;
     letter-spacing: 4px;
     color: var(--text-dim);
@@ -214,10 +227,9 @@
     white-space: nowrap;
   }
 
-  /* 4-Column Hardware Core */
   .panel-core {
     display: grid;
-    grid-template-columns: 186px minmax(235px, 1.15fr) minmax(240px, 1.1fr) minmax(220px, 1fr);
+    grid-template-columns: 186px minmax(235px, 1.15fr) minmax(235px, 1.05fr) minmax(220px, 1fr);
     border-left: 1px solid var(--col-div);
     border-right: 1px solid var(--col-div);
     min-width: 0;
@@ -227,7 +239,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 4px 10px;
+    padding: 3px 10px 5px 10px;
     border-right: 1px solid var(--col-div);
     min-width: 0;
   }
@@ -248,25 +260,25 @@
   }
 
   /* =========================================================================
-     4. COLUMN 1: SYSTEM & OLED
+     4. UPPER DECK COLUMN 1: SYSTEM & OLED
      ========================================================================= */
   .oled-container {
     width: 100%;
-    background: #000000;
+    background: var(--oled);
     border: 1px solid #333333;
     padding: 5px;
     display: flex;
     flex-direction: column;
     gap: 5px;
-    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.04);
   }
 
   #scope {
     width: 100%;
-    max-width: 150px;
+    max-width: 156px;
     height: 36px;
     margin: 0 auto;
-    background: #050505;
+    background: var(--oled);
     border: 1px solid #222222;
     cursor: pointer;
     display: block;
@@ -296,7 +308,7 @@
     white-space: nowrap;
     min-width: 0;
   }
-  .oled-btn:hover {
+  .oled-btn:hover:not(:disabled) {
     background: #2b2b2b;
     border-color: #999999;
   }
@@ -311,10 +323,17 @@
     border-color: var(--c-amber);
     box-shadow: 0 0 8px rgba(255, 157, 0, 0.35);
   }
+  .oled-btn.active-green {
+    background: var(--c-green);
+    color: #000000;
+    border-color: var(--c-green);
+    box-shadow: 0 0 8px rgba(0, 255, 68, 0.38);
+  }
+  .oled-btn:disabled,
   .oled-btn.locked-iso {
     background: #090909;
-    border-color: #3a3a3a;
-    color: #777777;
+    border-color: #383838;
+    color: #666666;
     cursor: not-allowed;
   }
   .oled-btn.freeze {
@@ -324,7 +343,7 @@
     font-weight: 600;
     font-size: 10.5px;
     padding: 4px 0;
-    letter-spacing: 1.6px;
+    letter-spacing: 1.8px;
   }
   .oled-btn.freeze:hover {
     background: rgba(0, 170, 255, 0.14);
@@ -336,7 +355,7 @@
   }
 
   /* =========================================================================
-     5. COLUMN 2: INGEST & TRANSPORT
+     5. UPPER DECK COLUMN 2: INGEST & TRANSPORT
      ========================================================================= */
   .ingest-stack {
     display: flex;
@@ -348,10 +367,10 @@
 
   #mic-device {
     width: 100%;
-    background: #050505;
+    background: var(--oled);
     color: #d4d4d4;
     border: 1px solid #3a3a3a;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Courier New', Menlo, monospace;
     font-size: 9.5px;
     padding: 3px 5px;
     outline: none;
@@ -365,18 +384,18 @@
 
   #file-name-display {
     width: 100%;
-    background: #050505;
-    border: 1px solid #333333;
-    color: #e0e0e0;
-    font-family: 'Courier New', Courier, monospace;
+    background: var(--oled);
+    border: 1px solid #363636;
+    color: #e6e6e6;
+    font-family: 'Courier New', Menlo, monospace;
     font-size: 10px;
     font-weight: bold;
     padding: 4px 6px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    letter-spacing: 0.5px;
-    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.85);
+    letter-spacing: 0.4px;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.9);
   }
   #file-name-display.empty {
     color: #777777;
@@ -401,10 +420,10 @@
     -webkit-appearance: none;
     appearance: none;
     flex: 1;
-    min-width: 50px;
+    min-width: 48px;
     height: 6px;
-    background: #050505;
-    border: 1px solid #383838;
+    background: var(--oled);
+    border: 1px solid #3a3a3a;
     outline: none;
     cursor: pointer;
   }
@@ -426,21 +445,20 @@
     cursor: pointer;
   }
   #file-scrub:disabled {
-    opacity: 0.4;
+    opacity: 0.38;
     cursor: default;
   }
 
   #file-timecode {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Courier New', Menlo, monospace;
     font-size: 9.5px;
     color: var(--text-dim);
     white-space: nowrap;
     flex-shrink: 0;
-    letter-spacing: 0.3px;
   }
 
   /* =========================================================================
-     6. COLUMN 3: FOUR DOMAIN DIALS (MNEMOSYNE 44x44 SVG KNOBS)
+     6. UPPER DECK COLUMN 3: FOUR DOMAIN DIALS (EXACT 44x44 MNEMOSYNE SVG)
      ========================================================================= */
   .dials-row {
     display: grid;
@@ -484,10 +502,9 @@
   }
   .knob-readout {
     margin-top: 3px;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Courier New', Menlo, monospace;
     font-size: 9px;
-    color: #888888;
-    letter-spacing: 0.3px;
+    color: #969696;
   }
   .knob-container:hover .knob-readout,
   .knob-container.dragging .knob-readout {
@@ -504,33 +521,33 @@
   .d-red   .knob-label { color: var(--c-red); }
 
   .dials-hint {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Courier New', Menlo, monospace;
     font-size: 8.5px;
     color: #666666;
     text-align: center;
-    letter-spacing: 0.6px;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
-    margin-top: 4px;
+    margin-top: 3px;
   }
 
   /* =========================================================================
-     7. COLUMN 4: STRATA METERS & GRAMMAR
+     7. UPPER DECK COLUMN 4: STRATA METERS & VIEW CONTROLS
      ========================================================================= */
   .strata-stack {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     flex: 1;
-    gap: 5px;
+    gap: 6px;
   }
 
   .meters-block {
     display: flex;
     flex-direction: column;
-    gap: 3px;
-    background: #050505;
+    gap: 4px;
+    background: var(--oled);
     border: 1px solid #262626;
-    padding: 4px 6px;
+    padding: 6px 7px;
   }
   .meter-row {
     display: grid;
@@ -539,16 +556,16 @@
     gap: 5px;
   }
   .meter-label {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Courier New', Menlo, monospace;
     font-size: 8.5px;
     font-weight: bold;
     letter-spacing: 0.4px;
     white-space: nowrap;
   }
   .meter-track {
-    height: 4px;
+    height: 5px;
     background: #101010;
-    border: 1px solid #252525;
+    border: 1px solid #242424;
     overflow: hidden;
   }
   .meter-fill {
@@ -562,59 +579,216 @@
     border: 1px solid #333333;
   }
 
-  .grammar-btn {
-    width: 100%;
-    background: #080808;
-    border: 1px solid #4c4c4c;
-    color: #ffffff;
-    font-family: 'Oswald', sans-serif;
-    font-size: 9px;
-    font-weight: 500;
-    letter-spacing: 1px;
-    padding: 3px 6px;
-    cursor: pointer;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 6px;
-    transition: 0.1s;
-  }
-  .grammar-btn:hover {
-    background: #222222;
-    border-color: #ffffff;
-  }
-  .grammar-btn .g-tag {
-    color: var(--text-dim);
-    font-size: 8.5px;
-    letter-spacing: 1.2px;
-    flex-shrink: 0;
-  }
-  .grammar-btn .g-val {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 9px;
-    font-weight: bold;
-    color: #ffffff;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .util-row {
+  .view-btn-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.1fr 1.1fr 0.8fr;
     gap: 4px;
   }
 
   /* =========================================================================
-     8. RESPONSIVE ADAPTATION (TABLET / MOBILE)
+     8. DEDICATED LOWER ATELIER SHELF (#atelier-shelf, MNEMOSYNE #seq-shelf STYLE)
      ========================================================================= */
-  @media (max-width: 960px) {
-    #chassis {
+  #atelier-shelf {
+    border-top: 1px solid var(--col-div);
+    margin-top: 7px;
+    padding: 8px 10px 4px 10px;
+    background: rgba(4, 4, 4, 0.72);
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  #atelier-shelf.collapsed {
+    display: none;
+  }
+
+  .shelf-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .shelf-label {
+    flex: 0 0 92px;
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 1.8px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .shelf-btn-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .shelf-btn {
+    background: #080808;
+    border: 1px solid #444444;
+    color: var(--text-dim);
+    font-family: 'Oswald', sans-serif;
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    padding: 3px 7px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.1s;
+    white-space: nowrap;
+  }
+  .shelf-btn:hover {
+    background: #222222;
+    color: #ffffff;
+    border-color: #888888;
+  }
+  .shelf-btn.active {
+    background: #ffffff;
+    color: #000000;
+    border-color: #ffffff;
+  }
+
+  #formation-subtitle {
+    font-family: 'Courier New', Menlo, monospace;
+    font-size: 9.5px;
+    letter-spacing: 1px;
+    color: var(--c-green-dim);
+    text-transform: uppercase;
+    white-space: nowrap;
+    margin-left: auto;
+    padding-left: 8px;
+  }
+
+  /* Interactive Live Glyph Strip + Custom Input Row */
+  .glyph-editor-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-left: 100px;
+  }
+
+  #glyph-strip {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    flex-wrap: wrap;
+    background: var(--oled);
+    border: 1px solid #2b2b2b;
+    padding: 3px 4px;
+  }
+
+  .glyph-tile {
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #141414;
+    border: 1px solid #555555;
+    color: #f0f0f0;
+    font-family: 'Courier New', Menlo, monospace;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: 0.1s;
+  }
+  .glyph-tile:hover {
+    border-color: #ffffff;
+    background: #262626;
+  }
+  .glyph-tile.muted {
+    background: #070707;
+    border-color: #262626;
+    color: #444444;
+    text-decoration: line-through;
+    opacity: 0.55;
+  }
+
+  .custom-glyph-wrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+  }
+
+  .custom-tag {
+    font-size: 9px;
+    letter-spacing: 1.4px;
+    color: #888888;
+    text-transform: uppercase;
+  }
+
+  #custom-glyph-input {
+    width: 148px;
+    background: var(--oled);
+    border: 1px solid #444444;
+    color: #ffffff;
+    font-family: 'Courier New', Menlo, monospace;
+    font-size: 11px;
+    padding: 3px 6px;
+    outline: none;
+    letter-spacing: 1px;
+    -webkit-user-select: text;
+    user-select: text;
+  }
+  #custom-glyph-input:focus {
+    border-color: var(--c-cyan);
+  }
+
+  /* Palette Buttons with Miniature 4-Swatch Bars */
+  .pal-btn {
+    background: #080808;
+    border: 1px solid #404040;
+    color: var(--text-dim);
+    font-family: 'Oswald', sans-serif;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.9px;
+    padding: 3px 6px 4px 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 3px;
+    transition: 0.1s;
+    min-width: 78px;
+  }
+  .pal-btn:hover {
+    background: #1e1e1e;
+    color: #ffffff;
+    border-color: #888888;
+  }
+  .pal-btn.active {
+    background: #ffffff;
+    color: #000000;
+    border-color: #ffffff;
+  }
+  .pal-swatches {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    height: 3px;
+    width: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.45);
+  }
+  .pal-swatches span {
+    display: block;
+    height: 100%;
+  }
+
+  /* =========================================================================
+     9. RESPONSIVE ADAPTATION (LAPTOP / TABLET / MOBILE)
+     ========================================================================= */
+  @media (max-width: 980px) {
+    .upper-deck {
       grid-template-columns: 1fr;
-      max-height: 64vh;
-      overflow-y: auto;
-      padding: 8px;
     }
     .vertical-text {
       display: none;
@@ -635,6 +809,13 @@
     .column:nth-last-child(-n+2) {
       border-bottom: none;
     }
+    .glyph-editor-row {
+      padding-left: 0;
+    }
+    #formation-subtitle {
+      margin-left: 0;
+      padding-left: 0;
+    }
   }
 
   @media (max-width: 600px) {
@@ -643,25 +824,29 @@
     }
     .column {
       border-right: none;
-    }
-    .column:nth-last-child(-n+2) {
       border-bottom: 1px solid var(--col-div);
     }
     .column:last-child {
       border-bottom: none;
+    }
+    .shelf-label {
+      flex: 0 0 100%;
+    }
+    .custom-glyph-wrap {
+      margin-left: 0;
     }
   }
 </style>
 </head>
 <body>
 
-  <!-- FULL-SCREEN EDGE-TO-EDGE OCCULT ASCII ARCHITECTURAL CANVAS -->
-  <canvas id="ascii-canvas" aria-label="QUIET MACHINERY Suite Visualiser"></canvas>
+  <!-- FULL-SCREEN EDGE-TO-EDGE ARCHITECTURAL ASCII CANVAS -->
+  <canvas id="visualiser-canvas" aria-label="QUIET MACHINERY Architectural Visualiser"></canvas>
 
-  <!-- MINIMAL STAGE CORNER PILL TO HIDE / RESTORE CHASSIS -->
-  <button id="corner-toggle" title="Toggle Hardware Chassis [H]">HIDE [H]</button>
+  <!-- TOP-RIGHT STAGE PROJECTION TOGGLE -->
+  <button id="corner-toggle" title="Hide or Restore Console [H]">HIDE [H]</button>
 
-  <!-- TRANSIENT SYSTEM TOAST (ZERO alert() / confirm()) -->
+  <!-- INLINE TRANSIENT STATUS TOAST -->
   <div id="qm-toast">INITIALIZED</div>
 
   <!-- FULL-WINDOW DRAG & DROP AUDIO OVERLAY -->
@@ -672,175 +857,182 @@
     </div>
   </div>
 
-  <!-- COMPACT 4-COLUMN MNEMOSYNE HARDWARE CONSOLE -->
+  <!-- COMPACT TWO-TIER MNEMOSYNE HARDWARE CHASSIS -->
   <div id="chassis-dock">
     <div id="chassis">
 
-      <!-- LEFT VERTICAL RAIL -->
-      <div class="vertical-text">QUIET MACHINERY</div>
+      <!-- =================================================================
+           UPPER DECK: SIDE RAILS + 4 COMPACT HARDWARE COLUMNS
+           ================================================================= -->
+      <div class="upper-deck">
+        <div class="vertical-text">QUIET MACHINERY</div>
 
-      <!-- 4-COLUMN PANEL CORE -->
-      <div class="panel-core">
+        <div class="panel-core">
 
-        <!-- ===============================================================
-             COLUMN 1: SYSTEM & OLED
-             =============================================================== -->
-        <div class="column" data-col="sys">
-          <div class="col-header" id="hdr-sys">SYSTEM &amp; OLED</div>
-
-          <div class="oled-container">
-            <canvas id="scope" width="150" height="36" title="Click to toggle Waveform / Peak Seismograph"></canvas>
-            <div class="oled-row">
-              <button class="oled-btn" id="btn-activate" title="Initialize, Resume, or Suspend Audio Engine">ACTIVATE</button>
-              <button class="oled-btn" id="btn-scatter" title="Randomize EROSION, TESSELLATION, FRACTURE &amp; Strata Seed [S]">SCATTER</button>
-              <button class="oled-btn" id="btn-drift" title="Toggle Slow Random-Walk Drift on 3 Creative Dials">DRIFT</button>
+          <!-- COLUMN 1: SYSTEM & OLED -->
+          <div class="column" data-col="sys">
+            <div class="col-header">SYSTEM &amp; OLED</div>
+            <div class="oled-container">
+              <canvas id="scope" width="156" height="36" title="Click to toggle Waveform / Peak Seismograph"></canvas>
+              <div class="oled-row">
+                <button class="oled-btn" id="btn-activate" title="Initialize, Resume, or Suspend Audio Engine">ACTIVATE</button>
+                <button class="oled-btn" id="btn-scatter" title="Randomize EROSION, TESSELLATION, FRACTURE &amp; Seed [S]">SCATTER</button>
+                <button class="oled-btn" id="btn-drift" title="Slow Organic Random Walk on 3 Creative Dials (Excludes GAIN)">DRIFT</button>
+              </div>
+              <button class="oled-btn freeze" id="btn-freeze" style="width:100%;" title="Freeze Current Trace in Mortar [X]">FREEZE</button>
             </div>
-            <button class="oled-btn freeze" id="btn-freeze" style="width:100%;" title="Trap Current Trace in Mortar While Audio Weathers the Ruin [X]">FREEZE</button>
+          </div>
+
+          <!-- COLUMN 2: INGEST & TRANSPORT -->
+          <div class="column" data-col="ingest">
+            <div class="col-header">INGEST &amp; TRANSPORT</div>
+            <div class="ingest-stack">
+              <div class="oled-row">
+                <button class="oled-btn" id="btn-mic" title="Engage Live DI / Microphone Input (Isolated From Speakers)">MIC</button>
+                <button class="oled-btn" id="btn-file" title="Upload Audio File or Drag &amp; Drop Anywhere">FILE</button>
+                <button class="oled-btn active-amber" id="btn-mon" title="Toggle Speaker Monitor for File Playback">MON: ON</button>
+                <input type="file" id="file-upload" accept="audio/*" style="display:none;">
+              </div>
+
+              <select id="mic-device" title="Select Audio Interface / Microphone Channel">
+                <option value="">DEFAULT AUDIO INPUT (CLICK MIC)</option>
+              </select>
+
+              <div id="file-name-display" class="empty" title="No audio file loaded">NO FILE LOADED // DROP AUDIO</div>
+
+              <div class="transport-row">
+                <button class="oled-btn" id="btn-play-pause" title="Play / Pause Loaded Audio File [Space]">&#9654;</button>
+                <input type="range" id="file-scrub" min="0" max="1000" step="1" value="0" disabled title="Scrub Audio Playback">
+                <span id="file-timecode">00:00 / 00:00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMN 3: DOMAIN DIALS (44x44 MNEMOSYNE SVG ROTARY KNOBS) -->
+          <div class="column" data-col="dials">
+            <div class="col-header" id="hdr-dials">DOMAIN DIALS</div>
+            <div class="dials-row">
+              <!-- GAIN: Neutral unity default 0.50 -> 1.00x -->
+              <div class="knob-container d-green">
+                <div class="knob-label">GAIN</div>
+                <svg class="knob-svg" id="knob-gain" data-param="gain" data-val="0.50" data-default="0.50" viewBox="0 0 44 44" title="Input Gain (0.25x - 4.00x) | Default: 1.00x | Dbl-Click Reset">
+                  <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
+                  <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
+                </svg>
+                <div class="knob-readout" id="readout-gain">1.00x</div>
+              </div>
+
+              <!-- EROSION: Default 0.00 (Clean pristine edges) -->
+              <div class="knob-container d-amber">
+                <div class="knob-label">EROSION</div>
+                <svg class="knob-svg" id="knob-erosion" data-param="erosion" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Stone Weathering &amp; Pitted Dust | Default: 0.00">
+                  <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
+                  <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
+                </svg>
+                <div class="knob-readout" id="readout-erosion">0.00</div>
+              </div>
+
+              <!-- TESSELLATION: Default 0.50 -->
+              <div class="knob-container d-cyan">
+                <div class="knob-label">TESSELLATION</div>
+                <svg class="knob-svg" id="knob-tessellation" data-param="tessellation" data-val="0.50" data-default="0.50" viewBox="0 0 44 44" title="Subdivision, Ring Count &amp; Tile Scale | Default: 0.50">
+                  <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
+                  <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
+                </svg>
+                <div class="knob-readout" id="readout-tessellation">0.50</div>
+              </div>
+
+              <!-- FRACTURE: Default 0.00 (Zero random glitch clutter) -->
+              <div class="knob-container d-red">
+                <div class="knob-label">FRACTURE</div>
+                <svg class="knob-svg" id="knob-fracture" data-param="fracture" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="0ms Transient Shear, Row Shifts &amp; Dropouts | Default: 0.00">
+                  <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
+                  <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
+                </svg>
+                <div class="knob-readout" id="readout-fracture">0.00</div>
+              </div>
+            </div>
+            <div class="dials-hint">DRAG · SHIFT FINE · DBL-CLK RESET</div>
+          </div>
+
+          <!-- COLUMN 4: STRATA & VIEW -->
+          <div class="column" data-col="strata">
+            <div class="col-header">STRATA &amp; VIEW</div>
+            <div class="strata-stack">
+              <div class="meters-block">
+                <div class="meter-row">
+                  <span class="meter-label" style="color: var(--c-green-dim);">I. STRATA</span>
+                  <div class="meter-track"><div class="meter-fill" id="meter-0" style="background: var(--c-green-dim);"></div></div>
+                  <div class="gate-led" id="led-0" title="Band I Peak Indicator"></div>
+                </div>
+                <div class="meter-row">
+                  <span class="meter-label" style="color: var(--c-amber-dim);">II. EROSION</span>
+                  <div class="meter-track"><div class="meter-fill" id="meter-1" style="background: var(--c-amber-dim);"></div></div>
+                  <div class="gate-led" id="led-1" title="Band II Peak Indicator"></div>
+                </div>
+                <div class="meter-row">
+                  <span class="meter-label" style="color: var(--c-cyan-dim);">III. SILICA</span>
+                  <div class="meter-track"><div class="meter-fill" id="meter-2" style="background: var(--c-cyan-dim);"></div></div>
+                  <div class="gate-led" id="led-2" title="Band III Fracture Gate LED"></div>
+                </div>
+                <div class="meter-row">
+                  <span class="meter-label" style="color: var(--c-red-dim);">IV. LETHE</span>
+                  <div class="meter-track"><div class="meter-fill" id="meter-3" style="background: var(--c-red-dim);"></div></div>
+                  <div class="gate-led" id="led-3" title="Band IV Fracture / Cut Gate LED"></div>
+                </div>
+              </div>
+
+              <div class="view-btn-row">
+                <button class="oled-btn active" id="btn-atelier" title="Toggle Formation, Symbol &amp; Palette Shelf [D]">[D] ATELIER</button>
+                <button class="oled-btn" id="btn-fullscreen" title="Toggle Fullscreen [F]">[F] FULL</button>
+                <button class="oled-btn" id="btn-hide" title="Hide Console [H]">[H] HIDE</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="vertical-text">VISUAL ENGINE</div>
+      </div>
+
+      <!-- =================================================================
+           LOWER SHELF (#atelier-shelf): FORMATION / SYMBOLS / PALETTE
+           ================================================================= -->
+      <div id="atelier-shelf">
+
+        <!-- ROW 1: FORMATION [M] -->
+        <div class="shelf-row">
+          <div class="shelf-label">FORMATION [M]</div>
+          <div class="shelf-btn-group" id="formation-buttons"></div>
+          <div id="formation-subtitle">STEPPED TEMPLE PORTAL</div>
+        </div>
+
+        <!-- ROW 2: SYMBOLS [G] + INTERACTIVE GLYPH STRIP & CUSTOM INPUT -->
+        <div class="shelf-row">
+          <div class="shelf-label">SYMBOLS [G]</div>
+          <div class="shelf-btn-group" id="symbol-set-buttons"></div>
+        </div>
+        <div class="glyph-editor-row">
+          <div id="glyph-strip" title="Click individual glyphs to mute or unmute in real time"></div>
+          <div class="custom-glyph-wrap">
+            <span class="custom-tag">CUSTOM</span>
+            <input type="text" id="custom-glyph-input" maxlength="24" placeholder="·┼◈╬▓█" spellcheck="false" autocomplete="off">
+            <button class="shelf-btn" id="btn-custom-set" title="Apply Custom Symbol Ramp">SET</button>
+            <button class="shelf-btn" id="btn-custom-rst" title="Reset Active Symbol Set">RST</button>
           </div>
         </div>
 
-        <!-- ===============================================================
-             COLUMN 2: INGEST & TRANSPORT
-             =============================================================== -->
-        <div class="column" data-col="ingest">
-          <div class="col-header" id="hdr-ingest">INGEST &amp; TRANSPORT</div>
-
-          <div class="ingest-stack">
-            <!-- Row 1: MIC / FILE / MON -->
-            <div class="oled-row">
-              <button class="oled-btn" id="btn-mic" title="Engage Live DI / Microphone Input (Isolated From Speakers)">MIC</button>
-              <button class="oled-btn" id="btn-file" title="Upload Audio File or Drag &amp; Drop Anywhere">FILE</button>
-              <button class="oled-btn active-amber" id="btn-mon" title="Toggle File Playback Speaker Monitor (Locked ISO in MIC Mode)">MON: ON</button>
-              <input type="file" id="file-upload" accept="audio/*" style="display:none;">
-            </div>
-
-            <!-- Audio Input Device Selector -->
-            <select id="mic-device" title="Select Audio Interface / DI Channel">
-              <option value="">DEFAULT AUDIO INPUT (CLICK MIC)</option>
-            </select>
-
-            <!-- Prominent OLED Monospace Filename Readout Box -->
-            <div id="file-name-display" class="empty" title="No file loaded">NO FILE LOADED // DROP AUDIO</div>
-
-            <!-- Transport Row: Play/Pause + Scrub Slider + Timecode -->
-            <div class="transport-row">
-              <button class="oled-btn" id="btn-play-pause" title="Play / Pause Loaded Audio File [Space]">&#9654;</button>
-              <input type="range" id="file-scrub" min="0" max="1000" step="1" value="0" disabled title="Scrub Audio Position">
-              <span id="file-timecode">00:00 / 00:00</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- ===============================================================
-             COLUMN 3: FOUR DOMAIN DIALS (MNEMOSYNE 44x44 SVG KNOBS)
-             =============================================================== -->
-        <div class="column" data-col="dials">
-          <div class="col-header" id="hdr-dials">DOMAIN DIALS</div>
-
-          <div class="dials-row">
-            <!-- 1. GAIN (Green, default 0.35 -> 0.5x..8.0x) -->
-            <div class="knob-container d-green">
-              <div class="knob-label">GAIN</div>
-              <svg class="knob-svg" id="knob-gain" data-param="gain" data-val="0.35" data-default="0.35" viewBox="0 0 44 44" title="Input Gain Staging (0.5x - 8.0x) | Shift: Fine | Dbl-Click: Reset">
-                <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
-                <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
-              </svg>
-              <div class="knob-readout" id="readout-gain">1.3x</div>
-            </div>
-
-            <!-- 2. EROSION (Amber, default 0.30) -->
-            <div class="knob-container d-amber">
-              <div class="knob-label">EROSION</div>
-              <svg class="knob-svg" id="knob-erosion" data-param="erosion" data-val="0.30" data-default="0.30" viewBox="0 0 44 44" title="Asperitas Weathering, Stone Pitting &amp; Patina Drift">
-                <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
-                <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
-              </svg>
-              <div class="knob-readout" id="readout-erosion">0.30</div>
-            </div>
-
-            <!-- 3. TESSELLATION (Cyan, default 0.50) -->
-            <div class="knob-container d-cyan">
-              <div class="knob-label">TESSELLATION</div>
-              <svg class="knob-svg" id="knob-tessellation" data-param="tessellation" data-val="0.50" data-default="0.50" viewBox="0 0 44 44" title="Kamen Symmetry Order, Subdivision &amp; Glyph Density">
-                <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
-                <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
-              </svg>
-              <div class="knob-readout" id="readout-tessellation">0.50</div>
-            </div>
-
-            <!-- 4. FRACTURE (Red, default 0.35) -->
-            <div class="knob-container d-red">
-              <div class="knob-label">FRACTURE</div>
-              <svg class="knob-svg" id="knob-fracture" data-param="fracture" data-val="0.35" data-default="0.35" viewBox="0 0 44 44" title="Karst/Mnemosyne Fault Shear, Threshold &amp; Coin-Toss Intensity">
-                <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
-                <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
-              </svg>
-              <div class="knob-readout" id="readout-fracture">0.35</div>
-            </div>
-          </div>
-
-          <div class="dials-hint">DRAG · SHIFT FINE · DBL-CLK RESET</div>
-        </div>
-
-        <!-- ===============================================================
-             COLUMN 4: STRATA METERS & GRAMMAR
-             =============================================================== -->
-        <div class="column" data-col="strata">
-          <div class="col-header" id="hdr-strata">STRATA &amp; GRAMMAR</div>
-
-          <div class="strata-stack">
-            <!-- 4-Band Crossover Peak Meters + 0ms Gate LEDs -->
-            <div class="meters-block">
-              <div class="meter-row">
-                <span class="meter-label" style="color: var(--c-green-dim);">I. STRATA</span>
-                <div class="meter-track"><div class="meter-fill" id="meter-0" style="background: var(--c-green-dim);"></div></div>
-                <div class="gate-led" id="led-0" title="Gate A: Karst Shear"></div>
-              </div>
-              <div class="meter-row">
-                <span class="meter-label" style="color: var(--c-amber-dim);">II. EROSION</span>
-                <div class="meter-track"><div class="meter-fill" id="meter-1" style="background: var(--c-amber-dim);"></div></div>
-                <div class="gate-led" id="led-1" title="Gate B: Mnemosyne Shatter"></div>
-              </div>
-              <div class="meter-row">
-                <span class="meter-label" style="color: var(--c-cyan-dim);">III. SILICA</span>
-                <div class="meter-track"><div class="meter-fill" id="meter-2" style="background: var(--c-cyan-dim);"></div></div>
-                <div class="gate-led" id="led-2" title="Gate B: Mnemosyne Shatter"></div>
-              </div>
-              <div class="meter-row">
-                <span class="meter-label" style="color: var(--c-red-dim);">IV. LETHE</span>
-                <div class="meter-track"><div class="meter-fill" id="meter-3" style="background: var(--c-red-dim);"></div></div>
-                <div class="gate-led" id="led-3" title="Gate C: Void Invert / Cut"></div>
-              </div>
-            </div>
-
-            <!-- Grammar Controls: Lexicon [G] & Palette [P] -->
-            <button class="grammar-btn" id="btn-lexicon" title="Cycle Occult Symbol Lexicon [G]">
-              <span class="g-tag">LEXICON [G]</span>
-              <span class="g-val" id="val-lexicon">HERMETIC SEALS</span>
-            </button>
-
-            <button class="grammar-btn" id="btn-palette" title="Cycle Colour Palette [P]">
-              <span class="g-tag">PALETTE [P]</span>
-              <span class="g-val" id="val-palette">MNEMOSYNE PATINA</span>
-            </button>
-
-            <!-- Utility Micro-Buttons -->
-            <div class="util-row">
-              <button class="oled-btn" id="btn-fullscreen" title="Toggle Fullscreen [F]">[F] FULLSCREEN</button>
-              <button class="oled-btn" id="btn-hide" title="Hide Chassis [H]">[H] HIDE</button>
-            </div>
-          </div>
+        <!-- ROW 3: PALETTE [P] (10 PURE QUIET MACHINERY MINERAL PALETTES) -->
+        <div class="shelf-row">
+          <div class="shelf-label">PALETTE [P]</div>
+          <div class="shelf-btn-group" id="palette-buttons"></div>
         </div>
 
       </div>
-
-      <!-- RIGHT VERTICAL RAIL -->
-      <div class="vertical-text">VISUAL ENGINE</div>
-
     </div>
   </div>
 
-  <!-- HIDDEN AUDIO ELEMENT FOR FILE PLAYBACK -->
+  <!-- HIDDEN AUDIO ELEMENT FOR SEAMLESS LOOPING FILE PLAYBACK -->
   <audio id="audio-player" loop crossorigin="anonymous" style="display:none;"></audio>
 
 <script>
@@ -848,138 +1040,130 @@
   'use strict';
 
   /* ===========================================================================
-     SECTION A: HACKABLE CREATIVE CORE (EDIT LIKE A gen~ CODEBOX)
+     SECTION A: HACKABLE CODEBOX (EDIT DIRECTLY LIKE A gen~ CODEBOX)
      ---------------------------------------------------------------------------
-     Everything that shapes the visual authorship lives cleanly right here:
-       1. GLYPH_LEXICONS  — 7 strictly monochrome occult Unicode ramps
-       2. PALETTES        — 6 Quiet Machinery / Brutalist colour systems
-       3. FIELD_PARAMS    — Tunable constants for negative space & cadence
-       4. computeField()  — Unified 4-philosophy architectural field equation
+     All architectural silhouettes, occult symbol ramps, mineral palettes, and
+     SDF field equations live right here for direct authorship.
      =========================================================================== */
 
-  /**
-   * Appends Unicode Text Variation Selector (U+FE0E) to geometric/astronomical
-   * symbols that some browsers might otherwise substitute with color emojis.
-   */
-  function monoGlyphs(list) {
-    return list.map((ch) => {
-      if (!ch || ch === ' ') return ' ';
-      const cp = ch.codePointAt(0);
-      if ((cp >= 0x25A0 && cp <= 0x27BF) || (cp >= 0x2B00 && cp <= 0x2BFF)) {
-        return ch + '\uFE0E';
-      }
-      return ch;
-    });
-  }
-
-  // 1. SEVEN CURATED STRICTLY MONOCHROME OCCULT SYMBOL LEXICONS
-  const GLYPH_LEXICONS = [
-    {
-      name: 'HERMETIC SEALS',
-      chars: monoGlyphs([' ', '·', '˙', '∶', '⊹', '┼', '╳', '◇', '◈', '◉', '◎', '◬', '△', '▽', '✦', '✧', '✶', '☉', '☽', '☾', '☿', '♄', '☥', '☧', '╬', '▓', '█'])
-    },
-    {
-      name: 'ALCHEMICAL STRATA',
-      chars: monoGlyphs([' ', '·', ':', '╌', '┼', '┤', '├', '┴', '┬', '⟐', '⟑', '⟁', '⧖', '⧗', '⧠', '⧦', '⧧', '⧨', '⧩', '⚶', '⚷', '⚸', '⚹', '╬', '╫', '▒', '▓'])
-    },
-    {
-      name: 'RUNIC MONOLITH',
-      chars: monoGlyphs([' ', '·', 'ᛁ', 'ᚾ', 'ᛃ', 'ᛇ', 'ᛉ', 'ᛊ', 'ᛏ', 'ᛒ', 'ᛖ', 'ᛗ', 'ᛚ', 'ᛜ', 'ᛞ', 'ᛟ', 'ᚠ', 'ᚢ', 'ᚦ', 'ᚨ', 'ᚱ', 'ᚲ', 'ᚷ', 'ᚹ', 'ᚺ', '╬', '█'])
-    },
-    {
-      name: 'ASTRAL SIGILS',
-      chars: monoGlyphs([' ', '·', '∘', '∗', '⋆', '⊹', '⋇', '⋈', '⋉', '⋊', '⋋', '⋌', '⋍', '⋎', '⋏', '⋔', '⋕', '✦', '✧', '✴', '✵', '✶', '✷', '✸', '✹', '◉', '█'])
-    },
-    {
-      name: 'SHATTER MATRIX',
-      chars: monoGlyphs([' ', '·', ':', '╵', '╷', '|', '│', '⋮', '-', '=', '~', '+', '/', '\\', '◊', '‡', '»', '┬', '┃', '▼', 'x', '*', '#', '░', '▒', '▓', '█'])
-    },
-    {
-      name: 'TEMPLE GEOMETRY',
-      chars: monoGlyphs([' ', '·', '▫', '▪', '□', '■', '▭', '▬', '▯', '▮', '▱', '▰', '△', '▲', '▽', '▼', '◁', '◀', '▷', '▶', '◇', '◆', '◈', '❖', '╬', '▓', '█'])
-    },
-    {
-      name: 'SIGIL CODEX',
-      chars: monoGlyphs([' ', '·', '˙', '∶', '☤', '☥', '☧', '☨', '☩', '☉', '☽', '☾', '☿', '♀', '♁', '♂', '♃', '♄', '♅', '♆', '♇', '⚶', '⚷', '⚸', '◬', '◈', '█'])
-    }
+  // 1. SIX UNMISTAKABLE ARCHITECTURAL / MOSAIC FORMATIONS
+  const FORMATIONS = [
+    { id: 0, label: 'I. MONOLITH', subtitle: 'STEPPED TEMPLE PORTAL' },
+    { id: 1, label: 'II. SEAL',    subtitle: 'OCCULT RITUAL CIRCLE' },
+    { id: 2, label: 'III. MOSAIC', subtitle: 'RELIQUARY COFFERED WALL' },
+    { id: 3, label: 'IV. STRATA',  subtitle: 'GEOLOGICAL FAULT CROSS-SECTION' },
+    { id: 4, label: 'V. OBELISK',  subtitle: 'VERTICAL TOTEM SPINE' },
+    { id: 5, label: 'VI. VAULT',   subtitle: 'RECESSED STONE CORRIDOR' }
   ];
 
-  // 2. SIX CURATED QUIET MACHINERY / BRUTALIST COLOUR PALETTES
-  //    domains[0..3] = [I. STRATA, II. EROSION, III. SILICA, IV. LETHE]
+  // 2. EIGHT SAFARI/MACOS-SAFE MONOCHROME OCCULT & ARCHITECTURAL SYMBOL LEXICONS
+  const SYMBOL_LEXICONS = [
+    { name: 'RELIQUARY', chars: '·∶╵┼†‡◈❖╬▓█' },
+    { name: 'SIGILUM',   chars: '·∘○△▽◬⊕⊗⊙✦◉▓' },
+    { name: 'MASONRY',   chars: '·─│┌┐┼╞╡╬╠╣▒▓█' },
+    { name: 'OSSUARY',   chars: '·˙╱╲╳‹›∧∨⟐⌧╬▓' },
+    { name: 'ASTRAL',    chars: '·˙∘∗✧✦⌖◎⊕⊙⊚◉' },
+    { name: 'RUNIC',     chars: '·╵╷├┤┬┴⟁⊻⊢⊣╫╪╬█' },
+    { name: 'HALFTONE',  chars: '·∶∴∵░▒▓▪▫■█' },
+    { name: 'CIPHER',    chars: '·:|=+-‡┃▼#▓█' }
+  ];
+
+  // 3. TEN PURE QUIET MACHINERY MINERAL & ARCHIVAL PALETTES
+  //    domains[0..3] map coherently to Bands I-IV (STRATA, EROSION, SILICA, LETHE)
   const PALETTES = [
     {
-      name: 'MNEMOSYNE PATINA',
-      bg: '#080808',
-      rest: '#4a6658',
-      domains: ['#52a869', '#bf893b', '#498eb8', '#b85454'],
-      highlight: '#e8e8e4',
-      invertBg: '#e8e8e4',
-      invertInk: '#080808',
-      blockWash: ['rgba(82,168,105,0.09)', 'rgba(191,137,59,0.09)', 'rgba(73,142,184,0.09)', 'rgba(184,84,84,0.11)']
-    },
-    {
-      name: 'OBSIDIAN & SULPHUR',
+      name: 'MNEMOSYNE',
       bg: '#060606',
-      rest: '#585858',
-      domains: ['#8c8c8c', '#d49635', '#b59a5b', '#d93838'],
+      rest: '#446252',
+      domains: ['#52a869', '#bf893b', '#498eb8', '#b85454'],
+      highlight: '#ecece6',
+      invertBg: '#ecece6',
+      invertInk: '#060606'
+    },
+    {
+      name: 'OBSIDIAN',
+      bg: '#040404',
+      rest: '#4c4c4c',
+      domains: ['#6e6e6e', '#949494', '#bdbdbd', '#e0e0e0'],
       highlight: '#ffffff',
-      invertBg: '#f0ece1',
-      invertInk: '#060606',
-      blockWash: ['rgba(140,140,140,0.08)', 'rgba(212,150,53,0.10)', 'rgba(181,154,91,0.09)', 'rgba(217,56,56,0.12)']
+      invertBg: '#e8e8e8',
+      invertInk: '#040404'
     },
     {
-      name: 'MORTAR & OXIDE',
-      bg: '#0c0c0c',
-      rest: '#7e827d',
-      domains: ['#4a9688', '#b8764a', '#5f9c90', '#b84a39'],
-      highlight: '#f2f0ea',
-      invertBg: '#e5e2d9',
-      invertInk: '#0c0c0c',
-      blockWash: ['rgba(74,150,136,0.09)', 'rgba(184,118,74,0.09)', 'rgba(95,156,144,0.09)', 'rgba(184,74,57,0.12)']
+      name: 'LIMESTONE',
+      bg: '#090908',
+      rest: '#5f5b52',
+      domains: ['#827b6d', '#a89c82', '#c7a96b', '#ded8c8'],
+      highlight: '#f7f3e8',
+      invertBg: '#e6e0d1',
+      invertInk: '#090908'
     },
     {
-      name: 'KLAMP MONOLITH',
-      bg: '#0a0a0a',
-      rest: '#8c8c8c',
-      domains: ['#b8a369', '#b8a369', '#d4d4d4', '#e62e2e'],
-      highlight: '#ffffff',
-      invertBg: '#e62e2e',
-      invertInk: '#0a0a0a',
-      blockWash: ['rgba(184,163,105,0.10)', 'rgba(184,163,105,0.09)', 'rgba(212,212,212,0.07)', 'rgba(230,46,46,0.14)']
+      name: 'VERDIGRIS',
+      bg: '#050807',
+      rest: '#3c5a52',
+      domains: ['#4b7a6b', '#4fa695', '#b37a4c', '#c7ded8'],
+      highlight: '#ebf7f3',
+      invertBg: '#d8eae4',
+      invertInk: '#050807'
     },
     {
-      name: 'CATHEDRAL BONE',
-      bg: '#eceae3',
-      rest: '#181818',
-      domains: ['#3b4a42', '#7a5926', '#244c6b', '#9e2424'],
-      highlight: '#000000',
-      invertBg: '#121212',
-      invertInk: '#eceae3',
-      blockWash: ['rgba(59,74,66,0.08)', 'rgba(122,89,38,0.08)', 'rgba(36,76,107,0.10)', 'rgba(158,36,36,0.11)']
+      name: 'CINNABAR',
+      bg: '#070505',
+      rest: '#574c4c',
+      domains: ['#786f6f', '#9c6f5e', '#bf4d3d', '#e33b27'],
+      highlight: '#f7e6e3',
+      invertBg: '#e33b27',
+      invertInk: '#070505'
     },
     {
-      name: 'PHOSPHOR SEISMOGRAPH',
-      bg: '#050806',
-      rest: '#386b49',
-      domains: ['#00ff44', '#66d977', '#26c485', '#ff4444'],
-      highlight: '#d9ffe4',
+      name: 'SLATE & SALT',
+      bg: '#05070a',
+      rest: '#465466',
+      domains: ['#5d728a', '#6f92ad', '#4ca6c2', '#cfe0ed'],
+      highlight: '#f2f8fc',
+      invertBg: '#dde9f2',
+      invertInk: '#05070a'
+    },
+    {
+      name: 'SULPHUR',
+      bg: '#070704',
+      rest: '#52543d',
+      domains: ['#6e704b', '#8f8d48', '#baa13d', '#e0d56c'],
+      highlight: '#faf6cf',
+      invertBg: '#ebe288',
+      invertInk: '#070704'
+    },
+    {
+      name: 'ASH & RUST',
+      bg: '#080605',
+      rest: '#5c524d',
+      domains: ['#7d6b5f', '#a8653e', '#c24e29', '#dba786'],
+      highlight: '#f7ece1',
+      invertBg: '#e8dbd0',
+      invertInk: '#080605'
+    },
+    {
+      name: 'VELLUM INK',
+      bg: '#e6e1d6',
+      rest: '#262421',
+      domains: ['#394a3d', '#7d522c', '#2e4a59', '#8f3029'],
+      highlight: '#080807',
+      invertBg: '#161513',
+      invertInk: '#e6e1d6'
+    },
+    {
+      name: 'PHOSPHOR',
+      bg: '#040805',
+      rest: '#265c36',
+      domains: ['#2f8748', '#3dba5f', '#21d976', '#00ff44'],
+      highlight: '#ccffda',
       invertBg: '#00ff44',
-      invertInk: '#050806',
-      blockWash: ['rgba(0,255,68,0.09)', 'rgba(102,217,119,0.08)', 'rgba(38,196,133,0.09)', 'rgba(255,68,68,0.12)']
+      invertInk: '#040805'
     }
   ];
 
-  // 3. TUNABLE FIELD CONSTANTS
-  const FIELD_PARAMS = {
-    baseVoidThreshold: 0.34,   // Higher = more brooding obsidian negative space at rest
-    erosionVoidBias: 0.30,     // How strongly EROSION dial carves stone cavities
-    audioOpeningLift: 0.24,    // How strongly audio energy reveals hidden geometry
-    blockCellsX: 10,           // Architectural masonry chamber width (in cells)
-    blockCellsY: 6,            // Architectural masonry chamber height (in cells)
-    idleDriftSpeed: 0.22       // Slow geological cadence when silent
-  };
-
-  // Fast deterministic math helpers
+  // Clean SDF math helpers
   const PI = Math.PI;
   const TAU = Math.PI * 2;
 
@@ -992,207 +1176,617 @@
     return s - Math.floor(s);
   }
 
-  function valueNoise(x, y) {
-    const ix = Math.floor(x);
-    const iy = Math.floor(y);
-    const fx = x - ix;
-    const fy = y - iy;
-    const ux = fx * fx * (3.0 - 2.0 * fx);
-    const uy = fy * fy * (3.0 - 2.0 * fy);
-    const a = hash2(ix, iy);
-    const b = hash2(ix + 1, iy);
-    const c = hash2(ix, iy + 1);
-    const d = hash2(ix + 1, iy + 1);
-    return a + (b - a) * ux + (c - a) * uy + (a - b - c + d) * ux * uy;
-  }
-
-  function ridgedFbm(x, y) {
-    const n1 = 1.0 - Math.abs(valueNoise(x, y) * 2.0 - 1.0);
-    const n2 = 1.0 - Math.abs(valueNoise(x * 2.13 + 4.7, y * 2.13 - 2.9) * 2.0 - 1.0);
-    return n1 * n1 * 0.64 + n2 * n2 * 0.36;
+  function regularPolygonSDF(x, y, sides, radius, rotAngle) {
+    const a = Math.atan2(y, x) + rotAngle;
+    const r = Math.hypot(x, y);
+    const seg = TAU / sides;
+    const d = Math.cos(Math.floor(0.5 + a / seg) * seg - a) * r;
+    return d - radius;
   }
 
   /**
-   * 4. UNIFIED AUTONOMOUS ARCHITECTURAL FIELD EQUATION (gen~ style)
-   *    Combines all 4 Quiet Machinery philosophies simultaneously per cell:
-   *      - KARST      (Band 0 + Gate A): Tectonic horizontal shear & jagged fault cracks
-   *      - ASPERITAS  (Band 1 + EROSION): Ridged weathering veins & pitted stone voids
-   *      - KAMEN      (Band 2 + TESSELLATION): 2/4/8-way standing-wave cathedral corridors
-   *      - MNEMOSYNE  (Band 3 + Gate B/FRACTURE): Drip dissolution, shatter & highlight spikes
+   * 4. CORE ARCHITECTURAL SDF EVALUATOR
+   *    Evaluates one grid cell (nx, ny) in true aspect-corrected coordinates
+   *    (ny in [-1, 1], nx proportional to viewport aspect ratio).
    *
-   *    Returns { density: 0..1, peak: bool, domainBias: -1..3 }
+   *    Returns:
+   *      density : 0.0 (pure dark void) .. 1.0 (heaviest glyph in active ramp)
+   *      zone    : 0..3 (coherent mineral domain tied to Bands I-IV)
+   *      peak    : boolean (stark highlight peak on genuine audio transients)
    */
-  function computeField(x, y, col, row, localX, localY, ctxFrame) {
+  function computeFormationCell(fIdx, nx, ny, col, row, f) {
     const {
       t, seed, b0, b1, b2, b3,
-      gateA, gateB, erosion, tessellation, fracture,
-      isCorner, isEdge, blockFracture, frameTick
-    } = ctxFrame;
+      tess, erosion, fracture,
+      gateShear, gateDrop, cols, rows, frameTick
+    } = f;
 
-    // --- I. KARST: Tectonic slab shear & jagged geological fault line ---
-    const slabBand = Math.floor((y + 1.5) * 4.2);
-    const slabDir = (slabBand % 2 === 0) ? 1.0 : -1.0;
-    const slabHash = 0.35 + 0.65 * hash2(slabBand, seed);
-    const shearOffset = slabDir * (b0 * 0.32 + gateA * 0.85) * slabHash;
-    const sx = x + shearOffset;
-
-    const faultWave = Math.sin(y * 5.0 + seed * 1.9 + t * 0.32) * 0.17;
-    const faultDist = Math.abs((sx * 0.58 - y * 0.85) + faultWave);
-    const faultCrack = (b0 > 0.16 || gateA > 0.05)
-      ? clamp(1.0 - faultDist / (0.042 + b0 * 0.09 + gateA * 0.16), 0, 1)
-      : 0;
-
-    const rad = Math.hypot(sx, y);
-    const subPulse = (Math.sin(rad * (7.2 + b0 * 5.5) - t * 2.2 - gateA * 3.8) * 0.5 + 0.5)
-                   * Math.exp(-rad * 0.82) * (0.12 + b0 * 0.95);
-
-    // --- II. ASPERITAS: Ridged patina weathering veins & pitted stone cavities ---
-    const driftX = t * 0.15 + seed * 2.7;
-    const driftY = Math.sin(t * 0.08 + seed) * 0.3;
-    const veinScale = 1.6 + b1 * 0.85;
-    const veins = ridgedFbm(sx * veinScale + driftX, y * veinScale + driftY) * (0.24 + b1 * 0.92);
-
-    const pitSample = valueNoise(sx * 3.7 - driftY + 6.4, y * 3.7 + driftX - 3.3);
-    const pitCut = 0.14 + erosion * 0.36 + b1 * 0.12;
-    const pitDepth = pitSample < pitCut ? (pitCut - pitSample) / Math.max(0.05, pitCut) : 0;
-
-    // --- III. KAMEN: Mirrored 2-way / 4-way / 8-way nodal standing waves ---
-    const foldOrder = tessellation < 0.34 ? 2 : (tessellation < 0.68 ? 4 : 8);
-    let kx = Math.abs(sx);
-    let ky = (foldOrder >= 4) ? Math.abs(y) : y;
-    if (foldOrder === 8 && ky > kx) {
-      const tmp = kx; kx = ky; ky = tmp;
-    }
-
-    const kr = Math.hypot(kx, ky);
-    const kTheta = Math.atan2(ky, kx);
-    const nHarm = 2.0 + Math.floor(tessellation * 5.0) + (Math.floor(seed * 3.0) % 2);
-    const mHarm = nHarm + 2.0 + Math.floor(b2 * 2.5);
-    const kFreq = 2.15 + tessellation * 1.5;
-    const kPhase = t * 0.25 + b2 * 0.7;
-
-    const chladni = Math.cos(nHarm * kx * kFreq + kPhase) * Math.cos(mHarm * ky * kFreq - kPhase * 0.65)
-                  - Math.cos(mHarm * kx * kFreq - kPhase * 0.65) * Math.cos(nHarm * ky * kFreq + kPhase);
-    const nodal = Math.pow(1.0 - clamp(Math.abs(chladni) * 1.08, 0, 1), 2.3);
-
-    const corridor = Math.abs(Math.cos(kTheta * foldOrder + t * 0.12) * Math.sin(kr * (4.2 + tessellation * 4.5) - t * 0.4));
-    const cathedralRing = Math.exp(-Math.abs(kr - (0.48 + b2 * 0.22)) * 7.2);
-    const kamenField = nodal * (0.30 + b2 * 0.88) + corridor * (0.14 + b2 * 0.42) + cathedralRing * (0.16 + b2 * 0.58);
-
-    // --- IV. MNEMOSYNE: High-frequency vertical drips & localized shatter ---
-    const dripHash = hash2(col * 0.75 + Math.floor(frameTick * 0.14), Math.floor(row * 0.25));
-    const isDrip = (b3 > 0.18 || gateB > 0.08) && (dripHash > (0.88 - b3 * 0.30 - fracture * 0.16)) && (localY > 0.32);
-    const dripEnergy = isDrip ? clamp(0.38 + b3 * 0.62 + gateB * 0.5, 0, 1) : 0;
-
-    // Subtle brooding architectural monolith anchors (keeps quiet state deliberate)
-    const breath = Math.sin(t * 0.6 + (col * 0.06 + row * 0.08)) * 0.5 + 0.5;
-    let frameAnchor = 0;
-    if (isCorner && hash2(Math.floor(col / 10), Math.floor(row / 6)) > (0.30 + erosion * 0.32)) {
-      frameAnchor = 0.28 + breath * 0.14;
-    } else if (isEdge && (b0 + b2 > 0.22) && ((col + row) % 2 === 0)) {
-      frameAnchor = 0.18 + (b0 + b2) * 0.22;
-    }
-
-    // Combine all four philosophies into raw structural density
-    let density = kamenField * 0.62
-                + veins * 0.44
-                + subPulse * 0.56
-                + faultCrack * 0.96
-                + dripEnergy * 0.72
-                + frameAnchor
-                + blockFracture * 0.62;
-
-    // Carve ASPERITAS stone pits into negative space unless overridden by a fault or shatter
-    if (pitDepth > 0 && faultCrack < 0.35 && blockFracture < 0.25) {
-      density *= (1.0 - pitDepth * (0.68 + erosion * 0.30));
-    }
-
-    // Determine dominant physical signature for peak/pollution accents
+    let density = 0;
+    let zone = 0;
     let peak = false;
-    let domainBias = -1;
 
-    if (blockFracture > 0.20) {
-      peak = blockFracture > 0.65;
-      domainBias = 3; // IV. LETHE / Mnemosyne shatter
-    } else if (faultCrack > 0.48) {
-      peak = faultCrack > 0.78;
-      domainBias = 0; // I. STRATA / Karst fault
-    } else if (isDrip) {
-      domainBias = 3;
-    } else if (nodal > 0.74 && b2 > 0.32) {
-      peak = true;
-      domainBias = 2; // III. SILICA / Kamen harmonic seal
-    } else if (veins > 0.58 && b1 > 0.30) {
-      domainBias = 1; // II. EROSION / Asperitas patina
+    // -------------------------------------------------------------------------
+    // FORMATION 0 — I. MONOLITH (Stepped Temple Portal)
+    // -------------------------------------------------------------------------
+    if (fIdx === 0) {
+      const ax = Math.abs(nx);
+      const heave = b0 * 0.14;
+      const stepCount = 3 + Math.round(tess * 4);
+
+      // Stepped ziggurat temple contour widening from crown to plinth
+      const yNorm = clamp((ny + 0.86) / 1.72, 0, 1);
+      const stepQuant = Math.floor(yNorm * stepCount) / stepCount;
+      const outerW = 0.44 + stepQuant * 0.34 + heave;
+      const topY = -0.84 - heave * 0.30;
+      const botY = 0.84 + heave * 0.25;
+
+      // Clean dark void outside the stepped monolith silhouette
+      if (ax <= outerW && ny >= topY && ny <= botY) {
+        const doorW = 0.21 + b0 * 0.04;
+        const doorTop = -0.26 - b0 * 0.04;
+        const inSanctum = (ax < doorW && ny > doorTop && ny < botY - 0.07);
+
+        if (!inSanctum) {
+          // Outer stepped silhouette edge
+          const dOuterX = outerW - ax;
+          const dOuterY = Math.min(ny - topY, botY - ny);
+          const dStepH = Math.abs(((yNorm * stepCount) % 1) - 0.5);
+          const isOuterFrame = (dOuterX < 0.055) || (dOuterY < 0.055);
+          const isStepLedge = (dStepH > 0.44 && ax > doorW + 0.06);
+
+          // Inner doorway surround frame
+          const dDoorX = ax - doorW;
+          const dDoorTop = doorTop - ny;
+          const isDoorFrame =
+            (dDoorX >= 0 && dDoorX < 0.055 && ny >= doorTop - 0.055) ||
+            (dDoorTop >= 0 && dDoorTop < 0.055 && ax <= doorW + 0.055);
+
+          // Base temple plinth bar
+          const isPlinth = (ny > botY - 0.09);
+
+          // Symmetrical fluted vertical sanctuary pillars flanking doorway
+          const ribFreq = 10.0 + tess * 16.0;
+          const ribPhase = b1 * 2.4 + Math.sin(t * 0.4 + seed) * 0.35;
+          const inPillarZone = (ax > doorW + 0.065 && ax < outerW - 0.065 && ny > doorTop && ny < botY - 0.09);
+          const pillarRib = inPillarZone && (Math.cos((ax - doorW) * ribFreq * PI - ribPhase) > 0.42);
+
+          // Upper lintel frieze with high-frequency rune etching
+          const inLintel = (ny > topY + 0.065 && ny < doorTop - 0.065 && ax < outerW - 0.065);
+          const lintelBand = inLintel && (Math.sin(ny * (16 + tess * 14) + b1 * 1.5) > 0.25);
+          const lintelRune = inLintel && (Math.cos(ax * (18 + tess * 18) + seed * 3.0) * Math.sin(ny * 24) > (0.58 - b3 * 0.38));
+
+          if (isOuterFrame || isDoorFrame || isPlinth) {
+            density = 0.72 + b0 * 0.28;
+            zone = 0;
+            peak = b0 > 0.65;
+          } else if (isStepLedge) {
+            density = 0.54 + b0 * 0.26;
+            zone = 0;
+          } else if (pillarRib) {
+            density = 0.40 + b1 * 0.48 + b2 * 0.14;
+            zone = 1;
+            peak = b1 > 0.68;
+          } else if (lintelRune) {
+            density = 0.46 + b3 * 0.54;
+            zone = 3;
+            peak = b3 > 0.52;
+          } else if (lintelBand) {
+            density = 0.24 + b2 * 0.36;
+            zone = 2;
+          } else {
+            // Subtle recessed stone masonry texture inside solid monolith blocks
+            const ashlar = ((col + Math.floor(row / 2) * 3) % 5 === 0) && (row % 2 === 0);
+            if (ashlar) {
+              density = 0.14 + b0 * 0.16;
+              zone = 0;
+            }
+          }
+        } else {
+          // Dark central sanctum chamber: only a hairline altar threshold at bottom
+          if (ny > botY - 0.13 && ax < doorW - 0.04) {
+            density = 0.22 + b2 * 0.30;
+            zone = 2;
+          }
+        }
+
+        // Vertical seismic fault splitting down the temple centerline on strong transients
+        const faultAmp = Math.max(b0 > 0.48 ? (b0 - 0.48) * 1.6 : 0, gateShear);
+        if (faultAmp > 0.05) {
+          const crackX = Math.sin(ny * 11.0 + seed * 4.0 + Math.floor(t * 2.0)) * 0.045;
+          const dCrack = Math.abs(nx - crackX);
+          if (dCrack < 0.022 + faultAmp * 0.025) {
+            density = 0.92;
+            zone = 3;
+            peak = true;
+          }
+        }
+      }
+
+    // -------------------------------------------------------------------------
+    // FORMATION 1 — II. SEAL (Occult Ritual Circle)
+    // -------------------------------------------------------------------------
+    } else if (fIdx === 1) {
+      const r = Math.hypot(nx, ny);
+      const theta = Math.atan2(ny, nx);
+      const R = 0.78 + b0 * 0.10;
+
+      // Deep dark void outside the engraved outer seal ring
+      if (r <= R + 0.045) {
+        const sides = 3 + Math.round(tess * 5); // 3 (triangle) .. 8 (octagon), default 6 (hexagram)
+        const rotA = t * 0.22 + b1 * 0.55 + seed;
+        const rotB = -t * 0.18 - b2 * 0.55 + seed + PI / sides;
+
+        // 1. Engraved double outer ring + radial astrolabe graduations
+        const dRingOut = Math.abs(r - R);
+        const dRingIn = Math.abs(r - (R - 0.095));
+        const inRingBand = (r <= R && r >= R - 0.095);
+        const tickCount = 12 + Math.round(tess * 24);
+        const isTick = inRingBand && (Math.abs(Math.cos(theta * tickCount * 0.5)) > 0.92);
+
+        // 2. Cardinal axes & diagonal ritual rays
+        const isCardinal = (Math.abs(nx) < 0.018 || Math.abs(ny) < 0.018) && r > 0.14 && r < R - 0.095;
+        const isDiag = (Math.abs(Math.abs(nx) - Math.abs(ny)) < 0.016) && r > 0.18 && r < R - 0.11;
+
+        // 3. Nested counter-rotating regular polygons (exact SDF edges)
+        const dPoly1 = Math.abs(regularPolygonSDF(nx, ny, sides, R * 0.69, rotA));
+        const dPoly2 = Math.abs(regularPolygonSDF(nx, ny, sides, R * 0.52, rotB));
+        const dPoly3 = Math.abs(regularPolygonSDF(nx, ny, sides, R * 0.30, rotA * 1.4));
+
+        // 4. Central engraved oculus & standing-wave Chladni nodal rings
+        const dOculus = Math.abs(r - (0.14 + b0 * 0.04));
+        const nHarm = 2 + Math.round(tess * 4);
+        const chladni = Math.cos(r * (10 + tess * 12) - t * 0.9) * Math.cos(theta * nHarm + rotA * 0.5);
+        const isNodal = (r < R - 0.11 && r > 0.15) && (Math.abs(chladni) < (0.09 + b2 * 0.11)) && (b2 > 0.08 || b1 > 0.12);
+
+        if (dRingOut < 0.026 || dRingIn < 0.020) {
+          density = 0.76 + b0 * 0.24;
+          zone = 0;
+          peak = b0 > 0.62;
+        } else if (isTick) {
+          density = 0.42 + b3 * 0.56;
+          zone = 3;
+          peak = b3 > 0.55;
+        } else if (dPoly1 < 0.024) {
+          density = 0.66 + b1 * 0.34;
+          zone = 1;
+          peak = b1 > 0.62;
+        } else if (dPoly2 < 0.022) {
+          density = 0.58 + b2 * 0.40;
+          zone = 2;
+          peak = b2 > 0.60;
+        } else if (dOculus < 0.022) {
+          density = 0.64 + b0 * 0.36;
+          zone = 0;
+          peak = b0 > 0.55;
+        } else if (dPoly3 < 0.018 && r > 0.15) {
+          density = 0.38 + b2 * 0.42;
+          zone = 2;
+        } else if (isCardinal) {
+          density = 0.32 + b3 * 0.45;
+          zone = 3;
+        } else if (isNodal) {
+          density = 0.22 + b2 * 0.52 + b1 * 0.18;
+          zone = 2;
+        } else if (isDiag && (b1 + b3 > 0.25)) {
+          density = 0.18 + b3 * 0.34;
+          zone = 3;
+        }
+      }
+
+    // -------------------------------------------------------------------------
+    // FORMATION 2 — III. MOSAIC (Reliquary Coffered Wall)
+    // -------------------------------------------------------------------------
+    } else if (fIdx === 2) {
+      // Framed cathedral mosaic panel with clean dark perimeter margin
+      if (Math.abs(ny) <= 0.86 && Math.abs(nx) <= (cols / Math.max(1, rows)) * 0.86) {
+        const tileW = Math.round(12 - tess * 6); // 12 down to 6 cells (default 9)
+        const tileH = Math.round(8 - tess * 3);  // 8 down to 5 cells (default 6 or 7)
+        const centerCol = Math.floor(cols * 0.5);
+        const centerRow = Math.floor(rows * 0.5);
+
+        // Symmetrical tile coordinates centered on screen
+        const relC = col - centerCol + Math.floor(tileW * 0.5);
+        const relR = row - centerRow + Math.floor(tileH * 0.5);
+        const tx = Math.floor(relC / tileW);
+        const ty = Math.floor(relR / tileH);
+        const lx = ((relC % tileW) + tileW) % tileW;
+        const ly = ((relR % tileH) + tileH) % tileH;
+
+        // Mirrored architectural symmetry across cathedral axes
+        const stx = Math.abs(tx);
+        const sty = Math.abs(ty);
+
+        // Per-tile coherent domain assignment (0..3)
+        const tileZone = (stx + sty + Math.floor(seed * 2.0)) % 4;
+        const bandVals = [b0, b1, b2, b3];
+        const tileEnergy = bandVals[tileZone];
+
+        // Tile-by-tile transient dropout when FRACTURE is active
+        let tileDropped = false;
+        if (fracture > 0.02 && gateDrop > 0.05) {
+          const dropRoll = hash2(tx * 1.7 + Math.floor(frameTick * 0.2), ty * 2.3 + seed);
+          if (dropRoll < fracture * gateDrop * 0.72) {
+            tileDropped = true;
+          }
+        }
+
+        if (!tileDropped) {
+          // 1-cell dark grout gap between tiles for crisp masonry legibility
+          const isGrout = (lx === 0 || ly === 0);
+          if (!isGrout) {
+            const innerW = tileW - 1;
+            const innerH = tileH - 1;
+            const ix = lx - 1;
+            const iy = ly - 1;
+            const isBorder = (ix === 0 || ix === innerW - 1 || iy === 0 || iy === innerH - 1);
+            const isCorner = (ix === 0 || ix === innerW - 1) && (iy === 0 || iy === innerH - 1);
+
+            const ux = ((ix + 0.5) / innerW) * 2.0 - 1.0;
+            const uy = ((iy + 0.5) / innerH) * 2.0 - 1.0;
+            const manhattan = Math.abs(ux) + Math.abs(uy);
+            const maxBox = Math.max(Math.abs(ux), Math.abs(uy));
+
+            // Coherent geometric coffer motif inside each tile
+            const motifType = (stx * 3 + sty) % 3;
+            let motifHit = false;
+            if (motifType === 0) {
+              // Engraved central diamond
+              motifHit = Math.abs(manhattan - (0.58 + tileEnergy * 0.25)) < 0.24;
+            } else if (motifType === 1) {
+              // Inner recessed square coffer
+              motifHit = Math.abs(maxBox - (0.48 + tileEnergy * 0.22)) < 0.20;
+            } else {
+              // Crossed reliquary ribs
+              motifHit = (Math.abs(ux) < 0.22 || Math.abs(uy) < 0.22);
+            }
+
+            const centerSeal = (Math.hypot(ux, uy) < 0.26);
+
+            zone = tileZone;
+            if (isCorner) {
+              density = 0.54 + tileEnergy * 0.42;
+              peak = tileEnergy > 0.65;
+            } else if (isBorder) {
+              density = 0.28 + tileEnergy * 0.34;
+            } else if (centerSeal) {
+              density = 0.44 + tileEnergy * 0.54;
+              peak = tileEnergy > 0.58;
+            } else if (motifHit && (tileEnergy > 0.14 || (stx + sty) % 2 === 0)) {
+              density = 0.24 + tileEnergy * 0.64;
+              peak = tileEnergy > 0.74;
+            }
+          }
+        }
+      }
+
+    // -------------------------------------------------------------------------
+    // FORMATION 3 — IV. STRATA (Geological Fault Cross-Section)
+    // -------------------------------------------------------------------------
+    } else if (fIdx === 3) {
+      // Generous void above upper horizon and below deep bedrock abyss
+      const shelfSteps = 5 + Math.round(tess * 7);
+      const qx = Math.floor(nx * shelfSteps) / shelfSteps;
+      const horizonTop = -0.64 + Math.sin(qx * 3.1 + seed) * 0.08 + Math.cos(qx * 6.5) * 0.03;
+      const bedrockBot = 0.72 + Math.cos(qx * 2.4 + seed) * 0.05;
+
+      if (ny >= horizonTop && ny <= bedrockBot) {
+        // Living central horizontal seismic rift widening violently on bass hits
+        const riftCenter = Math.sin(qx * 2.8 + t * 0.35 + seed) * 0.11 + (b1 - 0.2) * 0.06;
+        const riftHalf = 0.065 + b0 * 0.17 + gateShear * 0.09;
+        const dRift = Math.abs(ny - riftCenter);
+
+        if (dRift < riftHalf) {
+          // Pitch-black seismic chasm void (except glowing rim fracture on peaks)
+          density = 0;
+        } else if (dRift < riftHalf + 0.048) {
+          // Razor-sharp lit fault lip bordering the chasm
+          density = 0.76 + b0 * 0.24;
+          zone = 3;
+          peak = b0 > 0.48 || b3 > 0.52;
+        } else {
+          // Distinct horizontal sedimentary rock strata
+          const strataCount = 4 + Math.round(tess * 6);
+          const depthShift = (ny < riftCenter ? -1 : 1) * (b0 * 0.08 + b1 * 0.12);
+          const sy = (ny - horizonTop + depthShift) * strataCount;
+          const stratumIdx = Math.floor(sy);
+          const sFrac = sy - stratumIdx;
+
+          // Crisp horizontal bedding seam between geological strata
+          const isSeam = (sFrac < 0.14 || sFrac > 0.88);
+          const sZone = ((stratumIdx % 4) + 4) % 4;
+          const bandVals = [b0, b1, b2, b3];
+          const sEnergy = bandVals[sZone];
+
+          zone = sZone;
+          if (isSeam) {
+            density = 0.52 + sEnergy * 0.44;
+            peak = sEnergy > 0.66;
+          } else {
+            // Distinct geological textures per stratum layer
+            const layerType = ((stratumIdx % 3) + 3) % 3;
+            if (layerType === 0) {
+              // Vertical basalt column striations
+              if (col % 3 === 0) {
+                density = 0.32 + b0 * 0.38 + sEnergy * 0.24;
+              }
+            } else if (layerType === 1) {
+              // Dense compressed shale bedding dashes
+              if (row % 2 === 0 && ((col + stratumIdx * 2) % 2 === 0)) {
+                density = 0.26 + b1 * 0.42 + sEnergy * 0.22;
+              }
+            } else {
+              // Sparse mineral quartz veins
+              if (Math.abs(sFrac - 0.5) < 0.16 && ((col + stratumIdx) % 4 === 0)) {
+                density = 0.30 + b2 * 0.46 + b3 * 0.24;
+                peak = b3 > 0.58;
+              }
+            }
+          }
+        }
+      }
+
+    // -------------------------------------------------------------------------
+    // FORMATION 4 — V. OBELISK (Vertical Totem Spine)
+    // -------------------------------------------------------------------------
+    } else if (fIdx === 4) {
+      const ax = Math.abs(nx);
+      const topTip = -0.88;
+      const capBase = -0.58;
+      const plinthTop = 0.72;
+      const plinthBot = 0.86;
+
+      // 1. Monumental Pyramidion Capstone & Tapering Shaft
+      if (ny >= topTip && ny <= plinthBot) {
+        if (ny < capBase) {
+          // Crisp tapering pyramidion triangle
+          const capW = ((ny - topTip) / (capBase - topTip)) * (0.14 + b0 * 0.04);
+          if (ax <= capW) {
+            const isCapEdge = (capW - ax < 0.032) || (capBase - ny < 0.03);
+            zone = 3;
+            density = isCapEdge ? (0.78 + b3 * 0.22) : (0.30 + b3 * 0.48);
+            peak = isCapEdge && b3 > 0.50;
+          }
+        } else if (ny <= plinthTop) {
+          // Slightly tapering monolithic stone shaft
+          const shaftProg = (ny - capBase) / (plinthTop - capBase);
+          const shaftW = 0.13 + shaftProg * 0.06 + b0 * 0.055;
+
+          if (ax <= shaftW) {
+            const isEdge = (shaftW - ax < 0.032);
+            const inSpineGroove = (ax < 0.036);
+
+            if (isEdge) {
+              density = 0.74 + b0 * 0.26;
+              zone = 0;
+              peak = b0 > 0.62;
+            } else if (inSpineGroove) {
+              // Carved central recessed spine channel with rising harmonic pulses
+              const pulse = Math.sin(ny * (14 + tess * 12) - t * 2.2) * 0.5 + 0.5;
+              if (pulse > (0.68 - b2 * 0.45)) {
+                density = 0.44 + b2 * 0.54;
+                zone = 2;
+                peak = b2 > 0.58;
+              }
+            } else {
+              // Engraved horizontal shaft bands
+              const bandFreq = 6 + Math.round(tess * 10);
+              const isBand = Math.abs(((shaftProg * bandFreq) % 1) - 0.5) > 0.40;
+              if (isBand) {
+                density = 0.40 + b1 * 0.46;
+                zone = 1;
+              } else if (row % 3 === 0) {
+                density = 0.16 + b0 * 0.18;
+                zone = 0;
+              }
+            }
+          } else {
+            // 2. Flanking Symmetrical Stepped Architectural Ribs & Plumb Lines
+            const plumb1 = 0.34;
+            const plumb2 = 0.52;
+            const ribCount = 5 + Math.round(tess * 7);
+            const ribPos = shaftProg * ribCount;
+            const isCrossbar = Math.abs((ribPos % 1) - 0.5) > 0.43;
+            const ribIdx = Math.floor(ribPos);
+
+            // Crossbars extend outward with low-mid & high energy in clean stepped tiers
+            const barReach = 0.28 + ((ribIdx % 2 === 0) ? 0.18 : 0.08) + b1 * 0.20;
+
+            if (isCrossbar && ax > shaftW + 0.04 && ax < barReach) {
+              density = 0.52 + b1 * 0.44;
+              zone = 1;
+              peak = b1 > 0.62;
+            } else if (Math.abs(ax - plumb1) < 0.015 && ny > capBase + 0.06 && ny < plinthTop - 0.04) {
+              // Inner vertical plumb line
+              const nodeHit = Math.abs((ribPos % 1) - 0.5) > 0.38;
+              density = nodeHit ? (0.62 + b2 * 0.36) : (0.20 + b2 * 0.25);
+              zone = 2;
+              peak = nodeHit && b2 > 0.62;
+            } else if (Math.abs(ax - plumb2) < 0.015 && ny > capBase + 0.18 && ny < plinthTop - 0.14) {
+              // Outer vertical plumb line (reveals softly with highs)
+              if (row % 2 === 0 || b3 > 0.25) {
+                density = 0.18 + b3 * 0.58;
+                zone = 3;
+                peak = b3 > 0.62;
+              }
+            }
+          }
+        } else {
+          // 3. Stepped Base Plinth Pedestal
+          const plinthW = (ny < plinthTop + 0.07) ? 0.32 + b0 * 0.06 : 0.44 + b0 * 0.08;
+          if (ax <= plinthW) {
+            const isEdge = (plinthW - ax < 0.035) || (ny - plinthTop < 0.03) || (plinthBot - ny < 0.03);
+            density = isEdge ? (0.72 + b0 * 0.28) : (0.26 + b0 * 0.28);
+            zone = 0;
+            peak = isEdge && b0 > 0.64;
+          }
+        }
+      }
+
+    // -------------------------------------------------------------------------
+    // FORMATION 5 — VI. VAULT (Recessed Stone Corridor)
+    // -------------------------------------------------------------------------
+    } else if (fIdx === 5) {
+      // Orthographic rectilinear stone archways receding into a dead-center void
+      const sx = Math.abs(nx) * 0.78;
+      const sy = Math.abs(ny);
+      const cheb = Math.max(sx, sy);
+
+      // Dead-center pitch-black sanctuary void
+      const coreVoid = 0.14 - b0 * 0.03;
+      if (cheb >= coreVoid && cheb <= 0.96) {
+        const archDensity = 2.6 + tess * 3.8;
+        const travel = t * 0.52 + b0 * 0.42;
+        const depth = Math.log(cheb) * archDensity + travel;
+        const archIdx = Math.floor(depth);
+        const archFrac = ((depth % 1) + 1) % 1;
+
+        // Crisp archway rib frames (narrow sharp stone edges with dark recessed bays between)
+        const ribThickness = 0.22 + b0 * 0.10;
+        const isArchRib = (archFrac < ribThickness);
+
+        // Diagonal corner miter seams connecting receding corners cleanly
+        const isMiter = Math.abs(sx - sy) < 0.026;
+
+        // Transverse coffered struts on top/bottom ceiling & floor bays
+        const onCeilingFloor = (sy > sx + 0.03);
+        const onSideWalls = (sx > sy + 0.03);
+        const strutStep = 5 + Math.round(tess * 6);
+        const isCofferStrut =
+          (onCeilingFloor && (Math.abs((nx * strutStep) % 1) < 0.12)) ||
+          (onSideWalls && (Math.abs((ny * strutStep) % 1) < 0.12));
+
+        // Depth fade: closest arches strongest, deepest arches recede into dark stone
+        const depthVis = clamp((cheb - coreVoid) / 0.55, 0.28, 1.0);
+        const aZone = ((archIdx % 4) + 4) % 4;
+        const bandVals = [b0, b1, b2, b3];
+        const aEnergy = bandVals[aZone];
+
+        if (isArchRib) {
+          density = (0.52 + aEnergy * 0.46) * depthVis;
+          zone = aZone;
+          peak = (archFrac < 0.08) && (aEnergy > 0.58 || b0 > 0.65);
+        } else if (isMiter) {
+          density = (0.44 + b3 * 0.48) * depthVis;
+          zone = 3;
+          peak = b3 > 0.60;
+        } else if (isCofferStrut && (archFrac > 0.48 && archFrac < 0.66)) {
+          density = (0.24 + b1 * 0.36 + b2 * 0.26) * depthVis;
+          zone = onCeilingFloor ? 2 : 1;
+        }
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // PROGRESSIVE STONE EROSION (Strictly 0.00 = Pristine, Crisp Architecture)
+    // -------------------------------------------------------------------------
+    if (density > 0 && erosion > 0.005) {
+      const nPit = hash2(col * 0.91 + seed * 3.1, row * 0.91 - seed * 2.3);
+      // Weather away softer edges first, progressively carving mineral pits into stone
+      const pitChance = erosion * (0.78 - density * 0.42);
+      if (nPit < pitChance) {
+        // Leave sparse weathered dust specks on intermediate hits, full void on deeper pits
+        if (nPit > pitChance * 0.74) {
+          density = 0.10;
+          peak = false;
+        } else {
+          density = 0;
+          peak = false;
+        }
+      }
     }
 
     return {
       density: clamp(density, 0, 1),
-      peak,
-      domainBias
+      zone,
+      peak
     };
   }
 
   /* ===========================================================================
-     SECTION B: APPLICATION STATE & UTILITIES
+     SECTION B: APPLICATION STATE & EXACT CALIBRATION
      =========================================================================== */
   const state = {
-    // 4 Domain Dials (0..1 normalized)
+    // 4 Domain Dials — Exact Neutral Defaults
     params: {
-      gain: 0.35,         // 0.5x .. 8.0x exponential input gain
-      erosion: 0.30,      // Asperitas weathering & pitting
-      tessellation: 0.50, // Kamen symmetry order & density
-      fracture: 0.35      // Karst/Mnemosyne shear & stochastic gate intensity
+      gain: 0.50,         // Exact unity 1.00x via Math.pow(4, val * 2 - 1) -> [0.25x..4.00x]
+      erosion: 0.00,      // Zero artificial weathering at rest
+      tessellation: 0.50, // Balanced geometric subdivision
+      fracture: 0.00      // Zero random shear/glitch clutter at rest
     },
 
-    // System UI state
-    activated: false,
-    sourceMode: 'none',   // 'none' | 'mic' | 'file'
-    monitorOn: true,      // File speaker monitor (default ON when file loaded)
-    driftActive: false,
-    frozen: false,
-    hudVisible: true,
-    scopeMode: 0,         // 0 = green waveform, 1 = red peak seismograph
-
-    // Active grammar & palette indices
+    // Active Atelier Selections
+    formationIdx: 0,
     lexiconIdx: 0,
     paletteIdx: 0,
 
-    // Audio source handles & file transport
+    // Active Symbol Ramp & Per-Glyph Mute Array
+    rawGlyphs: [],        // Array of characters in active/custom ramp
+    mutedFlags: [],       // Boolean per glyph (true = muted)
+    activeGlyphs: [],     // Filtered non-muted glyphs used by renderer
+
+    // Hardware System State
+    activated: false,
+    sourceMode: 'none',   // 'none' | 'mic' | 'file'
+    monitorOn: true,
+    driftActive: false,
+    frozen: false,
+    hudVisible: true,
+    atelierOpen: true,
+    scopeMode: 0,         // 0 = green waveform, 1 = red peak seismograph
+
+    // Audio Source & Transport
     selectedMicId: '',
     fileLoaded: false,
     fileUrl: null,
     wasPlayingBeforeSuspend: false,
     isScrubbing: false,
 
-    // Morph time & FREEZE mortar snapshot
+    // Time, Seed & FREEZE Mortar Snapshot
     morphTime: 0,
-    morphSeed: 1.73,
+    morphSeed: 1.0,
     frozenTime: 0,
-    frozenSeed: 1.73,
+    frozenSeed: 1.0,
     frozenBands: [0, 0, 0, 0],
 
-    // 4-Band Crossover Peak Envelopes (peakamp~)
+    // 4-Band Biquad Crossover Envelopes (peakamp~)
     bands: [
-      { env: 0, prevAbove: false, lastFire: 0, ledUntil: 0, baseThr: 0.52 }, // I. STRATA (<140Hz)
-      { env: 0, prevAbove: false, lastFire: 0, ledUntil: 0, baseThr: 0.50 }, // II. EROSION (140-600Hz)
-      { env: 0, prevAbove: false, lastFire: 0, ledUntil: 0, baseThr: 0.48 }, // III. SILICA (600-2800Hz)
-      { env: 0, prevAbove: false, lastFire: 0, ledUntil: 0, baseThr: 0.45 }  // IV. LETHE (>2800Hz)
+      { env: 0, prevAbove: false, lastFire: 0, ledUntil: 0 }, // I. STRATA  (LP 140Hz)
+      { env: 0, prevAbove: false, lastFire: 0, ledUntil: 0 }, // II. EROSION (BP 420Hz)
+      { env: 0, prevAbove: false, lastFire: 0, ledUntil: 0 }, // III. SILICA (BP 1800Hz)
+      { env: 0, prevAbove: false, lastFire: 0, ledUntil: 0 }  // IV. LETHE  (HP 4200Hz)
     ],
 
-    // 3 Stochastic Coin-Toss Glitch Gates (0ms instant attack, snappy decay)
+    // 0ms Stochastic Fracture / Glitch Gates (Band III & IV transients, scaled by FRACTURE)
     gates: {
-      a: { env: 0, start: 0, dur: 70 },                      // Gate A: Karst Shear
-      b: { env: 0, start: 0, dur: 90 },                      // Gate B: Mnemosyne Shatter
-      c: { env: 0, start: 0, dur: 55, mode: 'invert' }       // Gate C: Void Invert / Blackout Cut
+      shear: { env: 0, start: 0, dur: 75, seed: 1 },
+      drop:  { env: 0, start: 0, dur: 90, seed: 1 },
+      cut:   { env: 0, start: 0, dur: 52, mode: 'invert', lastCut: 0 }
     },
 
-    seismoHistory: new Array(150).fill(0)
+    seismoHistory: new Array(156).fill(0)
   };
 
-  function gainDialToMult(v) {
-    // 0.0 -> 0.5x, 0.35 -> ~1.32x, 0.5 -> 2.0x, 1.0 -> 8.0x
-    return 0.5 * Math.pow(16, clamp(v, 0, 1));
+  /**
+   * Exact unity GAIN scaling:
+   *   val = 0.00 -> 0.25x
+   *   val = 0.50 -> 1.00x (EXACT UNITY DEFAULT)
+   *   val = 1.00 -> 4.00x
+   */
+  function gainDialToMult(val) {
+    return Math.pow(4, clamp(val, 0, 1) * 2 - 1);
+  }
+
+  /**
+   * Appends Unicode Text Variation Selector (U+FE0E) to non-ASCII geometric
+   * symbols so macOS/Safari never substitutes Apple Color Emoji.
+   */
+  function toMonoChar(ch) {
+    if (!ch || ch === ' ') return ' ';
+    const cp = ch.codePointAt(0);
+    if (cp > 0x7F && !ch.includes('\uFE0E')) {
+      return ch + '\uFE0E';
+    }
+    return ch;
   }
 
   function formatTime(sec) {
@@ -1204,13 +1798,14 @@
   /* ===========================================================================
      SECTION C: DOM REFERENCES
      =========================================================================== */
-  const asciiCanvas = document.getElementById('ascii-canvas');
-  const ctx = asciiCanvas.getContext('2d', { alpha: false });
+  const visCanvas = document.getElementById('visualiser-canvas');
+  const ctx = visCanvas.getContext('2d', { alpha: false });
   const scopeCanvas = document.getElementById('scope');
   const scopeCtx = scopeCanvas.getContext('2d');
 
   const dom = {
     chassisDock: document.getElementById('chassis-dock'),
+    atelierShelf: document.getElementById('atelier-shelf'),
     cornerToggle: document.getElementById('corner-toggle'),
     toast: document.getElementById('qm-toast'),
     dropOverlay: document.getElementById('drop-overlay'),
@@ -1244,12 +1839,19 @@
       document.getElementById('led-2'),
       document.getElementById('led-3')
     ],
-    btnLexicon: document.getElementById('btn-lexicon'),
-    valLexicon: document.getElementById('val-lexicon'),
-    btnPalette: document.getElementById('btn-palette'),
-    valPalette: document.getElementById('val-palette'),
+
+    btnAtelier: document.getElementById('btn-atelier'),
     btnFullscreen: document.getElementById('btn-fullscreen'),
-    btnHide: document.getElementById('btn-hide')
+    btnHide: document.getElementById('btn-hide'),
+
+    formationButtons: document.getElementById('formation-buttons'),
+    formationSubtitle: document.getElementById('formation-subtitle'),
+    symbolSetButtons: document.getElementById('symbol-set-buttons'),
+    glyphStrip: document.getElementById('glyph-strip'),
+    customGlyphInput: document.getElementById('custom-glyph-input'),
+    btnCustomSet: document.getElementById('btn-custom-set'),
+    btnCustomRst: document.getElementById('btn-custom-rst'),
+    paletteButtons: document.getElementById('palette-buttons')
   };
 
   let toastTimer = null;
@@ -1263,7 +1865,7 @@
   }
 
   /* ===========================================================================
-     SECTION D: HIGH-DPI OFFSCREEN GLYPH ATLAS & ARCHITECTURAL BLOCK STATE
+     SECTION D: HIGH-DPI OFFSCREEN MONOCHROME GLYPH ATLAS (60FPS BLIT CACHE)
      =========================================================================== */
   const atlasCanvas = document.createElement('canvas');
   const atlasCtx = atlasCanvas.getContext('2d');
@@ -1274,45 +1876,29 @@
   let cols = 0;
   let rows = 0;
 
-  // Per-block masonry pollution state (homage to MNEMOSYNE #mb-0..#mb-7)
-  const blocks = {
-    bCols: 0,
-    bRows: 0,
-    count: 0,
-    domEnergy: null,  // Float32Array(count * 4) smoothed per-domain energy
-    shatterEnv: null, // Float32Array(count) localized shatter burst
-    shatterDom: null, // Uint8Array(count) dominant colour domain during shatter
-    shatterSeed: null // Uint16Array(count) glitch glyph scramble seed
-  };
-
-  // Per-cell mortar trace buffer (for FREEZE and lingering MNEMOSYNE ghosts)
-  let traceGlyphIdx = null; // Int16Array
-  let traceRow = null;      // Uint8Array (atlas row 0..5)
-  let traceEnergy = null;   // Float32Array
-
   /**
-   * Builds a 7-row GPU-resident sprite sheet for the active lexicon & palette:
-   *   Row 0: Resting ink
+   * Rebuilds the 7-row GPU-cached sprite sheet for activeGlyphs & active palette:
+   *   Row 0: Resting mineral ink
    *   Row 1: Domain 0 (I. STRATA)
    *   Row 2: Domain 1 (II. EROSION)
    *   Row 3: Domain 2 (III. SILICA)
    *   Row 4: Domain 3 (IV. LETHE)
-   *   Row 5: Peak Highlight ink
-   *   Row 6: Inverted polarity ink (Gate C Void Invert)
+   *   Row 5: Transient Highlight peak
+   *   Row 6: Inverted polarity ink
    */
   function rebuildGlyphAtlas() {
-    const lex = GLYPH_LEXICONS[state.lexiconIdx];
     const pal = PALETTES[state.paletteIdx];
+    const ramp = state.activeGlyphs.length > 0 ? state.activeGlyphs : ['·'];
     cellPx = Math.max(12, Math.round(cellCss * dpr));
 
-    atlasCanvas.width = lex.chars.length * cellPx;
+    atlasCanvas.width = Math.max(cellPx, ramp.length * cellPx);
     atlasCanvas.height = 7 * cellPx;
 
     atlasCtx.clearRect(0, 0, atlasCanvas.width, atlasCanvas.height);
     atlasCtx.textAlign = 'center';
     atlasCtx.textBaseline = 'middle';
-    const fontPx = Math.floor(cellPx * 0.88);
-    atlasCtx.font = `bold ${fontPx}px 'Courier New', Courier, monospace`;
+    const fontPx = Math.floor(cellPx * 0.86);
+    atlasCtx.font = `bold ${fontPx}px 'Courier New', Menlo, monospace`;
 
     const rowColors = [
       pal.rest,
@@ -1326,9 +1912,9 @@
 
     for (let r = 0; r < rowColors.length; r++) {
       atlasCtx.fillStyle = rowColors[r];
-      const cy = r * cellPx + cellPx * 0.53;
-      for (let i = 0; i < lex.chars.length; i++) {
-        const ch = lex.chars[i];
+      const cy = r * cellPx + cellPx * 0.52;
+      for (let i = 0; i < ramp.length; i++) {
+        const ch = toMonoChar(ramp[i]);
         if (ch === ' ') continue;
         const cx = i * cellPx + cellPx * 0.5;
         atlasCtx.fillText(ch, cx, cy);
@@ -1340,35 +1926,19 @@
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     const w = window.innerWidth;
     const h = window.innerHeight;
-    asciiCanvas.width = Math.floor(w * dpr);
-    asciiCanvas.height = Math.floor(h * dpr);
+    visCanvas.width = Math.floor(w * dpr);
+    visCanvas.height = Math.floor(h * dpr);
     ctx.imageSmoothingEnabled = false;
 
-    // Optimal ~14px-18px cell density responsive to viewport & TESSELLATION dial
-    const baseCell = clamp(Math.round(w / 92), 14, 18);
-    cellCss = clamp(Math.round(baseCell + (0.5 - state.params.tessellation) * 3), 14, 18);
-
+    cellCss = clamp(Math.round(Math.min(w, h) / 56), 13, 18);
     rebuildGlyphAtlas();
 
-    cols = Math.max(24, Math.ceil(asciiCanvas.width / cellPx));
-    rows = Math.max(16, Math.ceil(asciiCanvas.height / cellPx));
-
-    blocks.bCols = Math.ceil(cols / FIELD_PARAMS.blockCellsX);
-    blocks.bRows = Math.ceil(rows / FIELD_PARAMS.blockCellsY);
-    blocks.count = blocks.bCols * blocks.bRows;
-    blocks.domEnergy = new Float32Array(blocks.count * 4);
-    blocks.shatterEnv = new Float32Array(blocks.count);
-    blocks.shatterDom = new Uint8Array(blocks.count);
-    blocks.shatterSeed = new Uint16Array(blocks.count);
-
-    const total = cols * rows;
-    traceGlyphIdx = new Int16Array(total);
-    traceRow = new Uint8Array(total);
-    traceEnergy = new Float32Array(total);
+    cols = Math.max(28, Math.ceil(visCanvas.width / cellPx));
+    rows = Math.max(20, Math.ceil(visCanvas.height / cellPx));
   }
 
   /* ===========================================================================
-     SECTION E: REAL 4-BAND WEB AUDIO CROSSOVER + PEAKAMP~ ENGINE
+     SECTION E: WEB AUDIO 4-BAND CROSSOVER + TRUE PEAKAMP~ ENGINE
      =========================================================================== */
   let audioCtx = null;
   let inputGain = null;
@@ -1384,11 +1954,11 @@
   let fileSourceNode = null;
 
   /**
-   * Initializes AudioContext and wires the exact 4-band BiquadFilterNode crossover:
-   *   Band 0 (I. STRATA / Lows)     : Cascaded 2nd-order Lowpass @ 140Hz
-   *   Band 1 (II. EROSION / Low-Mid): Bandpass @ 320Hz, Q=0.8
-   *   Band 2 (III. SILICA / Hi-Mid) : Bandpass @ 1400Hz, Q=0.8
-   *   Band 3 (IV. LETHE / Highs)    : Highpass @ 2800Hz
+   * Builds the Web Audio 4-band BiquadFilterNode crossover:
+   *   Band I   (STRATA / Lows)     : Lowpass 140Hz
+   *   Band II  (EROSION / Low-Mid) : Bandpass 420Hz
+   *   Band III (SILICA / Hi-Mid)   : Bandpass 1800Hz
+   *   Band IV  (LETHE / Highs)     : Highpass 4200Hz
    */
   async function initOrResumeAudio() {
     try {
@@ -1399,7 +1969,7 @@
         inputGain = audioCtx.createGain();
         inputGain.gain.value = gainDialToMult(state.params.gain);
 
-        // Speaker monitor gain node (ONLY FILE connects here; MIC is isolated)
+        // Speaker monitor gain (ONLY FILE routes here; MIC is isolated for zero feedback)
         monitorGain = audioCtx.createGain();
         monitorGain.gain.value = state.monitorOn ? 0.9 : 0.0;
         monitorGain.connect(audioCtx.destination);
@@ -1410,7 +1980,7 @@
         scopeBytes = new Uint8Array(scopeAnalyser.frequencyBinCount);
         inputGain.connect(scopeAnalyser);
 
-        // Band 0: Cascaded Lowpass @ 140Hz (steep slope)
+        // Band I: Lowpass 140Hz (cascaded 2nd-order for tight sub isolation)
         const lp1 = audioCtx.createBiquadFilter();
         lp1.type = 'lowpass'; lp1.frequency.value = 140; lp1.Q.value = 0.707;
         const lp2 = audioCtx.createBiquadFilter();
@@ -1419,23 +1989,23 @@
         inputGain.connect(lp1); lp1.connect(lp2); lp2.connect(an0);
         bandAnalysers[0] = an0; bandBuffers[0] = new Float32Array(an0.fftSize);
 
-        // Band 1: Bandpass @ 320Hz, Q=0.8
+        // Band II: Bandpass 420Hz
         const bp1 = audioCtx.createBiquadFilter();
-        bp1.type = 'bandpass'; bp1.frequency.value = 320; bp1.Q.value = 0.8;
+        bp1.type = 'bandpass'; bp1.frequency.value = 420; bp1.Q.value = 0.85;
         const an1 = audioCtx.createAnalyser(); an1.fftSize = 256;
         inputGain.connect(bp1); bp1.connect(an1);
         bandAnalysers[1] = an1; bandBuffers[1] = new Float32Array(an1.fftSize);
 
-        // Band 2: Bandpass @ 1400Hz, Q=0.8
+        // Band III: Bandpass 1800Hz
         const bp2 = audioCtx.createBiquadFilter();
-        bp2.type = 'bandpass'; bp2.frequency.value = 1400; bp2.Q.value = 0.8;
+        bp2.type = 'bandpass'; bp2.frequency.value = 1800; bp2.Q.value = 0.85;
         const an2 = audioCtx.createAnalyser(); an2.fftSize = 256;
         inputGain.connect(bp2); bp2.connect(an2);
         bandAnalysers[2] = an2; bandBuffers[2] = new Float32Array(an2.fftSize);
 
-        // Band 3: Highpass @ 2800Hz
+        // Band IV: Highpass 4200Hz
         const hp3 = audioCtx.createBiquadFilter();
-        hp3.type = 'highpass'; hp3.frequency.value = 2800; hp3.Q.value = 0.707;
+        hp3.type = 'highpass'; hp3.frequency.value = 4200; hp3.Q.value = 0.707;
         const an3 = audioCtx.createAnalyser(); an3.fftSize = 256;
         inputGain.connect(hp3); hp3.connect(an3);
         bandAnalysers[3] = an3; bandBuffers[3] = new Float32Array(an3.fftSize);
@@ -1460,7 +2030,7 @@
         if (state.sourceMode === 'file' && state.wasPlayingBeforeSuspend && state.fileLoaded) {
           try { await dom.audioPlayer.play(); updatePlayPauseUI(); } catch (_) {}
         }
-        showToast('ENGINE ACTIVATED');
+        showToast('AUDIO ENGINE ACTIVE');
       }
     } else if (audioCtx.state === 'running') {
       state.wasPlayingBeforeSuspend = (state.sourceMode === 'file' && !dom.audioPlayer.paused);
@@ -1471,7 +2041,7 @@
       await audioCtx.suspend();
       state.activated = false;
       dom.btnActivate.classList.remove('active');
-      showToast('ENGINE SUSPENDED');
+      showToast('AUDIO ENGINE SUSPENDED');
     }
   }
 
@@ -1490,15 +2060,19 @@
     dom.btnMon.classList.remove('active-amber', 'locked-iso', 'active');
     if (state.sourceMode === 'mic') {
       dom.btnMon.textContent = 'MON: ISO';
+      dom.btnMon.disabled = true;
       dom.btnMon.classList.add('locked-iso');
-      dom.btnMon.title = 'Speaker Monitor Locked Isolated in MIC Mode (Zero Feedback Risk)';
-    } else if (state.monitorOn) {
-      dom.btnMon.textContent = 'MON: ON';
-      dom.btnMon.classList.add('active-amber');
-      dom.btnMon.title = 'Speaker Monitor Active — Click to Mute File Audio';
+      dom.btnMon.title = 'Isolated in MIC Mode (Zero Speaker Feedback)';
     } else {
-      dom.btnMon.textContent = 'MON: OFF';
-      dom.btnMon.title = 'Speaker Monitor Muted — Click to Audition File Audio';
+      dom.btnMon.disabled = false;
+      if (state.monitorOn) {
+        dom.btnMon.textContent = 'MON: ON';
+        dom.btnMon.classList.add('active-amber');
+        dom.btnMon.title = 'File Speaker Monitor Active — Click to Mute';
+      } else {
+        dom.btnMon.textContent = 'MON: OFF';
+        dom.btnMon.title = 'File Speaker Monitor Muted — Click to Audition';
+      }
     }
 
     if (monitorGain && audioCtx) {
@@ -1543,7 +2117,6 @@
     const ok = await initOrResumeAudio();
     if (!ok) return;
 
-    // Pause file playback if running
     if (!dom.audioPlayer.paused) {
       dom.audioPlayer.pause();
       updatePlayPauseUI();
@@ -1569,7 +2142,7 @@
 
       micStream = await navigator.mediaDevices.getUserMedia(constraints);
       micSourceNode = audioCtx.createMediaStreamSource(micStream);
-      // Strictly route ONLY to inputGain (never monitorGain / destination)
+      // Strictly isolated: MIC connects ONLY to inputGain, never to monitorGain / destination
       micSourceNode.connect(inputGain);
 
       state.sourceMode = 'mic';
@@ -1578,10 +2151,10 @@
       updateMonitorUI();
 
       await populateMicDevices();
-      showToast('LIVE DI / MIC ENGAGED (MON ISOLATED)');
+      showToast('LIVE DI / MIC ENGAGED (MON: ISO)');
     } catch (err) {
       const msg = err.name === 'NotAllowedError'
-        ? 'MIC PERMISSION DENIED BY BROWSER / OS'
+        ? 'MIC PERMISSION DENIED IN BROWSER OR OS'
         : `MIC ERROR: ${err.name || err.message}`;
       showToast(msg);
     }
@@ -1610,7 +2183,6 @@
       dom.fileScrub.value = '0';
       dom.fileTimecode.textContent = '00:00 / 00:00';
       state.fileLoaded = true;
-      state.monitorOn = true; // Default ON when a file is loaded
     }
 
     if (!state.fileLoaded) {
@@ -1632,50 +2204,18 @@
 
       await dom.audioPlayer.play();
       updatePlayPauseUI();
-      showToast(`LOADED // ${dom.fileNameDisplay.textContent.slice(0, 28)}`);
+      showToast(`LOADED // ${dom.fileNameDisplay.textContent.slice(0, 32)}`);
     } catch (err) {
       showToast(`FILE PLAYBACK ERROR: ${err.message}`);
     }
   }
 
   /* ===========================================================================
-     SECTION F: TRUE PEAKAMP~ ANALYSIS & 3 STOCHASTIC COIN-TOSS GATES
+     SECTION F: TRUE PEAKAMP~ ANALYSIS & STOCHASTIC 0ms FRACTURE GATES
      =========================================================================== */
-  function fireGateA(nowMs) {
-    state.gates.a.env = 1.0;
-    state.gates.a.start = nowMs;
-    state.gates.a.dur = 70;
-    state.bands[0].ledUntil = nowMs + 115;
-  }
-
-  function fireGateB(nowMs, sourceBandIdx) {
-    state.gates.b.env = 1.0;
-    state.gates.b.start = nowMs;
-    state.gates.b.dur = 90;
-    state.bands[sourceBandIdx].ledUntil = nowMs + 115;
-
-    if (blocks.count > 0) {
-      const numHits = 1 + Math.floor(Math.random() * (2 + state.params.fracture * 5));
-      for (let i = 0; i < numHits; i++) {
-        const bi = Math.floor(Math.random() * blocks.count);
-        blocks.shatterEnv[bi] = 1.0;
-        blocks.shatterDom[bi] = sourceBandIdx;
-        blocks.shatterSeed[bi] = Math.floor(Math.random() * 65535);
-      }
-    }
-  }
-
-  function fireGateC(nowMs) {
-    state.gates.c.env = 1.0;
-    state.gates.c.start = nowMs;
-    state.gates.c.dur = 55;
-    state.gates.c.mode = Math.random() < 0.72 ? 'invert' : 'blackout';
-    state.bands[3].ledUntil = nowMs + 115;
-  }
-
   function processAudioAndGates(nowMs, dtSec) {
-    const decayPerSec = [3.1, 3.8, 4.4, 5.6];
-    const spectralComp = [1.15, 1.55, 1.95, 2.65];
+    const decayPerSec = [3.0, 3.8, 4.5, 5.8];
+    const spectralComp = [1.15, 1.55, 2.05, 2.85];
 
     const audioRunning = audioCtx && audioCtx.state === 'running' &&
       (state.sourceMode === 'mic' || (state.sourceMode === 'file' && !dom.audioPlayer.paused));
@@ -1687,78 +2227,98 @@
         const b = state.bands[i];
         an.getFloatTimeDomainData(buf);
 
-        // True peakamp~: absolute max sample across the 256-sample time buffer
+        // True peakamp~: absolute maximum sample in the time buffer
         let peak = 0;
         for (let s = 0; s < buf.length; s++) {
-          const absVal = Math.abs(buf[s]);
-          if (absVal > peak) peak = absVal;
+          const v = Math.abs(buf[s]);
+          if (v > peak) peak = v;
         }
 
         const level = clamp(Math.pow(peak * spectralComp[i], 0.85), 0, 1);
 
-        // Instantaneous attack, smooth musical decay
+        // Fast attack / musical decay envelope
         if (level > b.env) {
           b.env = level;
         } else {
           b.env = Math.max(0, b.env - decayPerSec[i] * dtSec);
         }
+
+        // Band I & II LED feedback on strong hits
+        if ((i === 0 || i === 1) && level > 0.62) {
+          b.ledUntil = nowMs + 85;
+        }
       }
     } else {
       for (let i = 0; i < 4; i++) {
-        state.bands[i].env = Math.max(0, state.bands[i].env - 3.6 * dtSec);
+        state.bands[i].env = Math.max(0, state.bands[i].env - 3.8 * dtSec);
       }
     }
 
-    // Evaluate 3 Stochastic Coin-Toss Glitch Gates weighted by FRACTURE dial
+    // Stochastic 0ms fracture/glitch gates driven by Band III & IV transients
+    // Strictly inactive when FRACTURE === 0.00 so default state stays razor-clean
     const frac = state.params.fracture;
-    const coinProb = clamp(0.06 + frac * 0.88, 0.06, 0.94);
-    const thrOffset = (0.45 - frac) * 0.30;
+    if (audioRunning && frac > 0.005) {
+      const prob = clamp(0.15 + frac * 0.80, 0.15, 0.95);
+      const thr3 = clamp(0.62 - frac * 0.30, 0.28, 0.62);
+      const thr4 = clamp(0.56 - frac * 0.28, 0.24, 0.56);
 
-    for (let i = 0; i < 4; i++) {
-      const b = state.bands[i];
-      const thr = clamp(b.baseThr + thrOffset, 0.22, 0.86);
-      const above = audioRunning && b.env > thr;
+      // Band III (SILICA) -> 0ms Shear Tear & Row Shift
+      const b3 = state.bands[2];
+      const above3 = b3.env > thr3;
+      if (above3 && !b3.prevAbove && (nowMs - b3.lastFire > 90)) {
+        b3.lastFire = nowMs;
+        if (Math.random() < prob) {
+          state.gates.shear.env = 1.0;
+          state.gates.shear.start = nowMs;
+          state.gates.shear.seed = Math.floor(Math.random() * 9973) + 1;
+          b3.ledUntil = nowMs + 115;
+        }
+      }
+      b3.prevAbove = above3;
 
-      // Rising-edge detection + 85ms cooldown
-      if (above && !b.prevAbove && (nowMs - b.lastFire > 85)) {
-        b.lastFire = nowMs;
-        if (Math.random() < coinProb) {
-          if (i === 0) {
-            fireGateA(nowMs);
-          } else if (i === 1 || i === 2) {
-            fireGateB(nowMs, i);
-          } else if (i === 3) {
-            // Gate C fires on intense high-frequency transients
-            if (b.env > thr + 0.08 && Math.random() < (0.35 + frac * 0.55)) {
-              fireGateC(nowMs);
-            } else {
-              fireGateB(nowMs, 3);
-            }
+      // Band IV (LETHE) -> 0ms Dropout / Shatter & occasional Polarity Inversion
+      const b4 = state.bands[3];
+      const above4 = b4.env > thr4;
+      if (above4 && !b4.prevAbove && (nowMs - b4.lastFire > 90)) {
+        b4.lastFire = nowMs;
+        if (Math.random() < prob) {
+          state.gates.drop.env = 1.0;
+          state.gates.drop.start = nowMs;
+          state.gates.drop.seed = Math.floor(Math.random() * 9973) + 1;
+          b4.ledUntil = nowMs + 115;
+
+          if (frac > 0.35 && b4.env > thr4 + 0.12 && (nowMs - state.gates.cut.lastCut > 260) && Math.random() < frac * 0.55) {
+            state.gates.cut.env = 1.0;
+            state.gates.cut.start = nowMs;
+            state.gates.cut.lastCut = nowMs;
+            state.gates.cut.mode = Math.random() < 0.72 ? 'invert' : 'blackout';
           }
         }
       }
-      b.prevAbove = above;
+      b4.prevAbove = above4;
+    } else {
+      state.bands[2].prevAbove = false;
+      state.bands[3].prevAbove = false;
     }
 
-    // Advance snappy linear gate recovery envelopes (0ms attack, 55-90ms decay)
-    const gateList = [state.gates.a, state.gates.b, state.gates.c];
-    for (let g = 0; g < gateList.length; g++) {
-      const gt = gateList[g];
-      if (gt.env > 0) {
-        const elapsed = nowMs - gt.start;
-        gt.env = elapsed >= gt.dur ? 0 : (1.0 - elapsed / gt.dur);
+    // Advance linear recovery envelopes
+    const gateKeys = ['shear', 'drop', 'cut'];
+    for (let k = 0; k < gateKeys.length; k++) {
+      const g = state.gates[gateKeys[k]];
+      if (g.env > 0) {
+        const elapsed = nowMs - g.start;
+        g.env = elapsed >= g.dur ? 0 : (1.0 - elapsed / g.dur);
       }
     }
   }
 
   /* ===========================================================================
-     SECTION G: 60FPS EDGE-TO-EDGE ASCII ARCHITECTURAL RENDERER
+     SECTION G: 60FPS CRISP ARCHITECTURAL ASCII RENDERER
      =========================================================================== */
   function renderVisualiser(nowMs, dtSec) {
     const pal = PALETTES[state.paletteIdx];
-    const lex = GLYPH_LEXICONS[state.lexiconIdx];
-    const glyphCount = lex.chars.length;
-    const maxGlyph = glyphCount - 1;
+    const rampLen = Math.max(1, state.activeGlyphs.length);
+    const maxGlyphIdx = rampLen - 1;
 
     const liveB0 = state.bands[0].env;
     const liveB1 = state.bands[1].env;
@@ -1766,206 +2326,111 @@
     const liveB3 = state.bands[3].env;
 
     if (!state.frozen) {
-      const cadence = FIELD_PARAMS.idleDriftSpeed + liveB0 * 0.85 + liveB1 * 0.45 + liveB2 * 0.35;
+      const cadence = 0.24 + liveB0 * 0.85 + liveB1 * 0.40 + liveB2 * 0.35;
       state.morphTime += dtSec * cadence;
     }
 
-    // Under FREEZE, lock base structural time & audio snapshot while live erosion & gates weather it
+    // Under FREEZE, lock base architectural frame while EROSION & FRACTURE weather it live
     const t = state.frozen ? state.frozenTime : state.morphTime;
     const seed = state.frozen ? state.frozenSeed : state.morphSeed;
-    const b0 = state.frozen ? Math.max(state.frozenBands[0], liveB0 * 0.35) : liveB0;
-    const b1 = state.frozen ? Math.max(state.frozenBands[1], liveB1 * 0.55) : liveB1;
+    const b0 = state.frozen ? state.frozenBands[0] : liveB0;
+    const b1 = state.frozen ? state.frozenBands[1] : liveB1;
     const b2 = state.frozen ? state.frozenBands[2] : liveB2;
-    const b3 = state.frozen ? Math.max(state.frozenBands[3], liveB3 * 0.65) : liveB3;
-
-    const gateA = state.gates.a.env;
-    const gateB = state.gates.b.env;
-    const gateC = state.gates.c.env;
-
-    // Gate C: 55ms Blackout Cut or Stark Polarity Inversion
-    if (gateC > 0 && state.gates.c.mode === 'blackout') {
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, asciiCanvas.width, asciiCanvas.height);
-      return;
-    }
-
-    const isInverted = gateC > 0 && state.gates.c.mode === 'invert';
-    ctx.fillStyle = isInverted ? pal.invertBg : pal.bg;
-    ctx.fillRect(0, 0, asciiCanvas.width, asciiCanvas.height);
+    const b3 = state.frozen ? state.frozenBands[3] : liveB3;
 
     const erosion = state.params.erosion;
-    const tessellation = state.params.tessellation;
+    const tess = state.params.tessellation;
     const fracture = state.params.fracture;
-    const maxAudio = Math.max(b0, b1, b2, b3);
 
-    // Negative space threshold: austere obsidian at rest, opens cleanly as audio swells
-    const voidFloor = clamp(
-      FIELD_PARAMS.baseVoidThreshold + erosion * FIELD_PARAMS.erosionVoidBias - maxAudio * FIELD_PARAMS.audioOpeningLift,
-      0.10,
-      0.66
-    );
+    const gateShear = state.gates.shear.env * fracture;
+    const gateDrop = state.gates.drop.env * fracture;
+    const gateCut = state.gates.cut.env;
 
-    const aspect = cols / Math.max(1, rows);
-    const invCols = 1.0 / Math.max(1, cols - 1);
-    const invRows = 1.0 / Math.max(1, rows - 1);
-    const frameTick = Math.floor(nowMs * 0.03);
+    // Brief 52ms Blackout or Polarity Inversion on high-FRACTURE Band IV peaks
+    if (gateCut > 0 && state.gates.cut.mode === 'blackout') {
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, visCanvas.width, visCanvas.height);
+      return;
+    }
+    const isInverted = gateCut > 0 && state.gates.cut.mode === 'invert';
 
-    const bW = FIELD_PARAMS.blockCellsX;
-    const bH = FIELD_PARAMS.blockCellsY;
-    const shatterDecay = 11.5 * dtSec;
-    const ghostDecay = (state.frozen ? 0.18 : (1.55 - fracture * 1.15)) * dtSec;
+    // Fill crisp dark (or archival vellum) void
+    ctx.fillStyle = isInverted ? pal.invertBg : pal.bg;
+    ctx.fillRect(0, 0, visCanvas.width, visCanvas.height);
 
-    const ctxFrame = {
+    const cx = (cols - 1) * 0.5;
+    const cy = (rows - 1) * 0.5;
+    const halfScale = Math.min(cols, rows) * 0.48;
+    const invScale = 1.0 / Math.max(1, halfScale);
+    const frameTick = Math.floor(nowMs * 0.04);
+
+    // Subtle idle stone breathing so static architecture feels alive without noise
+    const idleBreath = 0.94 + Math.sin(t * 0.9) * 0.06;
+
+    const bandEnvs = [b0, b1, b2, b3];
+    const fCtx = {
       t, seed, b0, b1, b2, b3,
-      gateA, gateB, erosion, tessellation, fracture,
-      isCorner: false, isEdge: false, blockFracture: 0, frameTick
+      tess, erosion, fracture,
+      gateShear, gateDrop,
+      cols, rows, frameTick
     };
 
-    // Iterate architectural masonry blocks (MNEMOSYNE colour pollution per block)
-    for (let br = 0; br < blocks.bRows; br++) {
-      const rStart = br * bH;
-      const rEnd = Math.min(rows, rStart + bH);
+    const shearSeed = state.gates.shear.seed;
+    const dropSeed = state.gates.drop.seed;
+    const fIdx = state.formationIdx;
 
-      for (let bc = 0; bc < blocks.bCols; bc++) {
-        const cStart = bc * bW;
-        const cEnd = Math.min(cols, cStart + bW);
-        const bi = br * blocks.bCols + bc;
+    for (let r = 0; r < rows; r++) {
+      const ny = (r - cy) * invScale;
+      const drawY = r * cellPx;
 
-        // Decay localized Gate B shatter envelope
-        let bShatter = blocks.shatterEnv[bi];
-        if (bShatter > 0) {
-          bShatter = Math.max(0, bShatter - shatterDecay);
-          blocks.shatterEnv[bi] = bShatter;
+      // Coherent horizontal row-band shear shift on Band III FRACTURE transients
+      let rowShiftCols = 0;
+      if (gateShear > 0.04) {
+        const bandBand = Math.floor(r / 3);
+        const h = hash2(bandBand + shearSeed, frameTick * 0.25);
+        if (h > (1.0 - gateShear * 0.65)) {
+          const dir = (bandBand % 2 === 0) ? 1 : -1;
+          rowShiftCols = Math.round(dir * (2 + gateShear * 9));
+        }
+      }
+
+      for (let c = 0; c < cols; c++) {
+        const srcCol = c + rowShiftCols;
+        const nx = (srcCol - cx) * invScale;
+
+        const cell = computeFormationCell(fIdx, nx, ny, srcCol, r, fCtx);
+        if (cell.density <= 0.02) continue;
+
+        // Coherent transient dropouts on Band IV FRACTURE bursts
+        if (gateDrop > 0.06 && fIdx !== 2) {
+          const dh = hash2(Math.floor(c / 4) + dropSeed, Math.floor(r / 2) + dropSeed);
+          if (dh < gateDrop * 0.55) continue;
         }
 
-        // Spatial domain weights for this masonry chamber
-        const bx = ((cStart + bW * 0.5) * invCols - 0.5) * 2.0 * aspect;
-        const by = ((rStart + bH * 0.5) * invRows - 0.5) * 2.0;
-        const bDist = Math.hypot(bx, by);
-        const bWave = Math.sin(bc * 1.4 + br * 1.6 + t * 0.45 + seed) * 0.5 + 0.5;
+        const finalDensity = clamp(cell.density * idleBreath, 0, 1);
+        const gIdx = clamp(Math.floor(finalDensity * maxGlyphIdx + 0.25), 0, maxGlyphIdx);
 
-        const w0 = b0 * (0.55 + 0.60 * Math.exp(-bDist * 0.75)) + gateA * 0.9;
-        const w1 = b1 * (0.45 + 0.70 * bWave);
-        const w2 = b2 * (0.45 + 0.75 * (1.0 - Math.min(1, bDist * 0.72)));
-        const w3 = b3 * (0.55 + 0.65 * hash2(bc, br + Math.floor(t * 0.6))) + bShatter * 1.5;
-
-        const eOff = bi * 4;
-        blocks.domEnergy[eOff + 0] += (w0 - blocks.domEnergy[eOff + 0]) * 0.24;
-        blocks.domEnergy[eOff + 1] += (w1 - blocks.domEnergy[eOff + 1]) * 0.24;
-        blocks.domEnergy[eOff + 2] += (w2 - blocks.domEnergy[eOff + 2]) * 0.24;
-        blocks.domEnergy[eOff + 3] += (w3 - blocks.domEnergy[eOff + 3]) * 0.24;
-
-        // Determine dominant domain colour for this block (0 = resting, 1..4 = polluted)
-        let maxDomVal = 0;
-        let maxDomIdx = -1;
-        for (let d = 0; d < 4; d++) {
-          const val = blocks.domEnergy[eOff + d];
-          if (val > maxDomVal) {
-            maxDomVal = val;
-            maxDomIdx = d;
+        // Coherent color assignment by structural zone & its band energy:
+        // Resting mineral ink at low energy -> smooth pollution into domain ink as band rises
+        let atlasRow = 0;
+        if (isInverted) {
+          atlasRow = 6;
+        } else {
+          const zoneEnergy = bandEnvs[cell.zone];
+          if (cell.peak && zoneEnergy > 0.42) {
+            atlasRow = 5; // Stark transient highlight peak
+          } else if (zoneEnergy > 0.14 || (state.frozen && zoneEnergy > 0.10)) {
+            atlasRow = 1 + cell.zone; // Domain mineral patina ink
+          } else {
+            atlasRow = 0; // Austere resting stone ink
           }
         }
 
-        // Only pollute colour when real audio energy or shatter crosses the resting patina threshold
-        const polluted = maxDomVal > 0.26 || bShatter > 0.12;
-        const blockAtlasRow = isInverted
-          ? 6
-          : (bShatter > 0.12 ? (1 + blocks.shatterDom[bi]) : (polluted ? (1 + maxDomIdx) : 0));
-
-        // Subtle localized block wash on strong shatter/pollution bursts
-        if (!isInverted && (bShatter > 0.18 || maxDomVal > 0.62) && maxDomIdx >= 0) {
-          ctx.fillStyle = pal.blockWash[bShatter > 0.18 ? blocks.shatterDom[bi] : maxDomIdx];
-          ctx.fillRect(
-            cStart * cellPx,
-            rStart * cellPx,
-            (cEnd - cStart) * cellPx,
-            (rEnd - rStart) * cellPx
-          );
-        }
-
-        ctxFrame.blockFracture = bShatter;
-        const shatterSeed = blocks.shatterSeed[bi];
-
-        // Evaluate cells inside this block
-        for (let r = rStart; r < rEnd; r++) {
-          const localY = (r - rStart) / Math.max(1, bH - 1);
-          const y = (r * invRows - 0.5) * 2.0;
-          const isEdgeY = (r === rStart || r === rEnd - 1);
-          const drawY = r * cellPx;
-
-          for (let c = cStart; c < cEnd; c++) {
-            const localX = (c - cStart) / Math.max(1, bW - 1);
-            const x = (c * invCols - 0.5) * 2.0 * aspect;
-            const isEdgeX = (c === cStart || c === cEnd - 1);
-            const cellIdx = r * cols + c;
-
-            ctxFrame.isCorner = isEdgeX && isEdgeY;
-            ctxFrame.isEdge = isEdgeX || isEdgeY;
-
-            // Decay existing mortar ghost trace
-            let ghost = traceEnergy[cellIdx];
-            if (ghost > 0) {
-              ghost = Math.max(0, ghost - ghostDecay);
-              traceEnergy[cellIdx] = ghost;
-            }
-
-            const res = computeField(x, y, c, r, localX, localY, ctxFrame);
-            let gIdx = 0;
-            let rowToDraw = blockAtlasRow;
-
-            if (bShatter > 0.15) {
-              // Gate B localized shatter: corrupts block with dense esoteric glyphs
-              const sh = hash2(c + shatterSeed, r * 1.3 + frameTick);
-              if (sh > 0.25) {
-                gIdx = Math.max(1, Math.floor((0.45 + sh * 0.55) * maxGlyph));
-                rowToDraw = isInverted ? 6 : (sh > 0.86 ? 5 : (1 + blocks.shatterDom[bi]));
-                traceGlyphIdx[cellIdx] = gIdx;
-                traceRow[cellIdx] = 1 + blocks.shatterDom[bi];
-                traceEnergy[cellIdx] = 0.88;
-              }
-            } else if (res.density > voidFloor) {
-              const norm = clamp((res.density - voidFloor) / Math.max(0.14, 1.0 - voidFloor), 0, 1);
-              gIdx = Math.floor(norm * maxGlyph);
-
-              if (!isInverted) {
-                if (res.peak && norm > 0.68) {
-                  rowToDraw = 5; // Stark bone/white peak highlight
-                } else if (res.domainBias >= 0 && norm > 0.44) {
-                  rowToDraw = 1 + res.domainBias;
-                }
-              }
-
-              // Imprint bright motifs into the MNEMOSYNE mortar trace buffer
-              if (norm > 0.66 && (fracture > 0.15 || state.frozen)) {
-                traceGlyphIdx[cellIdx] = gIdx;
-                traceRow[cellIdx] = rowToDraw === 6 ? 0 : rowToDraw;
-                traceEnergy[cellIdx] = Math.max(traceEnergy[cellIdx], 0.72 + fracture * 0.24);
-              }
-            } else if (ghost > 0.10) {
-              // Render lingering trapped mortar trace (especially vivid under FREEZE)
-              gIdx = traceGlyphIdx[cellIdx];
-              rowToDraw = isInverted ? 6 : traceRow[cellIdx];
-              if (gIdx > 0) {
-                ctx.globalAlpha = clamp(ghost * 0.85, 0.12, 0.85);
-                ctx.drawImage(
-                  atlasCanvas,
-                  gIdx * cellPx, rowToDraw * cellPx, cellPx, cellPx,
-                  c * cellPx, drawY, cellPx, cellPx
-                );
-                ctx.globalAlpha = 1.0;
-              }
-              continue;
-            }
-
-            if (gIdx <= 0) continue;
-
-            ctx.drawImage(
-              atlasCanvas,
-              gIdx * cellPx, rowToDraw * cellPx, cellPx, cellPx,
-              c * cellPx, drawY, cellPx, cellPx
-            );
-          }
-        }
+        ctx.drawImage(
+          atlasCanvas,
+          gIdx * cellPx, atlasRow * cellPx, cellPx, cellPx,
+          c * cellPx, drawY, cellPx, cellPx
+        );
       }
     }
   }
@@ -1978,10 +2443,10 @@
     const w = scopeCanvas.width;
     const h = scopeCanvas.height;
 
-    scopeCtx.fillStyle = '#050505';
+    scopeCtx.fillStyle = '#040404';
     scopeCtx.fillRect(0, 0, w, h);
 
-    // Subtle center graticule
+    // Subtle centerline graticule
     scopeCtx.strokeStyle = '#181818';
     scopeCtx.lineWidth = 1;
     scopeCtx.beginPath();
@@ -1993,13 +2458,12 @@
       (state.sourceMode === 'mic' || (state.sourceMode === 'file' && !dom.audioPlayer.paused));
 
     if (!active) {
-      // Quiet standby trace
-      scopeCtx.strokeStyle = state.frozen ? '#00aaff' : '#4a6658';
+      scopeCtx.strokeStyle = state.frozen ? '#00aaff' : '#446252';
       scopeCtx.lineWidth = 1;
       scopeCtx.beginPath();
       for (let x = 0; x < w; x++) {
         const u = x / w;
-        const y = h * 0.5 + Math.sin(u * TAU * 2.0 + state.morphTime * 2.2) * Math.sin(u * PI) * 3.0;
+        const y = h * 0.5 + Math.sin(u * TAU * 2.0 + state.morphTime * 1.8) * Math.sin(u * PI) * 2.5;
         if (x === 0) scopeCtx.moveTo(x, y);
         else scopeCtx.lineTo(x, y);
       }
@@ -2010,7 +2474,7 @@
     scopeAnalyser.getByteTimeDomainData(scopeBytes);
 
     if (state.scopeMode === 0) {
-      // MNEMOSYNE Green Waveform
+      // Green Live Waveform Trace
       scopeCtx.lineWidth = 1.5;
       scopeCtx.strokeStyle = state.frozen ? '#00aaff' : '#00ff44';
       scopeCtx.beginPath();
@@ -2026,7 +2490,7 @@
       scopeCtx.lineTo(w, h * 0.5);
       scopeCtx.stroke();
     } else {
-      // MNEMOSYNE Red Peak Seismograph
+      // Red Peak Seismograph History
       let peak = 0;
       for (let i = 0; i < scopeBytes.length; i++) {
         const v = Math.abs(scopeBytes[i] - 128) / 128.0;
@@ -2045,7 +2509,7 @@
   function updateTelemetry(nowMs) {
     if (!state.hudVisible) return;
 
-    const ledGlow = ['#00ff44', '#ff9d00', '#00aaff', '#ff4444'];
+    const ledColors = ['#00ff44', '#ff9d00', '#00aaff', '#ff4444'];
     for (let i = 0; i < 4; i++) {
       const b = state.bands[i];
       dom.meters[i].style.width = `${Math.round(clamp(b.env, 0, 1) * 100)}%`;
@@ -2053,8 +2517,8 @@
       const led = dom.leds[i];
       if (nowMs < b.ledUntil) {
         led.style.backgroundColor = '#ffffff';
-        led.style.borderColor = ledGlow[i];
-        led.style.boxShadow = `0 0 6px ${ledGlow[i]}`;
+        led.style.borderColor = ledColors[i];
+        led.style.boxShadow = `0 0 6px ${ledColors[i]}`;
       } else {
         led.style.backgroundColor = '#161616';
         led.style.borderColor = '#333333';
@@ -2062,7 +2526,6 @@
       }
     }
 
-    // Update file scrub bar & timecode readout
     if (state.fileLoaded && !state.isScrubbing && Number.isFinite(dom.audioPlayer.duration) && dom.audioPlayer.duration > 0) {
       const cur = dom.audioPlayer.currentTime || 0;
       const dur = dom.audioPlayer.duration;
@@ -2072,7 +2535,133 @@
   }
 
   /* ===========================================================================
-     SECTION I: MNEMOSYNE ROTARY KNOBS, ACTIONS & STAGE SHORTCUTS
+     SECTION I: ATELIER SHELF BUILDERS (FORMATIONS, LIVE GLYPH STRIP, PALETTES)
+     =========================================================================== */
+  function buildFormationButtons() {
+    dom.formationButtons.innerHTML = '';
+    FORMATIONS.forEach((fm, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'shelf-btn' + (idx === state.formationIdx ? ' active' : '');
+      btn.textContent = fm.label;
+      btn.title = `${fm.subtitle} [${idx + 1}]`;
+      btn.addEventListener('click', () => selectFormation(idx));
+      dom.formationButtons.appendChild(btn);
+    });
+    dom.formationSubtitle.textContent = FORMATIONS[state.formationIdx].subtitle;
+  }
+
+  function selectFormation(idx) {
+    state.formationIdx = ((idx % FORMATIONS.length) + FORMATIONS.length) % FORMATIONS.length;
+    const btns = dom.formationButtons.querySelectorAll('.shelf-btn');
+    btns.forEach((b, i) => b.classList.toggle('active', i === state.formationIdx));
+    const fm = FORMATIONS[state.formationIdx];
+    dom.formationSubtitle.textContent = fm.subtitle;
+    showToast(`FORMATION // ${fm.label} — ${fm.subtitle}`);
+  }
+
+  function syncActiveGlyphsFromStrip() {
+    const filtered = [];
+    for (let i = 0; i < state.rawGlyphs.length; i++) {
+      if (!state.mutedFlags[i]) filtered.push(state.rawGlyphs[i]);
+    }
+    state.activeGlyphs = filtered.length > 0 ? filtered : [state.rawGlyphs[0] || '·'];
+    rebuildGlyphAtlas();
+  }
+
+  function renderGlyphStrip() {
+    dom.glyphStrip.innerHTML = '';
+    state.rawGlyphs.forEach((ch, idx) => {
+      const tile = document.createElement('button');
+      tile.type = 'button';
+      tile.className = 'glyph-tile' + (state.mutedFlags[idx] ? ' muted' : '');
+      tile.textContent = toMonoChar(ch);
+      tile.title = state.mutedFlags[idx] ? 'Click to unmute glyph' : 'Click to mute glyph';
+      tile.addEventListener('click', () => {
+        // Always retain at least 1 unmuted glyph
+        const activeCount = state.mutedFlags.filter((m) => !m).length;
+        if (!state.mutedFlags[idx] && activeCount <= 1) {
+          showToast('AT LEAST ONE GLYPH MUST REMAIN ACTIVE');
+          return;
+        }
+        state.mutedFlags[idx] = !state.mutedFlags[idx];
+        tile.classList.toggle('muted', state.mutedFlags[idx]);
+        syncActiveGlyphsFromStrip();
+      });
+      dom.glyphStrip.appendChild(tile);
+    });
+  }
+
+  function loadSymbolRampString(str, isCustom) {
+    const chars = Array.from(str).filter((c) => c.trim() !== '');
+    if (chars.length === 0) {
+      showToast('ENTER AT LEAST ONE SYMBOL');
+      return;
+    }
+    state.rawGlyphs = chars;
+    state.mutedFlags = new Array(chars.length).fill(false);
+    dom.customGlyphInput.value = chars.join('');
+    renderGlyphStrip();
+    syncActiveGlyphsFromStrip();
+
+    const btns = dom.symbolSetButtons.querySelectorAll('.shelf-btn');
+    btns.forEach((b, i) => b.classList.toggle('active', !isCustom && i === state.lexiconIdx));
+  }
+
+  function selectSymbolLexicon(idx) {
+    state.lexiconIdx = ((idx % SYMBOL_LEXICONS.length) + SYMBOL_LEXICONS.length) % SYMBOL_LEXICONS.length;
+    const lex = SYMBOL_LEXICONS[state.lexiconIdx];
+    loadSymbolRampString(lex.chars, false);
+    showToast(`SYMBOLS // ${lex.name}`);
+  }
+
+  function buildSymbolSetButtons() {
+    dom.symbolSetButtons.innerHTML = '';
+    SYMBOL_LEXICONS.forEach((lex, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'shelf-btn' + (idx === state.lexiconIdx ? ' active' : '');
+      btn.textContent = lex.name;
+      btn.title = `${lex.name}: ${lex.chars}`;
+      btn.addEventListener('click', () => selectSymbolLexicon(idx));
+      dom.symbolSetButtons.appendChild(btn);
+    });
+    loadSymbolRampString(SYMBOL_LEXICONS[state.lexiconIdx].chars, false);
+  }
+
+  function buildPaletteButtons() {
+    dom.paletteButtons.innerHTML = '';
+    PALETTES.forEach((pal, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'pal-btn' + (idx === state.paletteIdx ? ' active' : '');
+      btn.title = `Select ${pal.name} Palette`;
+
+      const labelSpan = document.createElement('span');
+      labelSpan.textContent = pal.name;
+
+      const swatchBar = document.createElement('div');
+      swatchBar.className = 'pal-swatches';
+      pal.domains.forEach((hex) => {
+        const sw = document.createElement('span');
+        sw.style.backgroundColor = hex;
+        swatchBar.appendChild(sw);
+      });
+
+      btn.appendChild(labelSpan);
+      btn.appendChild(swatchBar);
+      btn.addEventListener('click', () => selectPalette(idx));
+      dom.paletteButtons.appendChild(btn);
+    });
+  }
+
+  function selectPalette(idx) {
+    state.paletteIdx = ((idx % PALETTES.length) + PALETTES.length) % PALETTES.length;
+    const btns = dom.paletteButtons.querySelectorAll('.pal-btn');
+    btns.forEach((b, i) => b.classList.toggle('active', i === state.paletteIdx));
+    rebuildGlyphAtlas();
+    showToast(`PALETTE // ${PALETTES[state.paletteIdx].name}`);
+  }
+
+  /* ===========================================================================
+     SECTION J: MNEMOSYNE ROTARY KNOBS, ACTIONS & STAGE SHORTCUTS
      =========================================================================== */
   const knobEls = Array.from(document.querySelectorAll('.knob-svg'));
 
@@ -2092,24 +2681,13 @@
     const readout = document.getElementById(`readout-${param}`);
     if (readout) {
       readout.textContent = (param === 'gain')
-        ? `${gainDialToMult(val).toFixed(1)}x`
+        ? `${gainDialToMult(val).toFixed(2)}x`
         : val.toFixed(2);
     }
 
     if (param === 'gain' && inputGain && audioCtx) {
       inputGain.gain.setTargetAtTime(gainDialToMult(val), audioCtx.currentTime, 0.015);
     }
-    if (param === 'tessellation') {
-      const baseCell = clamp(Math.round(window.innerWidth / 92), 14, 18);
-      const nextCell = clamp(Math.round(baseCell + (0.5 - val) * 3), 14, 18);
-      if (nextCell !== cellCss) {
-        resizeViewport();
-      }
-    }
-
-    const avg = (state.params.gain + state.params.erosion + state.params.tessellation + state.params.fracture) * 0.25;
-    dom.hdrDials.style.color = avg > 0.08 ? `rgba(255,255,255,${(0.6 + avg * 0.4).toFixed(2)})` : 'var(--text-dim)';
-    dom.hdrDials.style.textShadow = avg > 0.08 ? `0 0 ${Math.round(avg * 8)}px rgba(255,255,255,0.35)` : 'none';
   }
 
   function initKnobs() {
@@ -2148,41 +2726,38 @@
 
       knob.addEventListener('dblclick', (e) => {
         e.preventDefault();
-        setKnobValue(knob, parseFloat(knob.dataset.default));
-        showToast(`${knob.dataset.param.toUpperCase()} RESET`);
+        const def = parseFloat(knob.dataset.default);
+        setKnobValue(knob, def);
+        const label = knob.dataset.param === 'gain' ? 'GAIN RESET TO 1.00x' : `${knob.dataset.param.toUpperCase()} RESET`;
+        showToast(label);
       });
     });
   }
 
   /**
-   * SCATTER: Randomizes ONLY EROSION, TESSELLATION, and FRACTURE (NEVER GAIN),
-   * rolls a fresh structural seed, and triggers a subtle glitch impulse.
+   * SCATTER: Randomizes ONLY EROSION, TESSELLATION, FRACTURE & structural seed.
+   * Strictly NEVER touches GAIN.
    */
   function triggerScatter() {
     knobEls.forEach((knob) => {
-      const p = knob.dataset.param;
-      if (p === 'gain') return; // Strictly preserve GAIN staging
-      setKnobValue(knob, 0.06 + Math.random() * 0.88);
+      if (knob.dataset.param === 'gain') return;
+      setKnobValue(knob, Math.random() * 0.85);
     });
-
-    state.morphSeed = 0.5 + Math.random() * 30.0;
+    state.morphSeed = 0.5 + Math.random() * 25.0;
     if (state.frozen) {
       state.frozenSeed = state.morphSeed;
     }
-
-    const now = performance.now();
-    fireGateA(now);
-    fireGateB(now, 2);
-    showToast('SCATTER // CREATIVE DIALS & SEED ROLLED');
+    showToast('SCATTER // DIALS & STRUCTURAL SEED ROLLED');
   }
 
   /**
-   * DRIFT: Slow organic random-walk of the 3 creative dials (excluding GAIN).
+   * DRIFT: Slow organic random-walk on EROSION, TESSELLATION, FRACTURE.
+   * Strictly NEVER touches GAIN.
    */
   function toggleDrift() {
     state.driftActive = !state.driftActive;
     dom.btnDrift.classList.toggle('active', state.driftActive);
-    showToast(`DRIFT: ${state.driftActive ? 'ON (SAFE GAIN)' : 'OFF'}`);
+    showToast(`DRIFT: ${state.driftActive ? 'ON (GAIN LOCKED)' : 'OFF'}`);
   }
 
   setInterval(() => {
@@ -2191,14 +2766,14 @@
       const p = knob.dataset.param;
       if (p === 'gain') return;
       const cur = state.params[p];
-      const next = clamp(cur + (Math.random() - 0.5) * 0.011, 0.05, 0.95);
+      const next = clamp(cur + (Math.random() - 0.5) * 0.012, 0.0, 0.92);
       setKnobValue(knob, next);
     });
   }, 60);
 
   /**
-   * FREEZE: Traps current visual trace in mortar while ongoing audio erosion
-   * and fracture continue to weather the frozen ruin.
+   * FREEZE: Locks current architectural frame in mortar while allowing
+   * EROSION and FRACTURE to weather and shatter the frozen ruin live.
    */
   function toggleFreeze() {
     state.frozen = !state.frozen;
@@ -2207,39 +2782,30 @@
       state.frozenTime = state.morphTime;
       state.frozenSeed = state.morphSeed;
       for (let i = 0; i < 4; i++) {
-        state.frozenBands[i] = Math.max(0.20, state.bands[i].env);
+        state.frozenBands[i] = state.bands[i].env;
       }
       dom.btnFreeze.textContent = 'FROZEN';
-      showToast('TRACE TRAPPED IN MORTAR');
+      showToast('FORMATION FROZEN IN MORTAR');
     } else {
       dom.btnFreeze.textContent = 'FREEZE';
       showToast('MORTAR RELEASED');
     }
   }
 
-  function cycleLexicon() {
-    state.lexiconIdx = (state.lexiconIdx + 1) % GLYPH_LEXICONS.length;
-    const lex = GLYPH_LEXICONS[state.lexiconIdx];
-    dom.valLexicon.textContent = lex.name;
-    rebuildGlyphAtlas();
-    showToast(`LEXICON // ${lex.name}`);
-  }
-
-  function cyclePalette() {
-    state.paletteIdx = (state.paletteIdx + 1) % PALETTES.length;
-    const pal = PALETTES[state.paletteIdx];
-    dom.valPalette.textContent = pal.name;
-    rebuildGlyphAtlas();
-    showToast(`PALETTE // ${pal.name}`);
+  function toggleAtelier() {
+    state.atelierOpen = !state.atelierOpen;
+    dom.atelierShelf.classList.toggle('collapsed', !state.atelierOpen);
+    dom.btnAtelier.classList.toggle('active', state.atelierOpen);
+    showToast(`ATELIER SHELF: ${state.atelierOpen ? 'OPEN' : 'COLLAPSED'}`);
   }
 
   function toggleHud() {
     state.hudVisible = !state.hudVisible;
     dom.chassisDock.classList.toggle('hidden', !state.hudVisible);
-    dom.cornerToggle.textContent = state.hudVisible ? 'HIDE [H]' : 'SHOW CHASSIS [H]';
+    dom.cornerToggle.textContent = state.hudVisible ? 'HIDE [H]' : 'SHOW [H]';
     dom.cornerToggle.classList.toggle('stealth', !state.hudVisible);
     if (!state.hudVisible) {
-      showToast('CLEAN PROJECTION // PRESS [H] TO SHOW CHASSIS');
+      showToast('PROJECTION MODE // PRESS [H] TO SHOW CHASSIS');
     }
   }
 
@@ -2251,7 +2817,7 @@
         document.exitFullscreen();
       }
     } catch (_) {
-      showToast('FULLSCREEN UNAVAILABLE IN THIS CONTEXT');
+      showToast('FULLSCREEN UNAVAILABLE IN THIS VIEW');
     }
   }
 
@@ -2277,19 +2843,19 @@
   }
 
   function wireControls() {
-    // OLED Scope click toggle
+    // OLED Scope click toggle (green waveform <-> red seismograph)
     scopeCanvas.addEventListener('click', () => {
       state.scopeMode = 1 - state.scopeMode;
       showToast(state.scopeMode === 0 ? 'OLED // WAVEFORM' : 'OLED // SEISMOGRAPH');
     });
 
-    // Column 1: System buttons
+    // Upper Deck Column 1: System
     dom.btnActivate.addEventListener('click', toggleActivate);
     dom.btnScatter.addEventListener('click', triggerScatter);
     dom.btnDrift.addEventListener('click', toggleDrift);
     dom.btnFreeze.addEventListener('click', toggleFreeze);
 
-    // Column 2: Ingest & Transport
+    // Upper Deck Column 2: Ingest & Transport
     dom.btnMic.addEventListener('click', engageMicInput);
     dom.btnFile.addEventListener('click', () => dom.fileUpload.click());
 
@@ -2300,13 +2866,10 @@
     });
 
     dom.btnMon.addEventListener('click', () => {
-      if (state.sourceMode === 'mic') {
-        showToast('MON LOCKED ISOLATED IN MIC MODE');
-        return;
-      }
+      if (state.sourceMode === 'mic') return;
       state.monitorOn = !state.monitorOn;
       updateMonitorUI();
-      showToast(`SPEAKER MONITOR: ${state.monitorOn ? 'ON' : 'MUTED'}`);
+      showToast(`SPEAKER MONITOR: ${state.monitorOn ? 'ON' : 'OFF'}`);
     });
 
     dom.micDevice.addEventListener('change', (e) => {
@@ -2324,7 +2887,6 @@
     dom.audioPlayer.addEventListener('play', updatePlayPauseUI);
     dom.audioPlayer.addEventListener('pause', updatePlayPauseUI);
 
-    // Interactive Scrub Slider
     dom.fileScrub.addEventListener('pointerdown', () => { state.isScrubbing = true; });
     dom.fileScrub.addEventListener('input', (e) => {
       if (!state.fileLoaded || !Number.isFinite(dom.audioPlayer.duration)) return;
@@ -2332,16 +2894,34 @@
       dom.audioPlayer.currentTime = targetSec;
       dom.fileTimecode.textContent = `${formatTime(targetSec)} / ${formatTime(dom.audioPlayer.duration)}`;
     });
-    const finishScrub = () => { state.isScrubbing = false; };
-    dom.fileScrub.addEventListener('pointerup', finishScrub);
-    dom.fileScrub.addEventListener('change', finishScrub);
+    const endScrub = () => { state.isScrubbing = false; };
+    dom.fileScrub.addEventListener('pointerup', endScrub);
+    dom.fileScrub.addEventListener('change', endScrub);
 
-    // Column 4: Grammar & Utilities
-    dom.btnLexicon.addEventListener('click', cycleLexicon);
-    dom.btnPalette.addEventListener('click', cyclePalette);
+    // Upper Deck Column 4: View Controls
+    dom.btnAtelier.addEventListener('click', toggleAtelier);
     dom.btnFullscreen.addEventListener('click', toggleFullscreen);
     dom.btnHide.addEventListener('click', toggleHud);
     dom.cornerToggle.addEventListener('click', toggleHud);
+
+    // Lower Shelf: Custom Symbol Ramp SET / RST
+    dom.btnCustomSet.addEventListener('click', () => {
+      const val = dom.customGlyphInput.value;
+      loadSymbolRampString(val, true);
+      dom.customGlyphInput.blur();
+      showToast('CUSTOM SYMBOL RAMP APPLIED');
+    });
+    dom.customGlyphInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        dom.btnCustomSet.click();
+      } else if (e.key === 'Escape') {
+        dom.customGlyphInput.blur();
+      }
+    });
+    dom.btnCustomRst.addEventListener('click', () => {
+      selectSymbolLexicon(state.lexiconIdx);
+    });
 
     // Full-window Drag & Drop Audio File Support
     let dragCounter = 0;
@@ -2374,37 +2954,38 @@
       }
     });
 
-    // Global Stage Keyboard Shortcuts
+    // Global Keyboard Shortcuts (strictly ignored when focus is inside <input> or <select>)
     window.addEventListener('keydown', (e) => {
       const tag = e.target ? e.target.tagName : '';
-      if (tag === 'SELECT' || tag === 'TEXTAREA') return;
-      if (tag === 'INPUT' && e.target.type !== 'range') return;
+      if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') {
+        if (e.key === 'Escape') e.target.blur();
+        return;
+      }
 
       const key = e.key.toLowerCase();
-      if (e.code === 'Space') {
-        e.preventDefault();
-        if (tag === 'INPUT') e.target.blur();
-        if (state.sourceMode === 'file' && state.fileLoaded) {
-          toggleFilePlayPause();
-        } else {
-          // Pulse fracture in MIC or idle mode
-          const now = performance.now();
-          fireGateA(now);
-          fireGateB(now, 2);
-          fireGateC(now);
-        }
+      if (key >= '1' && key <= '6') {
+        selectFormation(Number(key) - 1);
+      } else if (key === 'm') {
+        selectFormation(state.formationIdx + 1);
+      } else if (key === 'g') {
+        selectSymbolLexicon(state.lexiconIdx + 1);
+      } else if (key === 'p') {
+        selectPalette(state.paletteIdx + 1);
+      } else if (key === 'd') {
+        toggleAtelier();
       } else if (key === 'f') {
         toggleFullscreen();
       } else if (key === 'h') {
         toggleHud();
-      } else if (key === 'g') {
-        cycleLexicon();
-      } else if (key === 'p') {
-        cyclePalette();
       } else if (key === 's') {
         triggerScatter();
       } else if (key === 'x') {
         toggleFreeze();
+      } else if (e.code === 'Space') {
+        e.preventDefault();
+        if (state.sourceMode === 'file' && state.fileLoaded) {
+          toggleFilePlayPause();
+        }
       }
     });
 
@@ -2412,7 +2993,7 @@
   }
 
   /* ===========================================================================
-     SECTION J: MAIN 60FPS ANIMATION LOOP
+     SECTION K: MAIN 60FPS ANIMATION LOOP
      =========================================================================== */
   let lastMs = performance.now();
 
@@ -2429,6 +3010,9 @@
   }
 
   window.onload = () => {
+    buildFormationButtons();
+    buildSymbolSetButtons();
+    buildPaletteButtons();
     initKnobs();
     wireControls();
     updateMonitorUI();
