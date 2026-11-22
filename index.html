@@ -980,7 +980,7 @@
               <!-- GAIN -->
               <div class="knob-container d-green">
                 <div class="knob-label">GAIN</div>
-                <svg class="knob-svg" id="knob-gain" data-param="gain" data-val="0.50" data-default="0.50" viewBox="0 0 44 44" title="Input Gain (0.25x - 4.00x) | Default: 1.00x | Dbl-Click Reset">
+                <svg class="knob-svg" id="knob-gain" data-param="gain" data-val="0.50" data-default="0.50" viewBox="0 0 44 44" title="Bus Drive &amp; Input Gain (0.25x - 4.00x) | Push Past Unity for Rhythmic Tearing | Dbl-Click Reset">
                   <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
                   <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
                 </svg>
@@ -1043,7 +1043,7 @@
                 <div class="meter-row disengaged" id="mrow-1">
                   <span class="meter-label" data-lane="1" style="color: var(--c-amber-dim);">II. EROSION [W]</span>
                   <div class="meter-track"><div class="meter-fill" id="meter-1" style="background: var(--c-amber-dim);"></div></div>
-                  <button type="button" class="lane-toggle-sq" id="lane-btn-1" data-lane="1" aria-pressed="false" title="Engage Z-2 Foreground: Restrained Dust &amp; Transient Plumes [W]"></button>
+                  <button type="button" class="lane-toggle-sq" id="lane-btn-1" data-lane="1" aria-pressed="false" title="Engage Z-2 Foreground: Engine-Specific Dust Geometries [W]"></button>
                 </div>
                 <div class="meter-row disengaged" id="mrow-2">
                   <span class="meter-label" data-lane="2" style="color: var(--c-cyan-dim);">III. SILICA [E]</span>
@@ -1053,7 +1053,7 @@
                 <div class="meter-row disengaged" id="mrow-3">
                   <span class="meter-label" data-lane="3" style="color: var(--c-red-dim);">IV. LETHE [R]</span>
                   <div class="meter-track"><div class="meter-fill" id="meter-3" style="background: var(--c-red-dim);"></div></div>
-                  <button type="button" class="lane-toggle-sq" id="lane-btn-3" data-lane="3" aria-pressed="false" title="Engage Z-0/Z-1 Borders (Shatters Inward at High Dials) [R]"></button>
+                  <button type="button" class="lane-toggle-sq" id="lane-btn-3" data-lane="3" aria-pressed="false" title="Engage Z-0/Z-1 Borders (Shatters Inward on High Transients) [R]"></button>
                 </div>
               </div>
 
@@ -1117,8 +1117,8 @@
   /* ===========================================================================
      SECTION A: HACKABLE CODEBOX (EDIT DIRECTLY LIKE A gen~ CODEBOX)
      ---------------------------------------------------------------------------
-     8 Generative Visual Engines + 4 Multi-Angle Dissolution Modes +
-     Layer 5 Embedded Architectural Idle Liturgy + Full-Screen [V] VIZ Scope.
+     Pulsar-23 Asymmetric Bus Sidechain + 4 Independent Layer Clocks +
+     Differential Transient Detection + Engine-Specific Dust Geometries.
      =========================================================================== */
 
   const FORMATIONS = [
@@ -1216,7 +1216,6 @@
     }
   ];
 
-  // Intimate, meditative Quiet Machinery transmissions woven into the architecture during idle
   const IDLE_FRAGMENTS_A = [
     'LISTEN TO THE MORTAR SETTLING',
     'SIT WITH THE UNCOMFORTABILITY',
@@ -1265,12 +1264,12 @@
   }
 
   function evaluateSpectralFigure(nx, ny, col, row, f, vGen, figureScale, offsetX, offsetY) {
-    const { t, b0, b1, b2, b3, tess } = f;
+    const { p0, p1, b0, b1, b2, b3, tess } = f;
     const safeScale = Math.max(0.1, figureScale || 1.0);
     const px = (nx - offsetX) / safeScale;
     const py = (ny - offsetY) / safeScale;
 
-    const sway = Math.sin(py * 3.2 + t * 1.1 + vGen.seed) * 0.045 * (0.4 + vGen.mutAmt);
+    const sway = Math.sin(py * 3.2 + p0 * 1.1 + vGen.seed) * 0.045 * (0.4 + vGen.mutAmt);
     const sx = px + sway;
     const ax = Math.abs(sx);
 
@@ -1297,7 +1296,7 @@
       const eyeDist = Math.hypot(eyeX / 0.048, eyeY / 0.030);
 
       if (eyeDist < 1.0) {
-        if (b3 > 0.38 || b0 > 0.55) {
+        if (b3 > 0.35 || b0 > 0.52) {
           density = 0.92;
           zone = 3;
           peak = true;
@@ -1308,29 +1307,29 @@
       } else if (edgeRim < 0.09) {
         density = 0.76 + b0 * 0.24;
         zone = 0;
-        peak = b0 > 0.58;
+        peak = b0 > 0.55;
         isSkeleton = true;
       } else {
         const dither = ((col + row) % 2 === 0) ? 0.14 : -0.08;
-        const ridge = Math.cos(sx * (22 + tess * 18) + facePlane * 9.0) * 0.18;
+        const ridge = Math.cos(sx * (22 + tess * 18) + facePlane * 9.0 + p1 * 0.5) * 0.18;
         density = clamp(0.26 + facePlane * 0.54 + ridge + dither + b1 * 0.22, 0.12, 0.95);
         zone = facePlane > 0.52 ? 2 : 1;
-        peak = facePlane > 0.72 && b2 > 0.58;
+        peak = facePlane > 0.72 && b2 > 0.55;
       }
     } else if (py > -0.22 && py <= 0.85 && ax <= bodyHalfW) {
       const dEdge = bodyHalfW - ax;
-      const drapeRib = Math.cos(sx * (18 + tess * 16) + Math.sin(py * 5.0 + vGen.seed) * 2.2);
+      const drapeRib = Math.cos(sx * (18 + tess * 16) + Math.sin(py * 5.0 + vGen.seed + p1 * 0.4) * 2.2);
       const dither = ((col * 2 + row) % 3 === 0) ? 0.12 : -0.05;
 
       if (dEdge < 0.045 || py > 0.80) {
         density = 0.68 + b0 * 0.30;
         zone = 0;
-        peak = b0 > 0.62;
+        peak = b0 > 0.58;
         isSkeleton = true;
       } else if (drapeRib > 0.35) {
         density = clamp(0.32 + b1 * 0.45 + dither, 0.15, 0.90);
         zone = 1;
-        peak = b1 > 0.68;
+        peak = b1 > 0.64;
       } else {
         density = clamp(0.18 + (1.0 - ax / bodyHalfW) * 0.32 + dither + b2 * 0.20, 0.10, 0.78);
         zone = 2;
@@ -1342,10 +1341,13 @@
 
   /**
    * 4. GENERATIVE ARCHITECTURAL & ORGANIC EVALUATOR
+   *    Driven by 4 Independent Band Clocks (`p0, p1, p2, p3`) so lows, low-mids,
+   *    hi-mids, and highs animate distinct structural tiers at their own tempos.
    */
   function evaluateSingleFormation(fIdx, nx, ny, col, row, f, vGen) {
     const {
-      t, seed, b0, b1, b2, b3,
+      p0, p1, p2, p3,
+      seed, b0, b1, b2, b3,
       tess, erosion, fracture,
       gateShear, gateDrop, cols, rows, frameTick
     } = f;
@@ -1396,14 +1398,16 @@
 
           const isPlinth = (ny > botY - 0.09);
 
+          // Pillar ribs move on Band II clock (p1)
           const ribFreq = 10.0 + tess * 16.0;
-          const ribPhase = b1 * 2.4 + Math.sin(t * 0.4 + seed) * 0.35;
+          const ribPhase = b1 * 2.4 + Math.sin(p1 * 0.55 + seed) * 0.45;
           const inPillarZone = (ax > doorW + 0.065 && ax < outerW - 0.065 && ny > doorTop && ny < botY - 0.09);
           const pillarRib = inPillarZone && (Math.cos((ax - doorW) * ribFreq * PI - ribPhase) > 0.42);
 
+          // Upper lintel frieze runes shimmer on Band III & Band IV fast clocks (p2, p3)
           const inLintel = (ny > topY + 0.065 && ny < doorTop - 0.065 && ax < outerW - 0.065);
-          const lintelBand = inLintel && (Math.sin(ny * (16 + tess * 14) + b1 * 1.5) > 0.25);
-          const lintelRune = inLintel && (Math.cos(ax * (18 + tess * 18) + seed * 3.0) * Math.sin(ny * 24) > (0.58 - b3 * 0.38));
+          const lintelBand = inLintel && (Math.sin(ny * (16 + tess * 14) + p2 * 0.8) > 0.25);
+          const lintelRune = inLintel && (Math.cos(ax * (18 + tess * 18) + seed * 3.0 + p3 * 0.6) * Math.sin(ny * 24) > (0.58 - b3 * 0.42));
 
           if (isOuterFrame || isDoorFrame || isPlinth) {
             density = 0.72 + b0 * 0.28;
@@ -1421,7 +1425,7 @@
           } else if (lintelRune) {
             density = 0.46 + b3 * 0.54;
             zone = 3;
-            peak = b3 > 0.48;
+            peak = b3 > 0.45;
           } else if (lintelBand) {
             density = 0.24 + b2 * 0.36;
             zone = 2;
@@ -1450,7 +1454,7 @@
 
         const faultAmp = Math.max(b0 > 0.48 ? (b0 - 0.48) * 1.6 : 0, gateShear);
         if (faultAmp > 0.05) {
-          const crackX = Math.sin(ny * 11.0 + seed * 4.0 + Math.floor(t * 2.0)) * 0.045;
+          const crackX = Math.sin(ny * 11.0 + seed * 4.0 + Math.floor(p0 * 2.0)) * 0.045;
           const dCrack = Math.abs(nx - crackX);
           if (dCrack < 0.022 + faultAmp * 0.025) {
             density = 0.92;
@@ -1462,7 +1466,7 @@
       }
 
     // -------------------------------------------------------------------------
-    // ENGINE 2 — II. SEAL
+    // ENGINE 2 — II. SEAL (Counter-rotating polygons driven by Band II & III clocks)
     // -------------------------------------------------------------------------
     } else if (fIdx === 1) {
       const eccX = (vGen.g1 - 0.5) * 0.14 * mut;
@@ -1474,14 +1478,14 @@
 
       if (r <= R + 0.045) {
         const sides = Math.max(3, 3 + Math.round(tess * 4 + vGen.g3 * 5 * mut));
-        const rotA = t * 0.22 + b1 * 0.55 + vGen.seed;
-        const rotB = -t * 0.18 - b2 * 0.55 + vGen.seed + PI / sides;
+        const rotA = p1 * 0.35 + b1 * 0.55 + vGen.seed;
+        const rotB = -p2 * 0.45 - b2 * 0.65 + vGen.seed + PI / sides;
 
         const dRingOut = Math.abs(r - R);
         const dRingIn = Math.abs(rInner - (R - 0.11));
         const inRingBand = (r <= R && r >= R - 0.095);
         const tickCount = 12 + Math.round(tess * 24 + (vGen.g6 || 0.5) * 12 * mut);
-        const isTick = inRingBand && (Math.abs(Math.cos(theta * tickCount * 0.5)) > 0.92);
+        const isTick = inRingBand && (Math.abs(Math.cos(theta * tickCount * 0.5 + p3 * 0.25)) > 0.92);
 
         const isCardinal = (Math.abs(nx) < 0.018 || Math.abs(ny) < 0.018) && r > 0.14 && r < R - 0.095;
         const isDiag = (Math.abs(Math.abs(nx) - Math.abs(ny)) < 0.016) && r > 0.18 && r < R - 0.11;
@@ -1495,8 +1499,8 @@
 
         const dOculus = Math.abs(rInner - (0.14 + b0 * 0.04));
         const nHarm = 2 + Math.round(tess * 4 + vGen.g4 * 4 * mut);
-        const chladni = Math.cos(r * (10 + tess * 12) - t * 0.9) * Math.cos(theta * nHarm + rotA * 0.5);
-        const isNodal = (r < R - 0.11 && r > 0.15) && (Math.abs(chladni) < (0.09 + b2 * 0.11 + mut * 0.05));
+        const chladni = Math.cos(r * (10 + tess * 12) - p2 * 1.1) * Math.cos(theta * nHarm + rotA * 0.5);
+        const isNodal = (r < R - 0.11 && r > 0.15) && (Math.abs(chladni) < (0.09 + b2 * 0.12 + mut * 0.05));
 
         if (dRingOut < 0.026 || dRingIn < 0.020) {
           density = 0.76 + b0 * 0.24;
@@ -1506,7 +1510,7 @@
         } else if (isTick) {
           density = 0.42 + b3 * 0.56;
           zone = 3;
-          peak = b3 > 0.50;
+          peak = b3 > 0.46;
         } else if (dPoly1 < 0.024) {
           density = 0.66 + b1 * 0.34;
           zone = 1;
@@ -1515,7 +1519,7 @@
         } else if (dPoly2 < 0.022 || isPetal) {
           density = 0.58 + b2 * 0.40;
           zone = 2;
-          peak = b2 > 0.55;
+          peak = b2 > 0.52;
           isSkeleton = true;
         } else if (dOculus < 0.022) {
           density = 0.64 + b0 * 0.36;
@@ -1630,7 +1634,7 @@
       const bedrockBot = 0.72 + qx * dipSlope * 0.3 - syncline * 0.4 + Math.cos(qx * 2.4 + vGen.seed) * 0.06;
 
       if (ny >= horizonTop && ny <= bedrockBot) {
-        const riftCenter = qx * dipSlope + syncline * 0.7 + Math.sin(qx * 2.8 + t * 0.35 + vGen.seed) * 0.12 + (b1 - 0.2) * 0.06;
+        const riftCenter = qx * dipSlope + syncline * 0.7 + Math.sin(qx * 2.8 + p0 * 0.45 + vGen.seed) * 0.12 + (b1 - 0.2) * 0.06;
         const riftHalf = 0.065 + b0 * 0.17 + gateShear * 0.09;
         const dRift = Math.abs(ny - riftCenter);
 
@@ -1639,7 +1643,7 @@
         } else if (dRift < riftHalf + 0.048) {
           density = 0.76 + b0 * 0.24;
           zone = 3;
-          peak = b0 > 0.45 || b3 > 0.48;
+          peak = b0 > 0.45 || b3 > 0.45;
           isSkeleton = true;
         } else {
           const strataCount = 4 + Math.round(tess * 6);
@@ -1671,7 +1675,7 @@
             } else {
               if (Math.abs(sFrac - 0.5) < 0.16 && ((col + stratumIdx) % 4 === 0)) {
                 density = 0.30 + b2 * 0.46 + b3 * 0.24;
-                peak = b3 > 0.52;
+                peak = b3 > 0.50;
               }
             }
           }
@@ -1705,7 +1709,7 @@
               const isCapEdge = (capW - ax < 0.032) || (capBase - ny < 0.03);
               zone = 3;
               density = isCapEdge ? (0.78 + b3 * 0.22) : (0.30 + b3 * 0.48);
-              peak = isCapEdge && b3 > 0.48;
+              peak = isCapEdge && b3 > 0.46;
               isSkeleton = isCapEdge;
             }
           } else if (ny <= plinthTop) {
@@ -1723,11 +1727,12 @@
                 peak = b0 > 0.55;
                 isSkeleton = true;
               } else if (inSpineGroove) {
-                const pulse = Math.sin(ny * (14 + tess * 12) - t * 2.2) * 0.5 + 0.5;
+                // Central spine channel pulses on Band III fast clock (p2)
+                const pulse = Math.sin(ny * (14 + tess * 12) - p2 * 2.4) * 0.5 + 0.5;
                 if (pulse > (0.68 - b2 * 0.45)) {
                   density = 0.44 + b2 * 0.54;
                   zone = 2;
-                  peak = b2 > 0.52;
+                  peak = b2 > 0.50;
                 }
               } else {
                 const bandFreq = 6 + Math.round(tess * 10);
@@ -1759,13 +1764,13 @@
                 const nodeHit = Math.abs((ribPos % 1) - 0.5) > 0.38;
                 density = nodeHit ? (0.62 + b2 * 0.36) : (0.20 + b2 * 0.25);
                 zone = 2;
-                peak = nodeHit && b2 > 0.58;
+                peak = nodeHit && b2 > 0.56;
                 isSkeleton = nodeHit;
               } else if (Math.abs(ax - plumb2) < 0.015 && ny > capBase + 0.18 && ny < plinthTop - 0.14) {
-                if (row % 2 === 0 || b3 > 0.25) {
+                if (row % 2 === 0 || b3 > 0.22) {
                   density = 0.18 + b3 * 0.58;
                   zone = 3;
-                  peak = b3 > 0.58;
+                  peak = b3 > 0.54;
                 }
               }
             }
@@ -1783,18 +1788,18 @@
       }
 
     // -------------------------------------------------------------------------
-    // ENGINE 6 — VI. VAULT
+    // ENGINE 6 — VI. VAULT (Forward surge driven by Band I + Band III clocks)
     // -------------------------------------------------------------------------
     } else if (fIdx === 5) {
       const engage = clamp(erosion * 0.45 + fracture * 0.55 + tess * 0.25 + mut * 0.55, 0, 1.4);
-      const warpX = Math.sin(t * 0.85 + vGen.seed) * 0.24 * engage;
-      const warpY = Math.sin(t * 1.35 + vGen.seed * 1.7) * 0.16 * engage;
+      const warpX = Math.sin(p1 * 0.85 + vGen.seed) * 0.24 * engage;
+      const warpY = Math.sin(p2 * 1.15 + vGen.seed * 1.7) * 0.16 * engage;
 
       const rx = nx - warpX * (1.0 - Math.min(1, Math.hypot(nx, ny)));
       const ry = ny - warpY * (1.0 - Math.min(1, Math.hypot(nx, ny)));
 
       const dist0 = Math.hypot(rx, ry);
-      const twistAng = (1.0 - clamp(dist0, 0, 1)) * Math.sin(t * 0.6) * 0.42 * engage;
+      const twistAng = (1.0 - clamp(dist0, 0, 1)) * Math.sin(p1 * 0.6) * 0.42 * engage;
       const cosT = Math.cos(twistAng);
       const sinT = Math.sin(twistAng);
       const tx = rx * cosT - ry * sinT;
@@ -1810,7 +1815,7 @@
       const coreVoid = Math.max(0.06, 0.14 - b0 * 0.03);
       if (cheb >= coreVoid && cheb <= 0.98) {
         const archDensity = 2.6 + tess * 3.8;
-        const travel = t * (0.55 + engage * 1.45) + b0 * 0.55;
+        const travel = (p0 * 0.45 + p2 * 0.35) * (0.7 + engage * 1.2) + b0 * 0.55;
         const depth = Math.log(cheb) * archDensity + travel;
         const archIdx = Math.floor(depth);
         const archFrac = ((depth % 1) + 1) % 1;
@@ -1835,12 +1840,12 @@
         if (isArchRib) {
           density = (0.56 + aEnergy * 0.44) * depthVis;
           zone = aZone;
-          peak = (archFrac < 0.09) && (aEnergy > 0.52 || b0 > 0.58);
+          peak = (archFrac < 0.09) && (aEnergy > 0.50 || b0 > 0.56);
           isSkeleton = true;
         } else if (isMiter) {
           density = (0.48 + b3 * 0.46) * depthVis;
           zone = 3;
-          peak = b3 > 0.54;
+          peak = b3 > 0.50;
           isSkeleton = true;
         } else if (isCofferStrut && (archFrac > 0.45 && archFrac < 0.68)) {
           density = (0.28 + b1 * 0.36 + b2 * 0.26) * depthVis;
@@ -1863,7 +1868,7 @@
 
         const distCenter = Math.abs(nx + (vGen.g2 - 0.5) * 0.35 * mut);
         const skylineArch = Math.cos(clamp(distCenter / Math.max(0.1, maxW), 0, 1) * PI * 0.5);
-        const roofY = 0.18 - skylineArch * (0.68 + b0 * 0.14) - (tHash * 0.30) + Math.sin(towerId * 2.1 + t * 0.3) * 0.03;
+        const roofY = 0.18 - skylineArch * (0.68 + b0 * 0.14) - (tHash * 0.30) + Math.sin(towerId * 2.1 + p1 * 0.4) * 0.03;
 
         if (ny >= roofY) {
           const isSpireTip = (ny < roofY + 0.12) && Math.abs(tFrac - 0.5) < (0.12 + (ny - roofY) * 2.5);
@@ -1875,7 +1880,7 @@
           if (isSpireTip) {
             density = 0.82 + b3 * 0.18;
             zone = 3;
-            peak = b3 > 0.48;
+            peak = b3 > 0.46;
             isSkeleton = true;
           } else if (isBattlement || isTowerWall) {
             density = 0.62 + b0 * 0.34;
@@ -1885,7 +1890,7 @@
           } else if (isLancetWindow) {
             density = 0.48 + b2 * 0.50;
             zone = 2;
-            peak = b2 > 0.54;
+            peak = b2 > 0.52;
           } else if (isArcadeRow) {
             density = 0.34 + b1 * 0.42;
             zone = 1;
@@ -1896,7 +1901,7 @@
         } else if (tHash > 0.72 && Math.abs(tFrac - 0.5) < 0.08 && ny > roofY - 0.14) {
           density = 0.55 + b3 * 0.45;
           zone = 3;
-          peak = b3 > 0.46;
+          peak = b3 > 0.44;
         }
       }
 
@@ -1912,9 +1917,9 @@
       if (r >= eclipseR && r <= 0.94) {
         const dRim = r - eclipseR;
         const coronaBand = Math.exp(-dRim * (5.5 - b0 * 2.0));
-        const waveRing = Math.sin(r * (18.0 + tess * 24.0) - t * 1.4 + vGen.seed);
+        const waveRing = Math.sin(r * (18.0 + tess * 24.0) - p2 * 1.4 + vGen.seed);
         const azim = Math.atan2(ny - shiftY, nx - shiftX);
-        const rays = Math.cos(azim * (6 + Math.round(tess * 10 + vGen.g4 * 6)) + t * 0.3);
+        const rays = Math.cos(azim * (6 + Math.round(tess * 10 + vGen.g4 * 6)) + p3 * 0.35);
 
         if (dRim < 0.045) {
           density = 0.86 + b0 * 0.14;
@@ -1924,7 +1929,7 @@
         } else if (waveRing > (0.35 - coronaBand * 0.55 - b2 * 0.30)) {
           density = clamp(0.24 + coronaBand * 0.55 + b1 * 0.25 + b2 * 0.25, 0, 1);
           zone = coronaBand > 0.45 ? 1 : 2;
-          peak = (coronaBand > 0.65 && b2 > 0.50);
+          peak = (coronaBand > 0.65 && b2 > 0.48);
           isSkeleton = coronaBand > 0.78;
         } else if (rays > 0.78 && r < 0.75) {
           density = 0.20 + b3 * 0.45;
@@ -1957,7 +1962,7 @@
       fIdx, morphAlpha,
       variantA, variantB,
       dissolveThreshold, dissolveAngle, dissolveMode,
-      t, seed, b0, b1, b2,
+      p1, seed, b0, b1, b2,
       erosion
     } = fCtx;
 
@@ -1969,7 +1974,7 @@
 
     if (morphAlpha > 0.01) {
       const resB = evaluateSingleFormation(fIdx, nx, ny, col, row, fCtx, variantB);
-      const weave = Math.sin((nx * 6.0 + ny * 6.0) + t * 2.0) * 0.14;
+      const weave = Math.sin((nx * 6.0 + ny * 6.0) + p1 * 2.0) * 0.14;
       const wB = clamp(morphAlpha + weave * Math.sin(morphAlpha * PI), 0, 1);
       density = resA.density * (1.0 - wB) + resB.density * wB;
       zone = wB > 0.5 ? resB.zone : resA.zone;
@@ -1977,28 +1982,23 @@
       isSkeleton = wB > 0.5 ? resB.isSkeleton : resA.isSkeleton;
     }
 
-    // Multi-Angle Stochastic Dissolution (never locked to a single corner)
     let dissolvedToParticle = false;
     if (density > 0.04 && dissolveThreshold > 0.02) {
       let sweepFront = 0.5;
       const edgeNoise = (hash2(col * 0.37 + seed, row * 0.41 - seed) - 0.5) * 0.32;
 
       if (dissolveMode === 0) {
-        // Mode 0: Full 360-degree randomized directional sweep
         const dirX = Math.cos(dissolveAngle);
         const dirY = Math.sin(dissolveAngle);
         sweepFront = (nx * dirX + ny * dirY) * 0.62 + 0.5 + edgeNoise;
       } else if (dissolveMode === 1) {
-        // Mode 1: Radial implosion / explosion from core or outer rim
         const r = Math.hypot(nx, ny);
         sweepFront = (dissolveAngle > PI ? (1.0 - r) : r) * 1.15 + edgeNoise;
       } else if (dissolveMode === 2) {
-        // Mode 2: Multi-octave cellular spall pockets eroding from all angles at once
-        const p1 = Math.sin(nx * 5.2 + seed) * Math.cos(ny * 5.2 - seed);
-        const p2 = Math.sin((nx - ny) * 9.0 + seed * 1.7);
-        sweepFront = (p1 * 0.35 + p2 * 0.25 + 0.5) + edgeNoise * 0.7;
+        const pA = Math.sin(nx * 5.2 + seed) * Math.cos(ny * 5.2 - seed);
+        const pB = Math.sin((nx - ny) * 9.0 + seed * 1.7);
+        sweepFront = (pA * 0.35 + pB * 0.25 + 0.5) + edgeNoise * 0.7;
       } else {
-        // Mode 3: Alternating horizontal scanline shred (odd/even rows tear opposite ways)
         const dir = (row % 2 === 0) ? 1 : -1;
         sweepFront = (nx * dir) * 0.62 + 0.5 + edgeNoise;
       }
@@ -2017,14 +2017,12 @@
           isSkeleton = false;
         }
       } else if (sweepFront < dissolveThreshold + 0.11) {
-        // Disintegration rim pulses brightly with active audio transients
         density = clamp(density + 0.32 + (b0 + b2) * 0.25, 0, 1);
         zone = 3;
         peak = true;
       }
     }
 
-    // Crumbling Stone Erosion + Cross-Layer Wake Carving
     const totalWear = clamp(erosion + wakeScar * 0.85, 0, 1.2);
     if (density > 0 && totalWear > 0.005) {
       const nPit = hash2(col * 0.91 + seed * 3.1, row * 0.91 - seed * 2.3);
@@ -2044,9 +2042,8 @@
       }
     }
 
-    // Ensure surviving skeleton cells still punch brightly on audio transients during GROW
-    if (density > 0.15 && isSkeleton && (b0 > 0.55 || b2 > 0.55)) {
-      density = clamp(density + 0.22, 0, 1);
+    if (density > 0.15 && isSkeleton && (b0 > 0.52 || b2 > 0.52)) {
+      density = clamp(density + 0.24, 0, 1);
       peak = true;
     }
 
@@ -2059,7 +2056,7 @@
   }
 
   /* ===========================================================================
-     SECTION B: APPLICATION STATE, GENERATIVE VARIANT GENOME & SLEWED IDLE
+     SECTION B: APPLICATION STATE, PULSAR BUS SIDECHAIN & 4 BAND CLOCKS
      =========================================================================== */
   function createVariantGenome(mutAmt) {
     return {
@@ -2089,11 +2086,9 @@
     variantA: createVariantGenome(0.0),
     variantB: createVariantGenome(0.45),
 
-    // Multi-angle dissolution state (randomized per cycle)
     dissolveAngle: Math.random() * TAU,
     dissolveMode: 0,
 
-    // Full-Screen ASCII Scope Override ([V] VIZ)
     vizScopeMode: false,
 
     lexiconIdx: 0,
@@ -2120,12 +2115,15 @@
     wasPlayingBeforeSuspend: false,
     isScrubbing: false,
 
-    // Slewed Idle Presence (0.0 = live audio active, 1.0 = full meditative idle)
     idlePresence: 0.0,
     prevIdlePresence: 0.0,
     idleDuration: 0,
     idlePhraseLines: generateMeditativeTransmission(),
     idlePhraseTimer: 0,
+
+    // 4 Independent Band Phase Clocks (Tectonic Lows -> Micro-Transient Highs)
+    bandPhases: [0, 0, 0, 0],
+    bassSidechain: 0.0, // Pulsar-23 master bus compression envelope
 
     morphTime: 0,
     morphSeed: 1.0,
@@ -2133,11 +2131,12 @@
     frozenSeed: 1.0,
     frozenBands: [0, 0, 0, 0],
 
+    // Dual-envelope (envFast + envSlow) per band so rapid hat rolls never lock out
     bands: [
-      { env: 0, prevEnv: 0, prevAbove: false, lastFire: 0 },
-      { env: 0, prevEnv: 0, prevAbove: false, lastFire: 0 },
-      { env: 0, prevEnv: 0, prevAbove: false, lastFire: 0 },
-      { env: 0, prevEnv: 0, prevAbove: false, lastFire: 0 }
+      { env: 0, slowEnv: 0, prevEnv: 0, prevAbove: false, lastFire: 0 },
+      { env: 0, slowEnv: 0, prevEnv: 0, prevAbove: false, lastFire: 0 },
+      { env: 0, slowEnv: 0, prevEnv: 0, prevAbove: false, lastFire: 0 },
+      { env: 0, slowEnv: 0, prevEnv: 0, prevAbove: false, lastFire: 0 }
     ],
 
     gates: {
@@ -2155,7 +2154,7 @@
   };
 
   /* ===========================================================================
-     SECTION B2: LAYER II (ASPERITAS) RESTRAINED DUST & SPLASH PARTICLE ENGINE
+     SECTION B2: LAYER II (ASPERITAS) ENGINE-SPECIFIC DUST GEOMETRY ENGINE
      =========================================================================== */
   const PARTICLE_COUNT = 220;
   const dustParticles = [];
@@ -2165,95 +2164,88 @@
     const r2 = Math.random();
     const sign = Math.random() < 0.5 ? -1 : 1;
 
-    if (fIdx === 0) {
-      if (r1 < 0.58) {
-        p.nx = (r2 * 2 - 1) * 0.65;
-        p.ny = 0.78 + (Math.random() - 0.5) * 0.10;
-        p.vx = (Math.random() - 0.5) * 0.10;
-        p.vy = -0.05 - Math.random() * 0.12;
-      } else {
-        p.nx = (r2 * 2 - 1) * 0.20;
-        p.ny = -0.22 + Math.random() * 0.95;
-        p.vx = sign * (0.04 + Math.random() * 0.09);
-        p.vy = -0.08 - Math.random() * 0.15;
-      }
-    } else if (fIdx === 1) {
+    if (fIdx === 0 || fIdx === 4) {
+      // I. MONOLITH & V. OBELISK: Vertical rising ash pillars & incense trails flanking core
+      p.nx = sign * (0.18 + r1 * 0.42);
+      p.ny = -0.30 + r2 * 1.15;
+      p.vx = sign * (0.02 + Math.random() * 0.06);
+      p.vy = -0.16 - Math.random() * 0.28;
+    } else if (fIdx === 1 || fIdx === 7) {
+      // II. SEAL & VIII. HORIZON: Counter-rotating orbital spark rings & corona spokes
       const ang = r1 * TAU;
-      const rad = 0.72 + (r2 - 0.5) * 0.12;
+      const rad = (fIdx === 1 ? 0.68 : 0.34) + (r2 - 0.5) * 0.14;
       p.nx = Math.cos(ang) * rad;
       p.ny = Math.sin(ang) * rad;
-      p.vx = -Math.sin(ang) * 0.14 + Math.cos(ang) * 0.04;
-      p.vy = Math.cos(ang) * 0.14 + Math.sin(ang) * 0.04;
-    } else if (fIdx === 2) {
-      p.nx = (r1 * 2 - 1) * aspect * 0.78;
-      const rowBand = Math.floor(r2 * 7) - 3;
-      p.ny = clamp(rowBand * 0.24 + (Math.random() - 0.5) * 0.04, -0.82, 0.82);
-      p.vx = (Math.random() - 0.5) * 0.08;
-      p.vy = 0.06 + Math.random() * 0.14;
-    } else if (fIdx === 3) {
-      p.nx = (r1 * 2 - 1) * aspect * 0.85;
-      p.ny = Math.sin(p.nx * 2.8 + seed) * 0.11 + (r2 - 0.5) * 0.07;
-      p.vx = (Math.random() - 0.5) * 0.12;
-      p.vy = sign * (0.08 + Math.random() * 0.18);
-    } else if (fIdx === 4) {
-      if (r1 < 0.72) {
-        p.nx = sign * (0.34 + (r2 < 0.5 ? 0 : 0.18) + (Math.random() - 0.5) * 0.03);
-        p.ny = -0.55 + Math.random() * 1.32;
-        p.vx = sign * (0.02 + Math.random() * 0.06);
-        p.vy = -0.09 - Math.random() * 0.15;
-      } else {
-        p.nx = (r2 - 0.5) * 0.15;
-        p.ny = -0.86 + (Math.random() - 0.5) * 0.07;
-        p.vx = sign * (0.07 + Math.random() * 0.12);
-        p.vy = -0.11 - Math.random() * 0.16;
-      }
-    } else if (fIdx === 5) {
-      const ang = r1 * TAU;
-      const rad = 0.11 + r2 * 0.10;
-      p.nx = Math.cos(ang) * rad * 1.25;
-      p.ny = Math.sin(ang) * rad;
-      p.vx = Math.cos(ang) * (0.12 + Math.random() * 0.18);
-      p.vy = Math.sin(ang) * (0.12 + Math.random() * 0.18);
-    } else if (fIdx === 6) {
-      p.nx = (r1 * 2 - 1) * aspect * 0.80;
-      p.ny = -0.25 + (r2 - 0.5) * 0.30;
-      p.vx = (Math.random() - 0.5) * 0.08;
-      p.vy = -0.09 - Math.random() * 0.16;
+      p.vx = -Math.sin(ang) * 0.28 + Math.cos(ang) * 0.08;
+      p.vy = Math.cos(ang) * 0.28 + Math.sin(ang) * 0.08;
+    } else if (fIdx === 2 || fIdx === 6) {
+      // III. MOSAIC & VII. CITADEL: Grid-snapped falling ember rain tracing vertical seams
+      const gridCols = 12;
+      const colSlot = (Math.floor(r1 * gridCols) - gridCols * 0.5 + 0.5) / (gridCols * 0.5);
+      p.nx = colSlot * aspect * 0.78;
+      p.ny = -0.85 + r2 * 1.65;
+      p.vx = 0;
+      p.vy = 0.18 + Math.random() * 0.28;
     } else {
-      const ang = r1 * TAU;
-      const rad = 0.32 + r2 * 0.05;
-      p.nx = Math.cos(ang) * rad;
-      p.ny = Math.sin(ang) * rad;
-      p.vx = Math.cos(ang) * (0.12 + Math.random() * 0.18);
-      p.vy = Math.sin(ang) * (0.12 + Math.random() * 0.18);
+      // IV. STRATA & VI. VAULT: High-velocity horizontal wind-shear streaks across fault / tunnel
+      p.nx = (r1 * 2 - 1) * aspect * 0.85;
+      p.ny = (fIdx === 3)
+        ? Math.sin(p.nx * 2.8 + seed) * 0.11 + (r2 - 0.5) * 0.08
+        : (r2 - 0.5) * 0.36;
+      p.vx = sign * (0.24 + Math.random() * 0.34);
+      p.vy = (Math.random() - 0.5) * 0.08;
     }
 
     p.phase = Math.random() * TAU;
     p.weight = 0.15 + Math.random() * 0.85;
     p.zDepth = 0.45 + Math.pow(Math.random(), 1.3) * 0.95;
-    p.maxLife = 1.0 + Math.random() * 2.0;
+    p.maxLife = 1.0 + Math.random() * 1.9;
     p.life = resetLife ? Math.random() * p.maxLife : p.maxLife;
   }
 
-  function emitTransientSplashJet(strength, angle) {
+  // Emits geometric particle formations tailored to the active engine on high-end hat bursts
+  function emitEngineDustPattern(strength, fIdx, aspect, seed) {
     if (!state.lanesActive[1]) return;
-    const count = 10 + Math.floor(strength * 14);
-    const originX = (Math.random() - 0.5) * 0.45;
-    const originY = (Math.random() - 0.5) * 0.45;
-    const baseSpeed = 0.65 + strength * 1.55;
+    const count = 12 + Math.floor(strength * 16);
+    const baseSpeed = 0.75 + strength * 1.75;
 
     for (let k = 0; k < count; k++) {
       const p = dustParticles[Math.floor(Math.random() * dustParticles.length)];
       if (!p) continue;
-      const spread = (Math.random() - 0.5) * 0.65;
-      const spd = baseSpeed * (0.6 + Math.random() * 0.8);
-      p.nx = originX + (Math.random() - 0.5) * 0.08;
-      p.ny = originY + (Math.random() - 0.5) * 0.08;
-      p.vx = Math.cos(angle + spread) * spd;
-      p.vy = Math.sin(angle + spread) * spd;
+      const u = k / Math.max(1, count);
+      const sign = (k % 2 === 0) ? 1 : -1;
+
+      if (fIdx === 0 || fIdx === 4) {
+        // Twin symmetrical ash plumes erupting vertically alongside temple/obelisk
+        p.nx = sign * (0.24 + Math.random() * 0.28);
+        p.ny = 0.65 - u * 1.2;
+        p.vx = sign * (0.12 + Math.random() * 0.25);
+        p.vy = -baseSpeed * (0.8 + Math.random() * 0.6);
+      } else if (fIdx === 1 || fIdx === 7) {
+        // Radial orbital burst spinning off the astrolabe ring / eclipse corona
+        const ang = u * TAU + seed;
+        const rad = fIdx === 1 ? 0.72 : 0.34;
+        p.nx = Math.cos(ang) * rad;
+        p.ny = Math.sin(ang) * rad;
+        p.vx = (-Math.sin(ang) * 0.8 + Math.cos(ang) * 0.6) * baseSpeed;
+        p.vy = (Math.cos(ang) * 0.8 + Math.sin(ang) * 0.6) * baseSpeed;
+      } else if (fIdx === 2 || fIdx === 6) {
+        // Crisp vertical ember curtains dropping down coffer & tower columns
+        p.nx = ((u * 2 - 1) * aspect * 0.78);
+        p.ny = -0.78 + (Math.random() - 0.5) * 0.16;
+        p.vx = 0;
+        p.vy = baseSpeed * (0.85 + Math.random() * 0.5);
+      } else {
+        // Razor horizontal wind-shear jets ripping across fault rift / corridor
+        p.nx = -sign * aspect * 0.65;
+        p.ny = (u * 2 - 1) * 0.55;
+        p.vx = sign * baseSpeed * 1.35;
+        p.vy = (Math.random() - 0.5) * 0.14;
+      }
+
       p.zDepth = 1.05 + Math.random() * 0.35;
-      p.weight = 0.75 + Math.random() * 0.25;
-      p.life = 0.65 + Math.random() * 0.55;
+      p.weight = 0.78 + Math.random() * 0.22;
+      p.life = 0.55 + Math.random() * 0.50;
       p.maxLife = p.life;
     }
   }
@@ -2695,7 +2687,7 @@
   }
 
   /* ===========================================================================
-     SECTION F: TRUE PEAKAMP~ ANALYSIS, SLEWED IDLE & MULTI-ANGLE EVOLUTION
+     SECTION F: PULSAR-23 BUS SIDECHAIN HIERARCHY & 4 INDEPENDENT BAND CLOCKS
      =========================================================================== */
   function advanceMorphCycle(phaseStep) {
     state.morphCyclePhase += phaseStep;
@@ -2705,7 +2697,6 @@
       state.variantA = state.variantB;
       state.variantB = createVariantGenome(clamp(0.30 + grow * 0.70, 0.30, 1.0));
       state.morphAlpha = 0.0;
-      // Roll a fresh dissolution angle & mode on every reconstruction cycle
       state.dissolveAngle = Math.random() * TAU;
       state.dissolveMode = Math.floor(Math.random() * 4);
     } else {
@@ -2714,8 +2705,10 @@
   }
 
   function processAudioAndGates(nowMs, dtSec) {
-    const decayPerSec = [3.0, 3.8, 4.5, 5.8];
-    const spectralComp = [1.15, 1.55, 2.05, 2.85];
+    // Distinct ballistic decay rates per band: slow tectonic lows -> razor-fast 0ms highs
+    const decayPerSec = [2.6, 4.2, 8.5, 14.0];
+    const slowDecayPerSec = [1.1, 1.6, 2.4, 3.2];
+    const spectralComp = [1.15, 1.65, 2.25, 3.20];
 
     const hasLiveSource = (state.sourceMode === 'mic') ||
                           (state.sourceMode === 'file' && state.fileLoaded && !dom.audioPlayer.paused);
@@ -2724,7 +2717,6 @@
     const anyLaneOn = state.lanesActive[0] || state.lanesActive[1] || state.lanesActive[2] || state.lanesActive[3];
     const targetIdle = (state.activated && !hasLiveSource && (anyLaneOn || state.vizScopeMode)) ? 1.0 : 0.0;
 
-    // Smoothly slew idlePresence in & out (no abrupt screen cut on unpause)
     state.prevIdlePresence = state.idlePresence;
     const slewSpeed = targetIdle > state.idlePresence ? 0.85 : 1.35;
     state.idlePresence += (targetIdle - state.idlePresence) * Math.min(1, dtSec * slewSpeed);
@@ -2741,6 +2733,10 @@
       state.idlePhraseTimer = 0;
     }
 
+    const aspect = Math.max(0.5, cols / Math.max(1, rows));
+    const gainNorm = state.params.gain; // 0.0 (0.25x) -> 0.50 (1.00x) -> 1.0 (4.00x)
+    const drivePush = clamp(0.65 + gainNorm * 1.15, 0.65, 1.80);
+
     if (audioRunning) {
       for (let i = 0; i < 4; i++) {
         const an = bandAnalysers[i];
@@ -2755,12 +2751,19 @@
           if (v > peak) peak = v;
         }
 
-        const level = clamp(Math.pow(peak * spectralComp[i], 0.85), 0, 1);
+        const level = clamp(Math.pow(peak * spectralComp[i], 0.82), 0, 1);
 
         if (level > b.env) {
           b.env = level;
         } else {
           b.env = Math.max(0, b.env - decayPerSec[i] * dtSec);
+        }
+
+        // Slow adaptive average follower so rapid hi-hat rolls still register upward transients
+        if (level > b.slowEnv) {
+          b.slowEnv += (level - b.slowEnv) * Math.min(1, dtSec * 5.5);
+        } else {
+          b.slowEnv = Math.max(0, b.slowEnv - slowDecayPerSec[i] * dtSec);
         }
       }
     } else if (state.idlePresence > 0.02) {
@@ -2774,44 +2777,70 @@
       for (let i = 0; i < 4; i++) {
         state.bands[i].prevEnv = state.bands[i].env;
         state.bands[i].env += (idleWaves[i] - state.bands[i].env) * Math.min(1, dtSec * 4.0);
+        state.bands[i].slowEnv = state.bands[i].env * 0.75;
       }
     } else {
       for (let i = 0; i < 4; i++) {
         state.bands[i].prevEnv = state.bands[i].env;
         state.bands[i].env = Math.max(0, state.bands[i].env - 3.8 * dtSec);
+        state.bands[i].slowEnv = Math.max(0, state.bands[i].slowEnv - 2.0 * dtSec);
       }
     }
 
-    // Engine-Locked GROW evolution
+    // -------------------------------------------------------------------------
+    // PULSAR-23 MASTER BUS SIDECHAIN HIERARCHY:
+    // Band I (140Hz kick) physically ducks high-end tearing on impact,
+    // while interludes / kick dropouts let high-end hats bloom into full range.
+    // -------------------------------------------------------------------------
+    const b0 = state.bands[0].env;
+    const b1 = state.bands[1].env;
+    const b2 = state.bands[2].env;
+    const b3 = state.bands[3].env;
+
+    if (b0 > state.bassSidechain) {
+      state.bassSidechain = b0; // Instant 0ms compressor clamp on kick impact
+    } else {
+      state.bassSidechain = Math.max(0, state.bassSidechain - 6.5 * dtSec); // ~150ms release
+    }
+    const scDuck = clamp(1.0 - Math.pow(state.bassSidechain, 1.35) * 0.78, 0.22, 1.0);
+
+    // Advance 4 Independent Layer Clocks at distinct musical tempo multipliers
+    if (!state.frozen) {
+      state.bandPhases[0] += dtSec * (0.18 + b0 * 1.15 * drivePush);
+      state.bandPhases[1] += dtSec * (0.28 + b1 * 1.65 * drivePush);
+      state.bandPhases[2] += dtSec * (0.45 + b2 * 2.85 * scDuck * drivePush);
+      state.bandPhases[3] += dtSec * (0.65 + b3 * 4.20 * scDuck * drivePush);
+    }
+
+    // Engine-Locked GROW evolution (pushed and pulled rhythmically by drivePush & transients)
     const grow = state.params.grow;
     if (!state.frozen && grow > 0.01) {
       state.variantB.mutAmt = clamp(0.30 + grow * 0.70, 0.30, 1.0);
-      const slowDriftRate = 0.025 + Math.pow(grow, 2.2) * 0.25;
+      const slowDriftRate = (0.025 + Math.pow(grow, 2.2) * 0.24) * drivePush;
       advanceMorphCycle(dtSec * slowDriftRate);
     } else if (grow <= 0.01) {
       state.morphCyclePhase = 0.0;
       state.morphAlpha = 0.0;
     }
 
-    // Band I (STRATA) sub-bass shockwave + transient shatter jump when GROW is high
-    const b1 = state.bands[0];
-    const above1 = b1.env > 0.56;
-    if (audioRunning && above1 && !b1.prevAbove && (nowMs - b1.lastFire > 150)) {
-      b1.lastFire = nowMs;
+    // Band I (STRATA) sub-bass shockwave + transient shatter jump
+    const b1Band = state.bands[0];
+    const above1 = b1Band.env > 0.52;
+    if (audioRunning && above1 && !b1Band.prevAbove && (nowMs - b1Band.lastFire > 140)) {
+      b1Band.lastFire = nowMs;
       state.shockwaves.push({
         r: 0.08,
-        speed: 1.5 + b1.env * 2.4,
-        strength: b1.env
+        speed: 1.5 + b1Band.env * 2.4,
+        strength: b1Band.env
       });
       if (state.shockwaves.length > 5) state.shockwaves.shift();
 
-      if (!state.frozen && grow > 0.42) {
-        const jump = Math.pow((grow - 0.42) / 0.58, 1.35) * (0.30 + b1.env * 0.34);
+      if (!state.frozen && grow > 0.35) {
+        const jump = Math.pow((grow - 0.35) / 0.65, 1.3) * (0.28 + b1Band.env * 0.34) * drivePush;
         advanceMorphCycle(jump);
-        emitTransientSplashJet(b1.env, state.windAngle);
       }
     }
-    b1.prevAbove = above1;
+    b1Band.prevAbove = above1;
 
     for (let i = state.shockwaves.length - 1; i >= 0; i--) {
       const sw = state.shockwaves[i];
@@ -2822,68 +2851,75 @@
       }
     }
 
-    const attackSpike = Math.max(0, state.bands[1].env - state.bands[1].prevEnv) * 2.5 +
-                        Math.max(0, state.bands[2].env - state.bands[2].prevEnv) * 3.0;
-    const targetGust = clamp(state.bands[1].env * 0.45 + state.bands[2].env * 0.65 + attackSpike + state.params.erosion * 0.45 + grow * 0.30, 0, 2.0);
-    state.windGust += (targetGust - state.windGust) * Math.min(1, dtSec * 8.0);
+    // Directional gale gust dynamics
+    const attackSpike = Math.max(0, b1 - state.bands[1].prevEnv) * 2.5 +
+                        Math.max(0, b2 - state.bands[2].prevEnv) * 3.2 * scDuck;
+    const targetGust = clamp((b1 * 0.45 + b2 * 0.75 * scDuck + attackSpike + state.params.erosion * 0.45) * drivePush, 0, 2.2);
+    state.windGust += (targetGust - state.windGust) * Math.min(1, dtSec * 8.5);
     state.windAngle += Math.sin(nowMs * 0.0007) * 0.35 * dtSec;
 
+    // -------------------------------------------------------------------------
+    // ADAPTIVE DIFFERENTIAL TRANSIENT DETECTOR (envFast - envSlow > deltaThr)
+    // Works at both low GAIN and high GAIN, and never locks out on fast hat rolls!
+    // -------------------------------------------------------------------------
     const frac = state.params.fracture;
-    if (audioRunning && (frac > 0.005 || grow > 0.55)) {
-      const effFrac = Math.max(frac, (grow - 0.55) * 1.4);
-      const prob = clamp(0.18 + effFrac * 0.78, 0.18, 0.96);
-      const thr3 = clamp(0.60 - effFrac * 0.28, 0.26, 0.60);
-      const thr4 = clamp(0.54 - effFrac * 0.26, 0.22, 0.54);
+    const driveTearBias = Math.max(0, (gainNorm - 0.50) * 0.75); // Pushing GAIN past unity adds rhythmic tearing
+    const effFrac = clamp(Math.max(frac, driveTearBias, (grow - 0.50) * 1.1), 0, 1.2);
 
-      const b3 = state.bands[2];
-      const above3 = b3.env > thr3;
-      if (above3 && !b3.prevAbove && (nowMs - b3.lastFire > 85)) {
-        b3.lastFire = nowMs;
-        if (Math.random() < prob) {
-          state.gates.shear.env = 1.0;
-          state.gates.shear.start = nowMs;
-          state.gates.shear.seed = Math.floor(Math.random() * 9973) + 1;
-          emitTransientSplashJet(b3.env * Math.max(0.4, effFrac), state.windAngle + (Math.random() - 0.5) * 0.8);
+    if (audioRunning && (effFrac > 0.02 || b2 > 0.18 || b3 > 0.18)) {
+      const deltaThr3 = clamp(0.16 - effFrac * 0.09, 0.04, 0.16);
+      const deltaThr4 = clamp(0.14 - effFrac * 0.08, 0.035, 0.14);
+
+      const band3 = state.bands[2];
+      const delta3 = band3.env - band3.slowEnv;
+      const trig3 = (delta3 > deltaThr3) && (band3.env > 0.12);
+      if (trig3 && !band3.prevAbove && (nowMs - band3.lastFire > 55)) {
+        band3.lastFire = nowMs;
+        const hitStrength = clamp((band3.env + delta3) * scDuck * drivePush, 0.2, 1.4);
+        state.gates.shear.env = clamp(0.45 + hitStrength * 0.55, 0.45, 1.0);
+        state.gates.shear.start = nowMs;
+        state.gates.shear.seed = Math.floor(Math.random() * 9973) + 1;
+        emitEngineDustPattern(hitStrength, state.formationIdx, aspect, state.morphSeed);
+      }
+      band3.prevAbove = trig3;
+
+      const band4 = state.bands[3];
+      const delta4 = band4.env - band4.slowEnv;
+      const trig4 = (delta4 > deltaThr4) && (band4.env > 0.10);
+      if (trig4 && !band4.prevAbove && (nowMs - band4.lastFire > 48)) {
+        band4.lastFire = nowMs;
+        const hatStrength = clamp((band4.env + delta4) * scDuck * drivePush, 0.25, 1.5);
+        state.gates.drop.env = clamp(0.45 + hatStrength * 0.55, 0.45, 1.0);
+        state.gates.drop.start = nowMs;
+        state.gates.drop.seed = Math.floor(Math.random() * 9973) + 1;
+        emitEngineDustPattern(hatStrength, state.formationIdx, aspect, state.morphSeed);
+
+        // Hi-hats rhythmically push GROW dissolution during interludes when kick ducks out
+        if (!state.frozen && grow > 0.35 && scDuck > 0.65) {
+          advanceMorphCycle(Math.pow((grow - 0.35) / 0.65, 1.3) * 0.16 * hatStrength);
+        }
+
+        if (state.lanesActive[0] && effFrac > 0.22 && state.calvedChunks.length < 16) {
+          const sign = Math.random() < 0.5 ? -1 : 1;
+          state.calvedChunks.push({
+            nx: sign * (0.12 + Math.random() * 0.35),
+            ny: -0.45 + Math.random() * 0.75,
+            vx: sign * (0.24 + Math.random() * 0.42) + Math.cos(state.windAngle) * 0.30,
+            vy: 0.28 + Math.random() * 0.50,
+            size: 2 + Math.floor(Math.random() * 2),
+            life: 1.2
+          });
+        }
+
+        if (effFrac > 0.35 && hatStrength > 0.55 && (nowMs - state.gates.lightning.lastFlash > 220) && Math.random() < effFrac * 0.65) {
+          state.gates.lightning.env = 1.0;
+          state.gates.lightning.start = nowMs;
+          state.gates.lightning.lastFlash = nowMs;
+          state.gates.lightning.angle = (Math.random() - 0.5) * 1.1;
+          state.gates.lightning.offset = (Math.random() - 0.5) * 0.9;
         }
       }
-      b3.prevAbove = above3;
-
-      const b4 = state.bands[3];
-      const above4 = b4.env > thr4;
-      if (above4 && !b4.prevAbove && (nowMs - b4.lastFire > 85)) {
-        b4.lastFire = nowMs;
-        if (Math.random() < prob) {
-          state.gates.drop.env = 1.0;
-          state.gates.drop.start = nowMs;
-          state.gates.drop.seed = Math.floor(Math.random() * 9973) + 1;
-          emitTransientSplashJet(b4.env * Math.max(0.4, effFrac), state.windAngle + PI * 0.25);
-
-          if (!state.frozen && grow > 0.52) {
-            advanceMorphCycle(Math.pow((grow - 0.52) / 0.48, 1.3) * 0.28);
-          }
-
-          if (state.lanesActive[0] && effFrac > 0.25 && state.calvedChunks.length < 16) {
-            const sign = Math.random() < 0.5 ? -1 : 1;
-            state.calvedChunks.push({
-              nx: sign * (0.12 + Math.random() * 0.35),
-              ny: -0.45 + Math.random() * 0.75,
-              vx: sign * (0.22 + Math.random() * 0.40) + Math.cos(state.windAngle) * 0.30,
-              vy: 0.28 + Math.random() * 0.50,
-              size: 2 + Math.floor(Math.random() * 2),
-              life: 1.3
-            });
-          }
-
-          if (frac > 0.35 && b4.env > thr4 + 0.10 && (nowMs - state.gates.lightning.lastFlash > 240) && Math.random() < frac * 0.65) {
-            state.gates.lightning.env = 1.0;
-            state.gates.lightning.start = nowMs;
-            state.gates.lightning.lastFlash = nowMs;
-            state.gates.lightning.angle = (Math.random() - 0.5) * 1.1;
-            state.gates.lightning.offset = (Math.random() - 0.5) * 0.9;
-          }
-        }
-      }
-      b4.prevAbove = above4;
+      band4.prevAbove = trig4;
     } else {
       state.bands[2].prevAbove = false;
       state.bands[3].prevAbove = false;
@@ -2914,13 +2950,11 @@
     const cy = (rows - 1) * 0.5;
     const erosion = state.params.erosion;
     const tess = state.params.tessellation;
-    const fracture = state.params.fracture;
 
     const spineIdx = maxGlyphIdx;
     const echoIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.45)), maxGlyphIdx);
     const gratIdx = 0;
 
-    // Subtle graticule crosshair
     const midR = Math.round(cy);
     const midC = Math.round(cx);
     for (let c = 2; c < cols - 2; c += 3) {
@@ -2938,7 +2972,6 @@
     }
 
     if (state.scopeMode === 0) {
-      // Full-Screen ASCII Waveform Trace
       const stepQuant = Math.max(1, Math.round((1.0 - tess) * 4));
       for (let c = 1; c < cols - 1; c++) {
         const qCol = Math.floor(c / stepQuant) * stepQuant;
@@ -2949,7 +2982,6 @@
           const sIdx = Math.min(scopeBytes.length - 1, Math.floor(u * scopeBytes.length));
           sample = (scopeBytes[sIdx] - 128.0) / 128.0;
         } else {
-          // Idle standing harmonic carrier
           sample = Math.sin(u * TAU * 3.0 + t * 2.2) * Math.sin(u * PI) * 0.35 +
                    Math.sin(u * TAU * 7.0 - t * 3.8) * 0.12;
         }
@@ -2968,7 +3000,6 @@
         const absAmp = Math.abs(sample);
         const aRow = absAmp > 0.65 ? 5 : (absAmp > 0.35 ? 4 : (absAmp > 0.15 ? 1 : 2));
 
-        // Vertical harmonic echo column between center line and peak
         const rStart = Math.min(midR, rClamp);
         const rEnd = Math.max(midR, rClamp);
         for (let r = rStart; r <= rEnd; r++) {
@@ -2979,7 +3010,6 @@
         }
       }
     } else {
-      // Full-Screen ASCII Peak Seismograph Canyon
       if (active && scopeBytes) {
         let peak = 0;
         for (let i = 0; i < scopeBytes.length; i++) {
@@ -3012,7 +3042,7 @@
   }
 
   /* ===========================================================================
-     SECTION G2: 5-LAYER PARALLAX, SHATTERING BORDERS & ARCHITECTURAL LITURGY
+     SECTION G2: 5-LAYER PARALLAX, PULSAR SIDECHAIN & ENGINE DUST GEOMETRIES
      =========================================================================== */
   function renderVisualiser(nowMs, dtSec) {
     const pal = PALETTES[state.paletteIdx];
@@ -3030,6 +3060,11 @@
     }
 
     const t = state.frozen ? state.frozenTime : state.morphTime;
+    const p0 = state.bandPhases[0];
+    const p1 = state.bandPhases[1];
+    const p2 = state.bandPhases[2];
+    const p3 = state.bandPhases[3];
+
     const seed = state.frozen ? state.frozenSeed : state.morphSeed;
     const b0 = state.frozen ? state.frozenBands[0] : liveB0;
     const b1 = state.frozen ? state.frozenBands[1] : liveB1;
@@ -3040,13 +3075,17 @@
     const tess = state.params.tessellation;
     const fracture = state.params.fracture;
     const grow = state.params.grow;
+    const gainNorm = state.params.gain;
 
-    const transientPulse = clamp(b0 * 0.4 + b2 * 0.7 + b3 * 0.8, 0, 1.2);
-    const gateShear = state.gates.shear.env * fracture * (0.35 + transientPulse * 0.65);
-    const gateDrop = state.gates.drop.env * fracture * (0.35 + transientPulse * 0.65);
+    const scDuck = clamp(1.0 - Math.pow(state.bassSidechain, 1.35) * 0.78, 0.22, 1.0);
+    const driveTearBias = Math.max(0, (gainNorm - 0.50) * 0.75);
+    const effFrac = clamp(Math.max(fracture, driveTearBias), 0, 1.2);
+
+    const transientPulse = clamp(b0 * 0.35 + (b2 * 0.85 + b3 * 0.95) * scDuck, 0, 1.3);
+    const gateShear = state.gates.shear.env * Math.max(0.25, effFrac) * (0.40 + transientPulse * 0.60);
+    const gateDrop = state.gates.drop.env * Math.max(0.25, effFrac) * (0.40 + transientPulse * 0.60);
     const lightningEnv = state.gates.lightning.env;
 
-    // [V] VIZ Full-Screen ASCII Oscilloscope / Seismograph Override
     if (state.vizScopeMode) {
       renderAsciiScopeOverride(t, b0, b1, b2, b3, gateShear);
       return;
@@ -3065,7 +3104,7 @@
       else wakeGrid[i] = 0;
     }
 
-    const dialDissolve = Math.max(0, (erosion - 0.50) * 1.4, (fracture - 0.50) * 1.4);
+    const dialDissolve = Math.max(0, (erosion - 0.50) * 1.4, (effFrac - 0.50) * 1.4);
     const growDissolve = grow > 0.01 ? Math.sin(state.morphCyclePhase * PI) * (0.35 + grow * 0.85) : 0;
     const dissolveThreshold = clamp(Math.max(dialDissolve * (0.45 + transientPulse * 0.65), growDissolve), 0, 1.35);
 
@@ -3075,7 +3114,7 @@
     const invScale = 1.0 / halfScale;
     const aspect = Math.max(0.5, cols / Math.max(1, rows));
     const frameTick = Math.floor(nowMs * 0.04);
-    const idleBreath = 0.94 + Math.sin(t * 0.9) * 0.06;
+    const idleBreath = 0.94 + Math.sin(p0 * 0.9) * 0.06;
 
     const bandEnvs = [b0, b1, b2, b3];
     const fCtx = {
@@ -3087,8 +3126,9 @@
       dissolveAngle: state.dissolveAngle,
       dissolveMode: state.dissolveMode,
       windAngle: state.windAngle,
-      t, seed, b0, b1, b2, b3,
-      tess, erosion, fracture,
+      p0, p1, p2, p3,
+      seed, b0, b1, b2, b3,
+      tess, erosion, fracture: effFrac,
       gateShear, gateDrop,
       cols, rows, frameTick
     };
@@ -3130,13 +3170,12 @@
     }
 
     if (state.lanesActive[2]) {
-      const duckMult = clamp(1.0 - b3 * 0.85 - gateDrop * 0.65, 0.08, 1.0);
-      const silicaEnergy = clamp((b2 * 0.85 + erosion * 0.25 + 0.08) * duckMult, 0.03, 0.85);
+      const silicaEnergy = clamp((b2 * 0.95 * scDuck + erosion * 0.25 + 0.08), 0.03, 0.88);
 
-      const panX = Math.cos(state.windAngle) * t * 0.06;
-      const panY = Math.sin(state.windAngle) * t * 0.04;
+      const panX = Math.cos(state.windAngle) * p2 * 0.06;
+      const panY = Math.sin(state.windAngle) * p2 * 0.04;
       const bandDensity = 6.0 + tess * 9.0;
-      const sweepSpeed = t * (0.45 + b2 * 1.6) + seed;
+      const sweepSpeed = p2 * 0.85 + seed;
 
       const patLo = 0;
       const patMid = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.28)), maxGlyphIdx);
@@ -3154,16 +3193,16 @@
           const grain = hash2(c * 0.51 + frameTick * 0.08, r * 0.67 + seed);
           if (interference + grain * 0.5 < (1.12 - silicaEnergy * 0.68)) continue;
 
-          if (b2 > 0.24) {
+          if (b2 * scDuck > 0.22) {
             const mCol = Math.round(cx + (nx - panX) * halfScale);
             const mRow = Math.round(cy + (ny - panY) * halfScale);
             if (mCol >= 0 && mCol < cols && mRow >= 0 && mRow < rows) {
               const wIdx = mRow * cols + mCol;
-              wakeGrid[wIdx] = Math.min(1.0, wakeGrid[wIdx] + b2 * 0.14);
+              wakeGrid[wIdx] = Math.min(1.0, wakeGrid[wIdx] + b2 * scDuck * 0.16);
             }
           }
 
-          const isSpark = (b2 > 0.58 && grain > 0.88) || (lightningEnv > 0.4 && grain > 0.75);
+          const isSpark = (b2 * scDuck > 0.52 && grain > 0.86) || (lightningEnv > 0.4 && grain > 0.75);
           const gIdx = isSpark ? patHi : (interference > 0.45 ? patMid : patLo);
           const atlasRow = isSpark ? 3 : 0;
 
@@ -3177,11 +3216,11 @@
     }
 
     // =========================================================================
-    // LAYER 4 (IV. LETHE): PERIPHERAL BORDERS — SHATTER INWARD AT HEAVY DIALS
+    // LAYER 4 (IV. LETHE): PERIPHERAL BORDERS — SHATTER INWARD ON HIGH TRANSIENTS
     // =========================================================================
     if (state.lanesActive[3]) {
-      const letheEnergy = clamp(b3 * 1.2 + b0 * 0.25 + 0.14, 0.14, 1.0);
-      const borderShatter = clamp(Math.max(0, erosion - 0.40) * 1.1 + Math.max(0, fracture - 0.35) * 1.35 + gateShear * 0.5, 0, 1.2);
+      const letheEnergy = clamp(b3 * 1.25 * scDuck + b0 * 0.20 + 0.14, 0.14, 1.0);
+      const borderShatter = clamp(Math.max(0, erosion - 0.35) * 1.1 + Math.max(0, effFrac - 0.30) * 1.35 + gateShear * 0.65, 0, 1.3);
 
       const baseMarginL = Math.max(2, Math.floor(cols * 0.05));
       const baseMarginR = Math.min(cols - 3, Math.ceil(cols * 0.95));
@@ -3195,12 +3234,11 @@
       for (let r = 2; r < rows - 2; r++) {
         const drawY = r * cellPx;
         const ny = (r - cy) * invScale;
-        const wave = Math.sin(ny * (8.0 + tess * 10.0) - t * (1.2 + b3 * 3.0) + seed);
+        const wave = Math.sin(ny * (8.0 + tess * 10.0) - p3 * 1.6 + seed);
 
-        // At heavy dial values, border rails bow inward & fracture into the central architecture
         const rowNoise = hash2(r * 0.73 + seed, frameTick * 0.18);
         const inwardPull = borderShatter > 0.05
-          ? Math.round(borderShatter * (cols * 0.28) * (0.35 + Math.abs(Math.sin(ny * 3.5 + t * 1.4)) * 0.65) * (rowNoise > 0.25 ? 1 : 0.2))
+          ? Math.round(borderShatter * (cols * 0.28) * (0.35 + Math.abs(Math.sin(ny * 3.5 + p3 * 0.8)) * 0.65) * (rowNoise > 0.25 ? 1 : 0.2))
           : 0;
 
         const colL = clamp(baseMarginL + inwardPull, 1, Math.floor(cx - 2));
@@ -3208,30 +3246,29 @@
         const railL = clamp(baseRailL + Math.round(inwardPull * 1.25), 2, Math.floor(cx - 1));
         const railR = clamp(baseRailR - Math.round(inwardPull * 1.25), Math.ceil(cx + 1), cols - 3);
 
-        // Carve wake scar where shattered border shards slam into the central formation
         if (inwardPull > cols * 0.14) {
           wakeGrid[r * cols + railL] = Math.min(1.0, wakeGrid[r * cols + railL] + 0.35);
           wakeGrid[r * cols + railR] = Math.min(1.0, wakeGrid[r * cols + railR] + 0.35);
         }
 
-        if (r % 3 === 0 || (b3 > 0.35 && wave > 0.35) || borderShatter > 0.35) {
+        if (r % 3 === 0 || (b3 * scDuck > 0.30 && wave > 0.35) || borderShatter > 0.35) {
           const isMajor = (r % 9 === 0) || (borderShatter > 0.45 && rowNoise > 0.72);
           const gIdx = isMajor ? sigilIdx : tickIdx;
-          const aRow = (isMajor && (b3 > 0.35 || borderShatter > 0.5) ? 5 : (b3 > 0.16 || borderShatter > 0.25 ? 4 : 0));
+          const aRow = (isMajor && (b3 * scDuck > 0.30 || borderShatter > 0.5) ? 5 : (b3 > 0.16 || borderShatter > 0.25 ? 4 : 0));
 
           ctx.drawImage(atlasCanvas, gIdx * cellPx, aRow * cellPx, cellPx, cellPx, colL * cellPx, drawY, cellPx, cellPx);
           ctx.drawImage(atlasCanvas, gIdx * cellPx, aRow * cellPx, cellPx, cellPx, colR * cellPx, drawY, cellPx, cellPx);
         }
 
         if (wave > (0.76 - letheEnergy * 0.42 - borderShatter * 0.25)) {
-          const aRow = (b3 > 0.48 || borderShatter > 0.6 ? 5 : 4);
+          const aRow = (b3 * scDuck > 0.42 || borderShatter > 0.6 ? 5 : 4);
           ctx.drawImage(atlasCanvas, runeIdx * cellPx, aRow * cellPx, cellPx, cellPx, railL * cellPx, drawY, cellPx, cellPx);
           ctx.drawImage(atlasCanvas, runeIdx * cellPx, aRow * cellPx, cellPx, cellPx, railR * cellPx, drawY, cellPx, cellPx);
         }
       }
 
       const bracketSpan = Math.min(10, Math.floor(cols * 0.08));
-      const bRowColor = (b3 > 0.32 || borderShatter > 0.4 ? 4 : 0);
+      const bRowColor = (b3 * scDuck > 0.30 || borderShatter > 0.4 ? 4 : 0);
       for (let k = 0; k < bracketSpan; k++) {
         const gIdx = (k === 0) ? sigilIdx : tickIdx;
         const dropY = borderShatter > 0.15 ? Math.round(borderShatter * (rows * 0.22) * hash2(k, seed)) : 0;
@@ -3259,7 +3296,7 @@
           const h = hash2(bandBand + shearSeed, frameTick * 0.25);
           if (h > (1.0 - gateShear * 0.65)) {
             const dir = (bandBand % 2 === 0) ? 1 : -1;
-            rowShiftCols = Math.round(dir * (2 + gateShear * 8));
+            rowShiftCols = Math.round(dir * (2 + gateShear * 9));
           }
         }
 
@@ -3294,7 +3331,7 @@
 
           let atlasRow = 0;
           const zoneEnergy = bandEnvs[cell.zone] || 0;
-          if (cell.peak && zoneEnergy > 0.42) {
+          if (cell.peak && zoneEnergy > 0.40) {
             atlasRow = 5;
           } else if (zoneEnergy > 0.14 || (state.frozen && zoneEnergy > 0.10)) {
             atlasRow = 1 + cell.zone;
@@ -3356,12 +3393,11 @@
     }
 
     // =========================================================================
-    // Z-PLANE 2: FOREGROUND DUST & SPLASH PLUMES (RESTRAINED 8% FLOOR AT REST)
+    // Z-PLANE 2: FOREGROUND ENGINE-SPECIFIC DUST & HAT PATTERNS (LAYER II)
     // =========================================================================
     if (state.lanesActive[1]) {
-      const highPresence = clamp(b2 * 0.75 + b3 * 1.10 + b1 * 0.30 + erosion * 0.45 + grow * 0.35, 0, 1.9);
+      const highPresence = clamp((b2 * 0.80 + b3 * 1.15) * scDuck + b1 * 0.25 + erosion * 0.45, 0, 2.0);
       const speedScale = 0.25 + Math.pow(highPresence, 1.65) * 4.4 + gateShear * 2.8;
-      // Quiet 8% baseline floor (~18 motes) so it stays subtle until transients or EROSION hit
       const activeCount = Math.floor(PARTICLE_COUNT * clamp(0.08 + Math.pow(highPresence, 1.3) * 0.92, 0.08, 1.0));
 
       const windVx = Math.cos(state.windAngle) * state.windGust * 1.55;
@@ -3393,8 +3429,8 @@
             }
           }
 
-          const swirlX = Math.sin(p.ny * 5.5 + t * 1.8 + p.phase) * (0.06 + highPresence * 0.55);
-          const swirlY = Math.cos(p.nx * 5.5 - t * 1.6 + p.phase) * (0.06 + highPresence * 0.55);
+          const swirlX = Math.sin(p.ny * 5.5 + p3 * 1.4 + p.phase) * (0.06 + highPresence * 0.55);
+          const swirlY = Math.cos(p.nx * 5.5 - p2 * 1.2 + p.phase) * (0.06 + highPresence * 0.55);
 
           const zVel = p.zDepth;
           p.nx += ((p.vx * speedScale + windVx + shockVx + swirlX) * zVel) * dtSec;
@@ -3412,13 +3448,13 @@
 
         const lifeNorm = clamp(p.life / p.maxLife, 0, 1);
         const energy = clamp(lifeNorm * (0.35 + highPresence * 0.80) * p.weight, 0, 1);
-        const isStreaking = (highPresence > 0.62 && p.zDepth > 1.02);
+        const isStreaking = (highPresence > 0.60 && p.zDepth > 1.02);
         const gIdx = isStreaking ? streakIdx : (energy > 0.68 ? dustHi : (energy > 0.32 ? dustMid : dustLo));
 
         let atlasRow = 0;
         if (energy > 0.74 && highPresence > 0.55) {
           atlasRow = 5;
-        } else if (b3 > 0.32 && p.weight > 0.55) {
+        } else if (b3 * scDuck > 0.30 && p.weight > 0.55) {
           atlasRow = 4;
         } else if (highPresence > 0.22) {
           atlasRow = 2;
@@ -3438,15 +3474,12 @@
 
     // =========================================================================
     // LAYER 5: ARCHITECTURAL IDLE LITURGY & SLEWED DISINTEGRATION
-    // Embeds meditative phrases directly onto the formation's geometry on the
-    // exact ASCII grid; unbolts characters into wind-blown dust when unpaused.
     // =========================================================================
     if (state.idlePresence > 0.03) {
       const ip = state.idlePresence;
-      const isReleasing = (ip < state.prevIdlePresence); // Audio just started/unpaused
+      const isReleasing = (ip < state.prevIdlePresence);
       const fIdx = state.formationIdx;
 
-      // 1. Subtle standing harmonic wave woven through the architecture
       const waveIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.42)), maxGlyphIdx);
       for (let c = 4; c < cols - 4; c += 2) {
         const nx = (c - cx) * invScale;
@@ -3458,7 +3491,6 @@
         }
       }
 
-      // 2. Embed meditative machine transmissions directly into the active formation
       if (state.idleDuration > 1.6 || isReleasing) {
         const cycleFade = isReleasing ? ip : Math.sin(clamp(state.idlePhraseTimer / 8.5, 0, 1) * PI);
         const visibility = clamp(cycleFade * ip * 1.35, 0, 1);
@@ -3483,26 +3515,20 @@
               let colPos = cx + u;
               let rowPos = cy + lineOffset;
 
-              // Shape text path to merge naturally with the active formation's geometry
               if (fIdx === 1 || fIdx === 7) {
-                // Circular / Eclipse formations: curve along lower inner astrolabe arc
                 const rad = (fIdx === 1 ? 0.56 : 0.62) + lineOffset * 0.08;
                 const arcSpan = Math.min(PI * 0.78, len * 0.055);
                 const ang = PI * 0.5 - (u / Math.max(1, len * 0.5)) * (arcSpan * 0.5) + Math.sin(t * 0.3) * 0.08;
                 colPos = cx + Math.cos(ang) * rad * halfScale;
                 rowPos = cy + Math.sin(ang) * rad * halfScale;
               } else if (fIdx === 5) {
-                // Vault corridor: align along floor & ceiling threshold bays
                 rowPos = cy + (lineOffset === 0 ? -0.52 : 0.52) * halfScale;
               } else if (fIdx === 0 || fIdx === 4) {
-                // Monolith / Obelisk: carve into upper lintel & base plinth
                 rowPos = cy + (lineOffset === 0 ? -0.62 : 0.76) * halfScale;
               } else {
-                // Mosaic / Strata / Citadel: follow geological bedding seam
                 rowPos = cy + (lineOffset === 0 ? -0.18 : 0.24) * halfScale + Math.sin((colPos - cx) * 0.12 + t * 0.5) * 0.8;
               }
 
-              // When unpausing (isReleasing), characters unbolt & blow away on the wind!
               if (isReleasing) {
                 const scatterAmt = (1.0 - ip) * 14.0;
                 const h = hash2(i * 1.9, lineOffset + 3.1);
@@ -3514,7 +3540,6 @@
               const rGrid = Math.round(rowPos);
               if (cGrid < 1 || cGrid >= cols - 1 || rGrid < 1 || rGrid >= rows - 1) continue;
 
-              // Per-character materialization threshold
               const charAppear = hash2(i * 0.61, lineOffset * 2.3);
               if (visibility < charAppear * 0.85) continue;
 
@@ -3621,7 +3646,7 @@
      =========================================================================== */
   const LANE_NAMES = [
     'I. STRATA // Z-1 ARCHITECTURE & APPARITIONS',
-    'II. EROSION // Z-2 DUST & TRANSIENT PLUMES',
+    'II. EROSION // Z-2 ENGINE DUST GEOMETRIES',
     'III. SILICA // Z-0 PATINA WALL & LIGHTNING',
     'IV. LETHE // Z-0/Z-1 SHATTERING BORDERS'
   ];
