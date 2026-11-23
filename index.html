@@ -1004,7 +1004,7 @@
               <!-- EROSION -->
               <div class="knob-container d-amber">
                 <div class="knob-label">EROSION</div>
-                <svg class="knob-svg" id="knob-erosion" data-param="erosion" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Stone Weathering, Gale Gusts &amp; Multi-Angle Dissolution (>0.50) | Default: 0.00">
+                <svg class="knob-svg" id="knob-erosion" data-param="erosion" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Stone Weathering &amp; Gale Gusts (Preserves Structural Silhouette) | Default: 0.00">
                   <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
                   <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
                 </svg>
@@ -1041,10 +1041,10 @@
                 <div class="knob-readout" id="readout-grow">0.00</div>
               </div>
 
-              <!-- PRLX: 2.5D Z-Plane Depth Separation & Fisheye Optical Warp (>0.45) -->
+              <!-- PRLX: True 2.5D Z-Plane Depth Separation & Outward Wide-Angle Perspective (>0.45) -->
               <div class="knob-container d-slate">
                 <div class="knob-label">PRLX</div>
-                <svg class="knob-svg" id="knob-prlx" data-param="prlx" data-val="0.25" data-default="0.25" viewBox="0 0 44 44" title="2.5D Z-Plane Depth Separation &amp; Barrel/Fisheye Optical Warp (>0.45) | Default: 0.25">
+                <svg class="knob-svg" id="knob-prlx" data-param="prlx" data-val="0.25" data-default="0.25" viewBox="0 0 44 44" title="2.5D Z-Plane Parallax Separation &amp; Wide-Angle Perspective (>0.45) | Default: 0.25">
                   <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
                   <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
                 </svg>
@@ -1083,8 +1083,8 @@
 
               <!-- Discoverable FX Toggles (Booted OFF: [T] ARTFX & [Y] SPIRITS) -->
               <div class="fx-btn-row">
-                <button type="button" class="oled-btn" id="btn-artfx" title="Engage Silhouette Occlusion, Volumetric Backlighting &amp; Lightning Rim-Cast [T]">[T] ARTFX</button>
-                <button type="button" class="oled-btn" id="btn-spirits" title="Summon Spectral Apparitions &amp; Haunted Watchers Across All Engines [Y]">[Y] SPIRITS</button>
+                <button type="button" class="oled-btn" id="btn-artfx" title="Engage Silhouette Occlusion, Volumetric Backlighting &amp; Directional Rim-Cast [T]">[T] ARTFX</button>
+                <button type="button" class="oled-btn" id="btn-spirits" title="Summon Engine-Specific Haunted Entities, Watcher Orbs &amp; Peering Eyes [Y]">[Y] SPIRITS</button>
               </div>
 
               <div class="view-btn-row">
@@ -1147,18 +1147,19 @@
   /* ===========================================================================
      SECTION A: HACKABLE CODEBOX (EDIT DIRECTLY LIKE A gen~ CODEBOX)
      ---------------------------------------------------------------------------
-     Pulsar-23 Asymmetric Bus Sidechain + 4 Independent Layer Clocks +
-     PRLX 2.5D Depth Separation & Fisheye Lens Warp + [T] ARTFX + [Y] SPIRITS.
+     True 2.5D Z-Plane Separation + Outward Wide-Angle Perspective + Continuous
+     ARTFX Volumetric Backlighting + Per-Engine Haunted Spirits + High-Fidelity
+     Structural Survival Floor at 100% Audio Volume.
      =========================================================================== */
 
   const FORMATIONS = [
     { id: 0, label: 'I. MONOLITH',    subtitle: 'STEPPED PORTAL // APPARITION' },
-    { id: 1, label: 'II. SEAL',       subtitle: 'SACRED ASTROLABE // MANDALA' },
-    { id: 2, label: 'III. MOSAIC',    subtitle: 'RELIQUARY COFFERED WALL' },
-    { id: 3, label: 'IV. STRATA',     subtitle: 'GEOLOGICAL FAULT & CRAGS' },
+    { id: 1, label: 'II. SEAL',       subtitle: 'SACRED ASTROLABE // WATCHER ORBS' },
+    { id: 2, label: 'III. MOSAIC',    subtitle: 'RELIQUARY WALL // LANTERN WISPS' },
+    { id: 3, label: 'IV. STRATA',     subtitle: 'FAULT CHASM // PEERING EYES' },
     { id: 4, label: 'V. OBELISK',     subtitle: 'TOTEM SPINE // SHROUDED IDOL' },
-    { id: 5, label: 'VI. VAULT',      subtitle: 'WARPING STONE CORRIDOR' },
-    { id: 6, label: 'VII. CITADEL',   subtitle: 'TERRACED SACRED SKYLINE' },
+    { id: 5, label: 'VI. VAULT',      subtitle: 'STONE CORRIDOR // WRAITHS' },
+    { id: 6, label: 'VII. CITADEL',   subtitle: 'SACRED SKYLINE // SPIRE WISPS' },
     { id: 7, label: 'VIII. HORIZON',  subtitle: 'ECLIPSE // SPECTRAL BUST' }
   ];
 
@@ -1293,14 +1294,15 @@
     return d - radius;
   }
 
-  // Radial Barrel / Fisheye Optical Warp driven by PRLX > 0.45
-  function applyFisheyeWarp(nx, ny, warpK) {
+  // Outward Wide-Angle Perspective Warp (expands center & curves edges outward without squishing)
+  function applyWidePerspective(nx, ny, warpK) {
     if (warpK <= 0.001) return { x: nx, y: ny };
-    const r2 = nx * nx + ny * ny;
-    const scale = 1.0 + warpK * r2;
+    const r2 = Math.min(1.8, nx * nx + ny * ny);
+    const scale = Math.max(0.62, 1.0 - warpK * r2);
     return { x: nx * scale, y: ny * scale };
   }
 
+  // 1. Shrouded Watcher / Spectral Bust Silhouette (for MONOLITH, OBELISK, HORIZON)
   function evaluateSpectralFigure(nx, ny, col, row, f, vGen, figureScale, offsetX, offsetY) {
     const { p0, p1, b0, b1, b2, b3, tess } = f;
     const safeScale = Math.max(0.1, figureScale || 1.0);
@@ -1377,10 +1379,82 @@
     return { density, zone, peak, isSkeleton };
   }
 
+  // 2. Engine-Specific Haunted Entities when [Y] SPIRITS is summoned:
+  //    - SEAL / HORIZON: Orbiting Watcher-Orbs with blazing ocular cores
+  //    - MOSAIC / CITADEL: Drifting Lantern-Wisp clusters with trailing wisps
+  //    - STRATA / VAULT: Subterranean Peering Eye Pairs & Shadow-Wraiths
+  function evaluateEngineSpiritEntity(fIdx, nx, ny, f, vGen) {
+    const { p1, p2, b1, b2, b3 } = f;
+    let density = 0;
+    let zone = 3;
+    let peak = false;
+
+    if (fIdx === 1 || fIdx === 7) {
+      // Orbiting Watcher-Orbs with glowing pupils circling the astrolabe / eclipse
+      const orbCount = 3;
+      const orbitR = (fIdx === 1) ? 0.48 : 0.22;
+      for (let k = 0; k < orbCount; k++) {
+        const ang = p2 * 0.85 + (k * TAU / orbCount) + vGen.seed;
+        const ox = Math.cos(ang) * orbitR;
+        const oy = Math.sin(ang) * orbitR;
+        const d = Math.hypot(nx - ox, ny - oy);
+        if (d < 0.13) {
+          if (d < 0.045) {
+            // Glowing pupil core
+            density = 0.95;
+            zone = 3;
+            peak = true;
+          } else if (d > 0.085) {
+            // Outer spectral halo
+            density = 0.58 + b2 * 0.38;
+            zone = 2;
+          }
+        }
+      }
+    } else if (fIdx === 2 || fIdx === 6) {
+      // Floating Lantern-Wisps with vertical spectral tails drifting across spires/coffers
+      const wispCount = 4;
+      for (let k = 0; k < wispCount; k++) {
+        const wx = Math.sin(p1 * 0.7 + k * 2.1 + vGen.seed) * 0.58;
+        const wy = Math.cos(p2 * 0.55 + k * 1.7) * 0.42 - (fIdx === 6 ? 0.28 : 0.0);
+        const dx = Math.abs(nx - wx);
+        const dy = ny - wy;
+        const dHead = Math.hypot(dx, dy);
+        if (dHead < 0.075) {
+          density = dHead < 0.032 ? 0.96 : (0.55 + b3 * 0.40);
+          zone = 3;
+          peak = dHead < 0.032;
+        } else if (dy > 0 && dy < 0.26 && dx < (0.06 * (1.0 - dy / 0.26))) {
+          density = Math.max(density, (0.35 + b2 * 0.35) * (1.0 - dy / 0.26));
+          zone = 2;
+        }
+      }
+    } else if (fIdx === 3 || fIdx === 5) {
+      // Subterranean Peering Eye Pairs & Shadow-Wraith emerging inside the chasm / tunnel void
+      const pairCount = 2;
+      for (let k = 0; k < pairCount; k++) {
+        const cx = (k === 0 ? -0.26 : 0.26) + Math.sin(p1 * 0.6 + k) * 0.08;
+        const cy = (fIdx === 3 ? 0.0 : 0.04) + Math.cos(p2 * 0.8 + k * 2.0) * 0.06;
+        const eyeDistL = Math.hypot((nx - (cx - 0.055)) / 0.035, (ny - cy) / 0.024);
+        const eyeDistR = Math.hypot((nx - (cx + 0.055)) / 0.035, (ny - cy) / 0.024);
+        const shroudDist = Math.hypot((nx - cx) / 0.16, (ny - (cy + 0.08)) / 0.22);
+
+        if (eyeDistL < 1.0 || eyeDistR < 1.0) {
+          density = 0.96;
+          zone = 3;
+          peak = true;
+        } else if (shroudDist < 1.0 && shroudDist > 0.72) {
+          density = Math.max(density, 0.36 + b1 * 0.35);
+          zone = 1;
+        }
+      }
+    }
+
+    return { density, zone, peak };
+  }
+
   /**
    * 4. GENERATIVE ARCHITECTURAL & ORGANIC EVALUATOR
-   *    Returns `occludes` (true when solid masonry blocks Z-Plane 0 behind it,
-   *    leaving open doorways, eclipse cores, and sky voids transparent for ARTFX).
    */
   function evaluateSingleFormation(fIdx, nx, ny, col, row, f, vGen) {
     const {
@@ -1422,7 +1496,7 @@
         const inSanctum = (splitGap === 0) && (ax < doorW && ny > doorTop && ny < botY - 0.07);
 
         if (!inSanctum) {
-          occludes = true; // Solid stone frame occludes Z-Plane 0 behind it
+          occludes = true;
           const dOuterX = outerW - ax;
           const dSplitX = ax - splitGap;
           const dOuterY = Math.min(ny - topY, botY - ny);
@@ -1476,8 +1550,8 @@
             }
           }
         } else {
-          // Open sanctum doorway remains transparent (`occludes = false`) so backlit clouds & lightning shine behind the figure!
-          const spiritDrive = spiritsOn ? clamp(0.45 + (b1 + b2) * 0.65 - b0 * 0.35, 0.25, 1.0) : (mut > 0.18 ? clamp((mut - 0.15) * 1.35, 0, 1) : 0);
+          // Organic spectral figure emergence inside sanctum (both from GROW and when SPIRITS is ON)
+          const spiritDrive = spiritsOn ? clamp(0.55 + (b1 + b2) * 0.55 - b0 * 0.25, 0.35, 1.0) : (mut > 0.15 ? clamp((mut - 0.12) * 1.35, 0, 1) : 0);
           if (spiritDrive > 0.08) {
             const ghost = evaluateSpectralFigure(nx, ny, col, row, f, vGen, 0.62, 0, 0.22);
             if (ghost.density > 0.04) {
@@ -1616,7 +1690,7 @@
         let tileDropped = false;
         if (fracture > 0.02 && gateDrop > 0.05) {
           const dropRoll = hash2(tx * 1.7 + Math.floor(frameTick * 0.2), ty * 2.3 + seed);
-          if (dropRoll < fracture * gateDrop * 0.72) {
+          if (dropRoll < fracture * gateDrop * 0.55) {
             tileDropped = true;
           }
         }
@@ -1686,7 +1760,7 @@
         const dRift = Math.abs(ny - riftCenter);
 
         if (dRift < riftHalf) {
-          density = 0; // Open chasm reveals Z-0 behind it
+          density = 0;
         } else {
           occludes = true;
           if (dRift < riftHalf + 0.048) {
@@ -1736,7 +1810,7 @@
     // ENGINE 5 — V. OBELISK
     // -------------------------------------------------------------------------
     } else if (fIdx === 4) {
-      if ((mut > 0.55 && (vGen.g6 || 0) > 0.42) || (spiritsOn && (b1 + b2 > 0.42))) {
+      if ((mut > 0.50 && (vGen.g6 || 0) > 0.38) || (spiritsOn && (b1 + b2 > 0.38))) {
         const idol = evaluateSpectralFigure(nx, ny, col, row, f, vGen, 1.05, 0, 0.04);
         density = idol.density;
         zone = idol.zone;
@@ -1995,8 +2069,8 @@
           zone = 3;
         }
       } else if (r < eclipseR) {
-        // Open eclipse core remains transparent (`occludes = false`) for backlit clouds & spectral bust!
-        const spiritDrive = spiritsOn ? clamp(0.50 + (b1 + b2) * 0.60 - b0 * 0.30, 0.30, 1.0) : (mut > 0.22 ? clamp((mut - 0.20) * 1.3, 0, 1) : 0);
+        // Organic spectral bust inside eclipse core (both from GROW and when SPIRITS is ON)
+        const spiritDrive = spiritsOn ? clamp(0.55 + (b1 + b2) * 0.55 - b0 * 0.25, 0.35, 1.0) : (mut > 0.20 ? clamp((mut - 0.18) * 1.3, 0, 1) : 0);
         if (spiritDrive > 0.08) {
           const bust = evaluateSpectralFigure(nx, ny, col, row, f, vGen, 0.72, shiftX, shiftY + 0.10);
           if (bust.density > 0.04) {
@@ -2009,19 +2083,13 @@
       }
     }
 
-    // Universal [Y] SPIRITS Summoning across Engines 2, 3, 4, 6, 7 when engaged
-    if (spiritsOn && density < 0.12 && fIdx !== 0 && fIdx !== 4 && fIdx !== 7) {
-      const spiritDrive = clamp(0.35 + (b1 + b2) * 0.65 - b0 * 0.45, 0, 0.95);
-      if (spiritDrive > 0.12) {
-        const yOff = (fIdx === 6) ? -0.36 : 0.06;
-        const sc = (fIdx === 5) ? 0.55 : 0.76;
-        const apparition = evaluateSpectralFigure(nx, ny, col, row, f, vGen, sc, 0, yOff);
-        if (apparition.density > 0.08) {
-          density = apparition.density * spiritDrive;
-          zone = apparition.zone;
-          peak = apparition.peak;
-          isSkeleton = apparition.isSkeleton;
-        }
+    // Engine-Specific Haunted Entities when [Y] SPIRITS is engaged
+    if (spiritsOn && density < 0.14 && fIdx !== 0 && fIdx !== 4 && fIdx !== 7) {
+      const entity = evaluateEngineSpiritEntity(fIdx, nx, ny, f, vGen);
+      if (entity.density > 0.08) {
+        density = entity.density;
+        zone = entity.zone;
+        peak = entity.peak;
       }
     }
 
@@ -2035,7 +2103,9 @@
   }
 
   /**
-   * 5. COMPOSITE MORPHOLOGICAL EVALUATOR WITH 4 STOCHASTIC DISSOLUTION ANGLES
+   * 5. COMPOSITE MORPHOLOGICAL EVALUATOR WITH STRUCTURAL SURVIVAL FLOOR
+   *    Transforms heavy stone glyphs down the ramp rather than erasing >90%
+   *    of the image during loud musical passages.
    */
   function computeFormationCell(fCtx, nx, ny, col, row, wakeScar) {
     const {
@@ -2064,8 +2134,10 @@
       occludes = wB > 0.5 ? resB.occludes : resA.occludes;
     }
 
+    // Controlled Dissolve-and-Reform Sweep (capped so architectural mass stays legible)
     let dissolvedToParticle = false;
-    if (density > 0.04 && dissolveThreshold > 0.02) {
+    const effDissolve = clamp(dissolveThreshold * 0.72, 0, 0.85);
+    if (density > 0.04 && effDissolve > 0.02) {
       let sweepFront = 0.5;
       const edgeNoise = (hash2(col * 0.37 + seed, row * 0.41 - seed) - 0.5) * 0.32;
 
@@ -2085,49 +2157,50 @@
         sweepFront = (nx * dir) * 0.62 + 0.5 + edgeNoise;
       }
 
-      if (sweepFront < dissolveThreshold) {
+      if (sweepFront < effDissolve) {
         dissolvedToParticle = true;
-        occludes = false;
-        const distBehind = dissolveThreshold - sweepFront;
-        if (distBehind < 0.22 && (row % 2 === 0) && hash2(col * 0.21, row * 0.83) < 0.48) {
-          density = 0.24 + b2 * 0.36;
+        // Leave glowing ember/scanline ghost trace instead of deleting completely
+        if (isSkeleton || ((row + col) % 2 === 0 && hash2(col * 0.29, row * 0.71) < 0.55)) {
+          density = Math.max(0.14, density * 0.36);
           zone = 2;
           peak = false;
-          isSkeleton = false;
         } else {
           density = 0;
           peak = false;
-          isSkeleton = false;
+          occludes = false;
         }
-      } else if (sweepFront < dissolveThreshold + 0.11) {
+      } else if (sweepFront < effDissolve + 0.11) {
         density = clamp(density + 0.32 + (b0 + b2) * 0.25, 0, 1);
         zone = 3;
         peak = true;
       }
     }
 
-    const totalWear = clamp(erosion + wakeScar * 0.85, 0, 1.2);
+    // Weathering & Cross-Layer Wake: Granulates glyphs down the symbol ramp
+    // rather than erasing >90% of the structure during loud audio passages
+    const totalWear = clamp(erosion * 0.75 + wakeScar * 0.55, 0, 0.95);
     if (density > 0 && totalWear > 0.005) {
       const nPit = hash2(col * 0.91 + seed * 3.1, row * 0.91 - seed * 2.3);
-      const effectiveWear = isSkeleton ? totalWear * 0.30 : totalWear;
-      const pitChance = effectiveWear * (0.82 - density * 0.32);
+      const effectiveWear = isSkeleton ? totalWear * 0.25 : totalWear * 0.65;
+      const pitChance = effectiveWear * (0.78 - density * 0.28);
 
       if (nPit < pitChance) {
-        if (isSkeleton || nPit > pitChance * 0.34) {
-          density = Math.max(isSkeleton ? 0.28 : 0.08, density * (0.28 + 0.34 * (1.0 - clamp(effectiveWear, 0, 1))));
-          peak = isSkeleton && (b0 > 0.50 || b1 > 0.50);
+        if (isSkeleton || nPit > pitChance * 0.24) {
+          // Step glyph down into fine weathered mineral grain instead of blank void
+          density = Math.max(isSkeleton ? 0.32 : 0.12, density * (0.35 + 0.30 * (1.0 - clamp(effectiveWear, 0, 1))));
+          peak = isSkeleton && (b0 > 0.48 || b1 > 0.48);
         } else {
           density = 0;
           peak = false;
           occludes = false;
         }
-      } else if (wakeScar > 0.35) {
+      } else if (wakeScar > 0.38) {
         zone = 3;
       }
     }
 
-    if (density > 0.15 && isSkeleton && (b0 > 0.52 || b2 > 0.52)) {
-      density = clamp(density + 0.24, 0, 1);
+    if (density > 0.15 && isSkeleton && (b0 > 0.48 || b2 > 0.48)) {
+      density = clamp(density + 0.26, 0, 1);
       peak = true;
     }
 
@@ -2135,7 +2208,8 @@
       density: clamp(density, 0, 1),
       zone: ((zone % 4) + 4) % 4,
       peak,
-      occludes
+      occludes,
+      dissolvedToParticle
     };
   }
 
@@ -2162,7 +2236,7 @@
       tessellation: 0.50,
       fracture: 0.00,
       grow: 0.00,
-      prlx: 0.25          // Default 2.5D Z-plane parallax separation (fisheye > 0.45)
+      prlx: 0.25
     },
 
     formationIdx: 0,
@@ -2176,7 +2250,7 @@
 
     vizScopeMode: false,
     artfxActive: false,   // [T] ARTFX: Occlusion mask, volumetric backlighting & rim-cast (booted OFF)
-    spiritsActive: false, // [Y] SPIRITS: Haunted apparitions across all engines (booted OFF)
+    spiritsActive: false, // [Y] SPIRITS: Engine-specific haunted entities & watcher orbs (booted OFF)
 
     lexiconIdx: 0,
     paletteIdx: 0,
@@ -2225,9 +2299,9 @@
     ],
 
     gates: {
-      shear: { env: 0, start: 0, dur: 85, seed: 1 },
-      drop:  { env: 0, start: 0, dur: 95, seed: 1 },
-      lightning: { env: 0, start: 0, dur: 135, angle: 0.3, offset: 0.0, lastFlash: 0 }
+      shear: { env: 0, start: 0, dur: 75, seed: 1 },
+      drop:  { env: 0, start: 0, dur: 65, seed: 1 },
+      lightning: { env: 0, start: 0, dur: 150, angle: 0.3, offset: 0.0, lastFlash: 0 }
     },
 
     shockwaves: [],
@@ -2445,7 +2519,6 @@
   let cols = 0;
   let rows = 0;
 
-  // Pre-allocated zero-GC cell buffers for Z-Plane 1 evaluation & ARTFX occlusion
   let wakeGrid = new Float32Array(1);
   let occlusionMask = new Uint8Array(1);
   let z1DensityBuf = new Float32Array(1);
@@ -2982,7 +3055,7 @@
           });
         }
 
-        if ((effFrac > 0.32 || state.artfxActive) && hatStrength > 0.50 && (nowMs - state.gates.lightning.lastFlash > 210) && Math.random() < Math.max(effFrac, 0.45) * 0.65) {
+        if ((effFrac > 0.28 || state.artfxActive) && hatStrength > 0.42 && (nowMs - state.gates.lightning.lastFlash > 190) && Math.random() < Math.max(effFrac, 0.55) * 0.72) {
           state.gates.lightning.env = 1.0;
           state.gates.lightning.start = nowMs;
           state.gates.lightning.lastFlash = nowMs;
@@ -3113,7 +3186,7 @@
   }
 
   /* ===========================================================================
-     SECTION G2: 2.5D Z-PARALLAX, FISHEYE WARP, ARTFX VOLUMETRIC LIGHTING & SPIRITS
+     SECTION G2: TRUE 2.5D PARALLAX, CONTINUOUS ARTFX BACKGLOW & HIGH-FIDELITY MASS
      =========================================================================== */
   function renderVisualiser(nowMs, dtSec) {
     const pal = PALETTES[state.paletteIdx];
@@ -3176,17 +3249,17 @@
       else wakeGrid[i] = 0;
     }
 
-    // Clear occlusion mask each frame (populated by Z-Plane 1 solid stone walls when ARTFX is ON)
     occlusionMask.fill(0);
 
-    // 2.5D Stereokinetic Parallax Drift & Dynamic Z-Plane Scale Spread driven by PRLX
-    const camAmp = prlx * (0.045 + b0 * 0.06);
-    const camX = Math.sin(p0 * 0.42 + seed) * camAmp;
-    const camY = Math.cos(p0 * 0.31 + seed * 1.3) * camAmp * 0.75;
-    const warpK = prlx > 0.45 ? Math.pow((prlx - 0.45) / 0.55, 1.35) * 0.44 : 0;
+    // True 2.5D Stereokinetic Parallax Separation across Z-Planes:
+    // Z-0 (Far background) shifts 0.18x, Z-1 (Midground) shifts 1.0x, Z-2 (Foreground) shifts 2.3x
+    const camAmp = prlx * (0.14 + b0 * 0.12);
+    const camX = Math.sin(p0 * 0.48 + seed) * camAmp;
+    const camY = Math.cos(p0 * 0.36 + seed * 1.3) * camAmp * 0.65;
+    const warpK = prlx > 0.45 ? Math.pow((prlx - 0.45) / 0.55, 1.35) * 0.24 : 0;
 
-    const dynBgCellPx = Math.max(7, Math.round(cellPx * clamp(0.72 - prlx * 0.22, 0.48, 0.72)));
-    const dynFgCellPx = Math.max(15, Math.round(cellPx * clamp(1.22 + prlx * 0.45, 1.22, 1.68)));
+    const dynBgCellPx = Math.max(7, Math.round(cellPx * clamp(0.70 - prlx * 0.24, 0.46, 0.70)));
+    const dynFgCellPx = Math.max(15, Math.round(cellPx * clamp(1.24 + prlx * 0.48, 1.24, 1.72)));
 
     const dialDissolve = Math.max(0, (erosion - 0.50) * 1.4, (effFrac - 0.50) * 1.4);
     const growDissolve = grow > 0.01 ? Math.sin(state.morphCyclePhase * PI) * (0.35 + grow * 0.85) : 0;
@@ -3223,8 +3296,6 @@
 
     // =========================================================================
     // PRE-EVALUATE Z-PLANE 1 (MIDGROUND MONUMENT) INTO ZERO-ALLOCATION BUFFERS
-    // Populates `occlusionMask` so ARTFX masks Z-Plane 0 behind solid stone walls
-    // while leaving open doorways, sanctums & eclipse cores transparent.
     // =========================================================================
     if (state.lanesActive[0]) {
       for (let r = 0; r < rows; r++) {
@@ -3236,7 +3307,7 @@
           const h = hash2(bandBand + shearSeed, frameTick * 0.25);
           if (h > (1.0 - gateShear * 0.65)) {
             const dir = (bandBand % 2 === 0) ? 1 : -1;
-            rowShiftCols = Math.round(dir * (2 + gateShear * 9));
+            rowShiftCols = Math.round(dir * (2 + gateShear * 7));
           }
         }
 
@@ -3244,7 +3315,7 @@
           const idx = r * cols + c;
           const srcCol = c + rowShiftCols;
           const rawNx = (srcCol - cx) * invScale + camX;
-          const warped = applyFisheyeWarp(rawNx, rawNy, warpK);
+          const warped = applyWidePerspective(rawNx, rawNy, warpK);
           const wakeScar = wakeGrid[idx] || 0;
 
           const cell = computeFormationCell(fCtx, warped.x, warped.y, srcCol, r, wakeScar);
@@ -3270,9 +3341,10 @@
             continue;
           }
 
-          if (gateDrop > 0.06 && state.formationIdx !== 2) {
+          // Capped block-drop so architecture remains clearly legible even at 100% volume
+          if (gateDrop > 0.12 && state.formationIdx !== 2) {
             const dh = hash2(Math.floor(c / 4) + dropSeed, Math.floor(r / 2) + dropSeed);
-            if (dh < gateDrop * 0.50) {
+            if (dh < gateDrop * 0.24) {
               z1DensityBuf[idx] = 0;
               continue;
             }
@@ -3288,7 +3360,7 @@
     }
 
     // =========================================================================
-    // Z-PLANE 0: DEEP BACKGROUND (SHEET LIGHTNING, VOLUMETRIC BACKGLOW & PATINA)
+    // Z-PLANE 0: DEEP BACKGROUND (CONTINUOUS ARTFX BACKGLOW, LIGHTNING & PATINA)
     // =========================================================================
     const bgCols = Math.ceil(visCanvas.width / dynBgCellPx);
     const bgRows = Math.ceil(visCanvas.height / dynBgCellPx);
@@ -3296,25 +3368,28 @@
     const bgCy = (bgRows - 1) * 0.5;
     const bgInvScale = 1.0 / Math.max(1, Math.min(bgCols, bgRows) * 0.48);
 
-    // 1. Sheet Lightning & ARTFX Volumetric Backlit Cloud Glow inside open sanctums/voids
-    if (lightningEnv > 0.04) {
+    // Continuous ARTFX volumetric illumination inside open doorways/voids + lightning discharge
+    const artfxGlow = state.artfxActive
+      ? clamp(0.28 + (b1 * 0.45 + b2 * 0.55 + b3 * 0.45) * scDuck + lightningEnv * 0.75, 0.25, 1.2)
+      : lightningEnv;
+
+    if (artfxGlow > 0.04) {
       const lAngle = state.gates.lightning.angle;
       const lOffset = state.gates.lightning.offset;
       const cosA = Math.cos(lAngle);
       const sinA = Math.sin(lAngle);
       const boltIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.85)), maxGlyphIdx);
       const haloIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.35)), maxGlyphIdx);
-      const cloudIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.22)), maxGlyphIdx);
+      const cloudIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.24)), maxGlyphIdx);
 
       for (let r = 0; r < bgRows; r += 2) {
-        const ny = (r - bgCy) * bgInvScale + camY * 0.2;
+        const ny = (r - bgCy) * bgInvScale + camY * 0.18;
         const drawY = r * dynBgCellPx;
         for (let c = 0; c < bgCols; c += 2) {
-          const nx = (c - bgCx) * bgInvScale + camX * 0.2;
+          const nx = (c - bgCx) * bgInvScale + camX * 0.18;
 
-          // Map background cell back to Z-Plane 1 grid to check ARTFX occlusion
-          const mCol = Math.round(cx + (nx - camX * 0.2) * halfScale);
-          const mRow = Math.round(cy + (ny - camY * 0.2) * halfScale);
+          const mCol = Math.round(cx + (nx - camX * 0.18) * halfScale);
+          const mRow = Math.round(cy + (ny - camY * 0.18) * halfScale);
           const isOccluded = (state.artfxActive && mCol >= 0 && mCol < cols && mRow >= 0 && mRow < rows)
             ? (occlusionMask[mRow * cols + mCol] === 1)
             : false;
@@ -3322,15 +3397,19 @@
 
           const jag = Math.sin(ny * 14.0 + seed * 5.0) * 0.06 + Math.cos(nx * 19.0) * 0.04;
           const dLine = Math.abs(nx * sinA + ny * cosA - lOffset + jag);
-          const rCenter = Math.hypot(nx, ny);
+          const rCenter = Math.hypot(nx - camX * 0.18, ny - camY * 0.18);
 
-          if (dLine < 0.045 * lightningEnv) {
+          if (lightningEnv > 0.05 && dLine < 0.045 * lightningEnv) {
             ctx.drawImage(atlasCanvas, boltIdx * cellPx, 5 * cellPx, cellPx, cellPx, c * dynBgCellPx, drawY, dynBgCellPx, dynBgCellPx);
-          } else if (dLine < 0.24 * lightningEnv && hash2(c * 0.7, r * 0.9) < 0.45 * lightningEnv) {
+          } else if (lightningEnv > 0.05 && dLine < 0.24 * lightningEnv && hash2(c * 0.7, r * 0.9) < 0.45 * lightningEnv) {
             ctx.drawImage(atlasCanvas, haloIdx * cellPx, 3 * cellPx, cellPx, cellPx, c * dynBgCellPx, drawY, dynBgCellPx, dynBgCellPx);
-          } else if (state.artfxActive && rCenter < 0.58 && hash2(c * 0.43 + frameTick * 0.1, r * 0.57) < 0.52 * lightningEnv) {
-            // Volumetric backlit cloud glow illuminating open doorways/cores behind spectral figures
-            ctx.drawImage(atlasCanvas, cloudIdx * cellPx, 5 * cellPx, cellPx, cellPx, c * dynBgCellPx, drawY, dynBgCellPx, dynBgCellPx);
+          } else if (state.artfxActive && rCenter < 0.62) {
+            // Continuous volumetric backlit cloud glow silhouetting figures inside doorways/cores
+            const cloudWave = Math.sin(nx * 5.0 + p1 * 0.6) * Math.cos(ny * 5.0 - p2 * 0.5) * 0.5 + 0.5;
+            if (cloudWave * artfxGlow > (0.38 + rCenter * 0.45)) {
+              const rowInk = (lightningEnv > 0.25 || b2 * scDuck > 0.45) ? 5 : 3;
+              ctx.drawImage(atlasCanvas, cloudIdx * cellPx, rowInk * cellPx, cellPx, cellPx, c * dynBgCellPx, drawY, dynBgCellPx, dynBgCellPx);
+            }
           }
         }
       }
@@ -3340,8 +3419,8 @@
     if (state.lanesActive[2]) {
       const silicaEnergy = clamp((b2 * 0.95 * scDuck + erosion * 0.25 + 0.08), 0.03, 0.88);
 
-      const panX = Math.cos(state.windAngle) * p2 * 0.06 + camX * 0.22;
-      const panY = Math.sin(state.windAngle) * p2 * 0.04 + camY * 0.22;
+      const panX = Math.cos(state.windAngle) * p2 * 0.06 + camX * 0.18;
+      const panY = Math.sin(state.windAngle) * p2 * 0.04 + camY * 0.18;
       const bandDensity = 6.0 + tess * 9.0;
       const sweepSpeed = p2 * 0.85 + seed;
 
@@ -3367,9 +3446,8 @@
           if (mCol >= 0 && mCol < cols && mRow >= 0 && mRow < rows) {
             const wIdx = mRow * cols + mCol;
             if (b2 * scDuck > 0.22) {
-              wakeGrid[wIdx] = Math.min(1.0, wakeGrid[wIdx] + b2 * scDuck * 0.16);
+              wakeGrid[wIdx] = Math.min(1.0, wakeGrid[wIdx] + b2 * scDuck * 0.14);
             }
-            // When ARTFX is ON, solid Z-Plane 1 stone occludes background patina so details never muddle
             if (state.artfxActive && occlusionMask[wIdx] === 1) continue;
           }
 
@@ -3462,11 +3540,12 @@
     }
 
     // =========================================================================
-    // Z-PLANE 1: BLIT MIDGROUND MONUMENT + ARTFX LIGHTNING RIM-CAST
+    // Z-PLANE 1: BLIT MIDGROUND MONUMENT + ARTFX DIRECTIONAL RIM-LIGHTING
     // =========================================================================
     if (state.lanesActive[0]) {
       const boltDirX = Math.cos(state.gates.lightning.angle);
       const boltDirY = Math.sin(state.gates.lightning.angle);
+      const rimStrength = state.artfxActive ? clamp(0.35 + (b2 + b3) * 0.65 * scDuck + lightningEnv * 0.85, 0, 1.4) : 0;
 
       for (let r = 0; r < rows; r++) {
         const drawY = r * cellPx;
@@ -3480,15 +3559,15 @@
           const z = z1ZoneBuf[idx];
           let isPk = z1PeakBuf[idx] === 1;
 
-          // ARTFX Directional Rim-Lighting: lightning bolt illuminates stone edges facing the discharge
-          if (state.artfxActive && lightningEnv > 0.12) {
+          // ARTFX Directional Rim-Lighting: illuminates stone edges facing the active light angle
+          if (rimStrength > 0.35) {
             const nx = (c - cx) * invScale;
             const facing = nx * boltDirX + ny * boltDirY;
             const isEdgeCell = (c > 0 && z1DensityBuf[idx - 1] <= 0.02) ||
                                (c < cols - 1 && z1DensityBuf[idx + 1] <= 0.02) ||
                                (r > 0 && z1DensityBuf[idx - cols] <= 0.02) ||
                                (r < rows - 1 && z1DensityBuf[idx + cols] <= 0.02);
-            if (isEdgeCell && facing > -0.15) {
+            if (isEdgeCell && facing > -0.10) {
               isPk = true;
             }
           }
@@ -3496,7 +3575,7 @@
           const gIdx = clamp(Math.floor(d * maxGlyphIdx + 0.25), 0, maxGlyphIdx);
           let atlasRow = 0;
           const zoneEnergy = bandEnvs[z] || 0;
-          if (isPk && (zoneEnergy > 0.38 || (state.artfxActive && lightningEnv > 0.15))) {
+          if (isPk && (zoneEnergy > 0.35 || rimStrength > 0.42)) {
             atlasRow = 5;
           } else if (zoneEnergy > 0.14 || (state.frozen && zoneEnergy > 0.10)) {
             atlasRow = 1 + z;
@@ -3558,7 +3637,7 @@
     }
 
     // =========================================================================
-    // Z-PLANE 2: FOREGROUND ENGINE-SPECIFIC DUST & HAT PATTERNS (WITH PRLX)
+    // Z-PLANE 2: FOREGROUND ENGINE-SPECIFIC DUST & HAT PATTERNS (2.3x PARALLAX)
     // =========================================================================
     if (state.lanesActive[1]) {
       const highPresence = clamp((b2 * 0.80 + b3 * 1.15) * scDuck + b1 * 0.25 + erosion * 0.45, 0, 2.0);
@@ -3602,10 +3681,10 @@
           p.ny += ((p.vy * speedScale + windVy + shockVy + swirlY) * zVel) * dtSec;
         }
 
-        // Apply 2.5D foreground camera parallax (1.8x) and optional fisheye lens warp
-        const pCamX = p.nx - camX * (1.8 * p.zDepth);
-        const pCamY = p.ny - camY * (1.8 * p.zDepth);
-        const warpedP = applyFisheyeWarp(pCamX, pCamY, warpK * 0.75);
+        // True 2.5D foreground camera parallax (2.3x opposite drift so layers clearly separate)
+        const pCamX = p.nx - camX * (2.3 * p.zDepth);
+        const pCamY = p.ny - camY * (2.3 * p.zDepth);
+        const warpedP = applyWidePerspective(pCamX, pCamY, warpK * 0.65);
 
         const col = Math.round(cx + warpedP.x * halfScale);
         const row = Math.round(cy + warpedP.y * halfScale);
@@ -3613,7 +3692,7 @@
 
         if (highPresence > 0.45 && p.zDepth > 0.85) {
           const wIdx = row * cols + col;
-          wakeGrid[wIdx] = Math.min(1.0, wakeGrid[wIdx] + highPresence * 0.28);
+          wakeGrid[wIdx] = Math.min(1.0, wakeGrid[wIdx] + highPresence * 0.22);
         }
 
         const lifeNorm = clamp(p.life / p.maxLife, 0, 1);
@@ -3857,13 +3936,13 @@
   function toggleArtfx() {
     state.artfxActive = !state.artfxActive;
     dom.btnArtfx.classList.toggle('active-cyan', state.artfxActive);
-    showToast(`ARTFX // OCCLUSION & VOLUMETRIC BACKLIGHT: ${state.artfxActive ? 'ON' : 'OFF'}`);
+    showToast(`ARTFX // VOLUMETRIC BACKLIGHT & RIM-CAST: ${state.artfxActive ? 'ON' : 'OFF'}`);
   }
 
   function toggleSpirits() {
     state.spiritsActive = !state.spiritsActive;
     dom.btnSpirits.classList.toggle('active-amber', state.spiritsActive);
-    showToast(`SPIRITS // SPECTRAL APPARITIONS: ${state.spiritsActive ? 'SUMMONED' : 'DISMISSED'}`);
+    showToast(`SPIRITS // HAUNTED ENTITIES & ORBS: ${state.spiritsActive ? 'SUMMONED' : 'DISMISSED'}`);
   }
 
   function toggleVizScopeOverride() {
