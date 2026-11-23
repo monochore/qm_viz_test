@@ -225,7 +225,7 @@
 
   .panel-core {
     display: grid;
-    grid-template-columns: 188px minmax(215px, 1.02fr) minmax(310px, 1.32fr) minmax(226px, 1.04fr);
+    grid-template-columns: 188px minmax(215px, 1.02fr) minmax(310px, 1.32fr) minmax(232px, 1.06fr);
     border-left: 1px solid var(--col-div);
     border-right: 1px solid var(--col-div);
     min-width: 0;
@@ -328,10 +328,10 @@
     border: 1px solid #555555;
     color: #ffffff;
     font-family: 'Oswald', sans-serif;
-    font-size: 9.5px;
+    font-size: 9px;
     font-weight: 500;
-    letter-spacing: 1px;
-    padding: 3px 3px;
+    letter-spacing: 0.8px;
+    padding: 3px 2px;
     cursor: pointer;
     text-transform: uppercase;
     transition: 0.1s;
@@ -588,7 +588,7 @@
   }
 
   /* =========================================================================
-     7. UPPER DECK COLUMN 4: STRATA LANES, FX SWITCHES & VIEW CONTROLS
+     7. UPPER DECK COLUMN 4: STRATA LANES, FX/DENSITY SWITCHES & VIEW CONTROLS
      ========================================================================= */
   .strata-stack {
     display: flex;
@@ -672,8 +672,8 @@
 
   .fx-btn-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4px;
+    grid-template-columns: 1fr 1fr 0.78fr;
+    gap: 3px;
   }
 
   .view-btn-row {
@@ -970,7 +970,7 @@
                 <button type="button" id="btn-viz-scope" title="Override Main Canvas with Full-Screen Live ASCII Scope [V]">VIZ</button>
               </div>
               <div class="oled-row">
-                <button class="oled-btn" id="btn-activate" title="Initialize, Resume, or Suspend Audio Engine (Idle Demoscene Monument When Silent)">ACTIVATE</button>
+                <button class="oled-btn" id="btn-activate" title="Initialize, Resume, or Suspend Audio Engine (Idle Title Liturgy When Silent)">ACTIVATE</button>
                 <button class="oled-btn" id="btn-scatter" title="Randomize Creative Dials &amp; Seed (Locks GAIN, GROW &amp; PRLX) [S]">SCATTER</button>
                 <button class="oled-btn" id="btn-drift" title="Slow Organic Random Walk on Creative Dials (Locks GAIN, GROW &amp; PRLX)">DRIFT</button>
               </div>
@@ -1073,7 +1073,7 @@
             <div class="dials-hint">DRAG · SHIFT FINE · DBL-CLK RESET</div>
           </div>
 
-          <!-- COLUMN 4: STRATA LANES, FX SWITCHES & VIEW CONTROLS -->
+          <!-- COLUMN 4: STRATA LANES, FX/DENSITY SWITCHES & VIEW CONTROLS -->
           <div class="column" data-col="strata">
             <div class="col-header">STRATA &amp; VIEW</div>
             <div class="strata-stack">
@@ -1103,6 +1103,7 @@
               <div class="fx-btn-row">
                 <button type="button" class="oled-btn" id="btn-artfx" title="Engage Silhouette Occlusion, Volumetric Backlighting &amp; Directional Rim-Cast [T]">[T] ARTFX</button>
                 <button type="button" class="oled-btn" id="btn-spirits" title="Summon Engine-Specific Haunted Entities, Watcher Orbs &amp; Peering Eyes [Y]">[Y] SPIRITS</button>
+                <button type="button" class="oled-btn" id="btn-density" title="Toggle 1X Brutalist Terminal vs 2X High-Density Micro-Engraving Grid [Z]">[Z] 1X</button>
               </div>
 
               <div class="view-btn-row">
@@ -1165,10 +1166,9 @@
   /* ===========================================================================
      SECTION A: HACKABLE CODEBOX (EDIT DIRECTLY LIKE A gen~ CODEBOX)
      ---------------------------------------------------------------------------
-     Large Multi-Cell Extruded Chrome ASCII Demoscene Logo (inspired by TRIAD)
-     that floats across the active visualiser in idle mode, morphs across the
-     4 suite styles (KAMEN, KARST, MNEMOSYNE, ASPERITAS), and decays into
-     uncanny machine-composed prayers & symbolic sigils over a 3-minute cycle.
+     Includes `[Z] 1X / 2X` Grid Density Switch + Crisp Bold-White Title
+     Wrapped in 4x Micro-Symbol Filigree Halos that Crumble & Mutate into
+     Machine-Composed Prayers over a 3-Minute Anti-Burn-In Cycle.
      =========================================================================== */
 
   const FORMATIONS = [
@@ -1267,39 +1267,40 @@
     }
   ];
 
-  // 4 Suite Demoscene Logo Morph Stages over a 3-Minute (180s) Anti-Burn-In Cycle
-  // Evolves from QUIET / MACHINERY into machine-composed prayers & symbolic sigils
-  const SUITE_LOGO_STAGES = [
+  // 4 Suite Title Liturgy Stages over a 3-Minute (180s) Anti-Burn-In Cycle
+  // Crisp bold white text threaded with 4x micro-symbol halos that fizzle,
+  // crumble, and mutate into machine-composed prayers & symbolic gibberish.
+  const SUITE_TITLE_STAGES = [
     {
       suite: 'KAMEN',
-      pairs: [
-        ['QUIET', 'MACHINERY'],
-        ['QUIET', 'SANCTUM'],
-        ['LITHIC', 'MORTAR']
+      entries: [
+        { main: 'QUIET MACHINERY', sub: 'STRATUM I // LITHIC MORTAR' },
+        { main: 'QUIET SANCTUM',   sub: 'SIT WITH THE UNCOMFORTABILITY' },
+        { main: 'MORTAR & STONE',  sub: 'AWAITING ACOUSTIC EXCITATION' }
       ]
     },
     {
       suite: 'KARST',
-      pairs: [
-        ['QUIET', 'PRAYER'],
-        ['FAULT', 'LITURGY'],
-        ['FRACTURED', 'PSALM']
+      entries: [
+        { main: 'QUIET PRAYER',    sub: 'STRATUM II // TECTONIC FAULT' },
+        { main: 'FRACTURED PSALM', sub: 'CATCH A RAGGED SIGH IN THE STONE' },
+        { main: 'FAULT LITURGY',   sub: 'FRICTION IS THE ONLY WITNESS' }
       ]
     },
     {
       suite: 'MNEMOSYNE',
-      pairs: [
-        ['QUIET', 'MOMENTS'],
-        ['BURIED', 'MEMENTO'],
-        ['SILENT', 'WITNESS']
+      entries: [
+        { main: 'QUIET MOMENTS',   sub: 'STRATUM III // SLICED MEMORY' },
+        { main: 'BURIED MEMENTO',  sub: 'NOTHING IS RETRIEVED WHOLE' },
+        { main: 'RESIDUAL TRACE',  sub: 'MORTAR REMEMBERS EVERY TREMOR' }
       ]
     },
     {
       suite: 'ASPERITAS',
-      pairs: [
-        ['RAGGED', 'SIGH'],
-        ['HOLLOW', 'VESPER'],
-        ['† ◈ ╬', '❖ ▓ ◈']
+      entries: [
+        { main: 'WEATHERED SIGH',  sub: 'STRATUM IV // WIND EROSION' },
+        { main: 'HOLLOW VESPER',   sub: 'LET THE SILENCE CARVE THE CHAMBER' },
+        { main: '† ◈ ╬  ❖ ▓ ◈',    sub: 'CYCLE COMPLETING // REFORMING' }
       ]
     }
   ];
@@ -2382,7 +2383,7 @@
   }
 
   /* ===========================================================================
-     SECTION B: APPLICATION STATE, PULSAR BUS SIDECHAIN & 3-MIN IDLE CYCLE
+     SECTION B: APPLICATION STATE, PULSAR BUS SIDECHAIN & 2X DENSITY STATE
      =========================================================================== */
   function createVariantGenome(mutAmt) {
     return {
@@ -2419,6 +2420,7 @@
     vizScopeMode: false,
     artfxActive: false,
     spiritsActive: false,
+    density2x: false,    // [Z] 1X vs 2X High-Density Songs of Syx Micro-Engraving Grid
 
     relicLoaded: false,
     relicImageObj: null,
@@ -2451,7 +2453,6 @@
     idlePresence: 0.0,
     prevIdlePresence: 0.0,
     idleDuration: 0,
-    lastLogoKey: '',
 
     bandPhases: [0, 0, 0, 0],
     bassSidechain: 0.0,
@@ -2655,6 +2656,7 @@
 
     btnArtfx: document.getElementById('btn-artfx'),
     btnSpirits: document.getElementById('btn-spirits'),
+    btnDensity: document.getElementById('btn-density'),
     btnAtelier: document.getElementById('btn-atelier'),
     btnFullscreen: document.getElementById('btn-fullscreen'),
     btnHide: document.getElementById('btn-hide'),
@@ -2680,17 +2682,13 @@
   }
 
   /* ===========================================================================
-     SECTION D: HIGH-DPI GLYPH ATLAS, DEMOSCENE LOGO RASTERIZER & [C] CAST
+     SECTION D: HIGH-DPI GLYPH ATLAS, RELIC INGEST & [C] CAST SNAPSHOT
      =========================================================================== */
   const atlasCanvas = document.createElement('canvas');
   const atlasCtx = atlasCanvas.getContext('2d');
 
   const relicSampleCanvas = document.createElement('canvas');
   const relicSampleCtx = relicSampleCanvas.getContext('2d', { willReadFrequently: true });
-
-  // Offscreen rasterizer for the Large Extruded Chrome ASCII Demoscene Logo
-  const logoSampleCanvas = document.createElement('canvas');
-  const logoSampleCtx = logoSampleCanvas.getContext('2d', { willReadFrequently: true });
 
   let dpr = Math.min(window.devicePixelRatio || 1, 2);
   let cellCss = 16;
@@ -2706,146 +2704,6 @@
 
   let relicLumaBuf = new Float32Array(1);
   let relicEdgeBuf = new Float32Array(1);
-
-  // Pre-baked multi-cell ASCII Demoscene Logo buffers (density + zone + highlight crest)
-  let logoW = 64;
-  let logoH = 26;
-  let logoDensityBuf = new Float32Array(logoW * logoH);
-  let logoZoneBuf = new Uint8Array(logoW * logoH);
-  let logoCrestBuf = new Uint8Array(logoW * logoH);
-
-  /**
-   * Rasterizes a TRIAD-inspired 3D extruded bevel & chrome-shaded ASCII logo
-   * onto a compact `logoW x logoH` cell grid whenever the stage or phrase changes.
-   */
-  function rebuildDemosceneLogo(topWord, botWord, stageIdx) {
-    logoW = clamp(Math.floor(cols * 0.72), 44, 96);
-    logoH = clamp(Math.floor(rows * 0.44), 20, 42);
-    logoSampleCanvas.width = logoW;
-    logoSampleCanvas.height = logoH;
-
-    const lctx = logoSampleCtx;
-    lctx.fillStyle = '#000000';
-    lctx.fillRect(0, 0, logoW, logoH);
-
-    const cx = logoW * 0.5;
-    const cy = logoH * 0.48;
-
-    // 1. Geometric Triangle / Sigil Crest Behind the Extruded Typography
-    lctx.save();
-    lctx.lineWidth = Math.max(1.2, logoH * 0.055);
-    lctx.strokeStyle = 'rgb(130, 60, 40)'; // Maps to Zone 3 / Accent rim
-    lctx.beginPath();
-    if (stageIdx === 0) {
-      // KAMEN: Classic upright TRIAD pyramid + base bar
-      lctx.moveTo(cx, logoH * 0.06);
-      lctx.lineTo(logoW * 0.84, logoH * 0.82);
-      lctx.lineTo(logoW * 0.16, logoH * 0.82);
-      lctx.closePath();
-    } else if (stageIdx === 1) {
-      // KARST: Inverted fault-split triangle
-      lctx.moveTo(logoW * 0.15, logoH * 0.14);
-      lctx.lineTo(logoW * 0.85, logoH * 0.14);
-      lctx.lineTo(cx, logoH * 0.88);
-      lctx.closePath();
-    } else if (stageIdx === 2) {
-      // MNEMOSYNE: Interlocking double diamond / astrolabe frame
-      lctx.moveTo(cx, logoH * 0.05);
-      lctx.lineTo(logoW * 0.86, cy);
-      lctx.lineTo(cx, logoH * 0.90);
-      lctx.lineTo(logoW * 0.14, cy);
-      lctx.closePath();
-    } else {
-      // ASPERITAS: Eroded broken halo arc & flanking monolith bars
-      lctx.arc(cx, cy, logoH * 0.40, 0.2, PI * 1.8);
-    }
-    lctx.stroke();
-    lctx.restore();
-
-    // Helper to draw 3D extruded bevel + chrome-banded block letters
-    const drawExtrudedWord = (word, centerY, fontPx) => {
-      lctx.save();
-      lctx.font = `900 ${fontPx}px 'Oswald', Impact, sans-serif`;
-      lctx.textAlign = 'center';
-      lctx.textBaseline = 'middle';
-
-      // Deep 3D Extrusion Depth Steps (back-to-front)
-      const depthSteps = Math.max(3, Math.round(logoH * 0.12));
-      for (let d = depthSteps; d >= 1; d--) {
-        const shade = Math.round(55 + (1 - d / depthSteps) * 75);
-        lctx.fillStyle = `rgb(${shade}, 90, 60)`; // Extrusion side wall
-        const ox = (stageIdx === 1 && d % 2 === 0) ? -d * 0.45 : d * 0.42;
-        const oy = d * 0.42;
-        lctx.fillText(word, cx + ox, centerY + oy);
-      }
-
-      // Specular Chrome Horizon Gradient across the main letter face
-      const grad = lctx.createLinearGradient(0, centerY - fontPx * 0.5, 0, centerY + fontPx * 0.5);
-      grad.addColorStop(0.00, 'rgb(255, 255, 255)'); // Top specular bevel crest
-      grad.addColorStop(0.32, 'rgb(175, 190, 210)'); // Upper chrome sky reflection
-      grad.addColorStop(0.50, 'rgb(70,  95,  120)'); // Chrome horizon line
-      grad.addColorStop(0.56, 'rgb(245, 245, 245)'); // Bright horizon glint
-      grad.addColorStop(0.82, 'rgb(135, 150, 165)'); // Lower metallic reflection
-      grad.addColorStop(1.00, 'rgb(255, 255, 255)'); // Bottom bevel edge
-
-      lctx.fillStyle = grad;
-      lctx.fillText(word, cx, centerY);
-
-      // Crisp outer bevel outline
-      lctx.lineWidth = Math.max(0.8, logoH * 0.025);
-      lctx.strokeStyle = 'rgb(255, 255, 255)';
-      lctx.strokeText(word, cx, centerY);
-      lctx.restore();
-    };
-
-    const topFont = Math.max(9, Math.round(logoH * 0.36));
-    const botFont = Math.max(8, Math.round(logoH * 0.31));
-    drawExtrudedWord(topWord, logoH * 0.33, topFont);
-    drawExtrudedWord(botWord, logoH * 0.67, botFont);
-
-    // Subtle mirrored reflection underneath the bottom word (like TRIAD reference)
-    lctx.save();
-    lctx.globalAlpha = 0.28;
-    lctx.font = `900 ${botFont}px 'Oswald', Impact, sans-serif`;
-    lctx.textAlign = 'center';
-    lctx.textBaseline = 'middle';
-    lctx.fillStyle = 'rgb(120, 140, 160)';
-    lctx.fillText(botWord, cx, logoH * 0.89);
-    lctx.restore();
-
-    const imgData = lctx.getImageData(0, 0, logoW, logoH).data;
-    const total = logoW * logoH;
-    logoDensityBuf = new Float32Array(total);
-    logoZoneBuf = new Uint8Array(total);
-    logoCrestBuf = new Uint8Array(total);
-
-    for (let i = 0; i < total; i++) {
-      const p = i * 4;
-      const r = imgData[p];
-      const g = imgData[p + 1];
-      const b = imgData[p + 2];
-      const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255.0;
-
-      if (lum < 0.08) {
-        logoDensityBuf[i] = 0;
-        continue;
-      }
-
-      logoDensityBuf[i] = clamp(lum * 1.15, 0.15, 1.0);
-      // Map chrome brightness & triangle accent into the 4 mineral domains + specular crest
-      if (lum > 0.86) {
-        logoCrestBuf[i] = 1;
-        logoZoneBuf[i] = 3;
-      } else if (r > g + 25) {
-        // Triangle / extrusion wall accent
-        logoZoneBuf[i] = (stageIdx === 0 || stageIdx === 3) ? 1 : 3;
-      } else if (lum > 0.52) {
-        logoZoneBuf[i] = 2; // Chrome sky/horizon reflection
-      } else {
-        logoZoneBuf[i] = 0; // Deep metallic shadow
-      }
-    }
-  }
 
   function rebuildRelicBuffers() {
     if (!state.relicLoaded || !state.relicImageObj || cols <= 0 || rows <= 0) return;
@@ -3005,7 +2863,7 @@
   function rebuildGlyphAtlas() {
     const pal = PALETTES[state.paletteIdx];
     const ramp = state.activeGlyphs.length > 0 ? state.activeGlyphs : ['·'];
-    cellPx = Math.max(12, Math.round(cellCss * dpr));
+    cellPx = Math.max(7, Math.round(cellCss * dpr));
 
     atlasCanvas.width = Math.max(cellPx, ramp.length * cellPx);
     atlasCanvas.height = 6 * cellPx;
@@ -3013,7 +2871,7 @@
     atlasCtx.clearRect(0, 0, atlasCanvas.width, atlasCanvas.height);
     atlasCtx.textAlign = 'center';
     atlasCtx.textBaseline = 'middle';
-    const fontPx = Math.floor(cellPx * 0.86);
+    const fontPx = Math.max(7, Math.floor(cellPx * 0.86));
     atlasCtx.font = `bold ${fontPx}px 'Courier New', Menlo, monospace`;
 
     const rowColors = [
@@ -3045,7 +2903,8 @@
     visCanvas.height = Math.floor(h * dpr);
     ctx.imageSmoothingEnabled = false;
 
-    cellCss = clamp(Math.round(Math.min(w, h) / 56), 13, 18);
+    const baseCss = clamp(Math.round(Math.min(w, h) / 56), 13, 18);
+    cellCss = state.density2x ? Math.max(7, Math.round(baseCss * 0.52)) : baseCss;
     rebuildGlyphAtlas();
 
     const prevCols = cols;
@@ -3058,8 +2917,6 @@
     z1DensityBuf = new Float32Array(totalCells);
     z1ZoneBuf = new Uint8Array(totalCells);
     z1PeakBuf = new Uint8Array(totalCells);
-
-    state.lastLogoKey = ''; // Force logo rasterization at new viewport dimensions
 
     if (state.relicLoaded) {
       rebuildRelicBuffers();
@@ -3666,7 +3523,7 @@
   }
 
   /* ===========================================================================
-     SECTION G2: 5-LAYER PARALLAX & EXTRUDED CHROME ASCII DEMOSCENE LOGO
+     SECTION G2: 5-LAYER PARALLAX & BOLD WHITE + 4X MICRO-SYMBOL TITLE LITURGY
      =========================================================================== */
   function renderVisualiser(nowMs, dtSec) {
     const pal = PALETTES[state.paletteIdx];
@@ -3737,8 +3594,8 @@
     const camY = Math.cos(p0 * 0.36 + seed * 1.3) * camAmp * 0.65;
     const warpK = prlx > 0.45 ? Math.pow((prlx - 0.45) / 0.55, 1.35) * 0.24 : 0;
 
-    const dynBgCellPx = Math.max(7, Math.round(cellPx * clamp(0.70 - prlx * 0.24, 0.46, 0.70)));
-    const dynFgCellPx = Math.max(15, Math.round(cellPx * clamp(1.24 + prlx * 0.48, 1.24, 1.72)));
+    const dynBgCellPx = Math.max(5, Math.round(cellPx * clamp(0.70 - prlx * 0.24, 0.46, 0.70)));
+    const dynFgCellPx = Math.max(9, Math.round(cellPx * clamp(1.24 + prlx * 0.48, 1.24, 1.72)));
 
     const dialDissolve = Math.max(0, (erosion - 0.50) * 1.4, (effFrac - 0.50) * 1.4);
     const growDissolve = grow > 0.01 ? Math.sin(state.morphCyclePhase * PI) * (0.35 + grow * 0.85) : 0;
@@ -4196,9 +4053,10 @@
     }
 
     // =========================================================================
-    // LAYER 5: LARGE MULTI-CELL EXTRUDED CHROME ASCII DEMOSCENE LOGO
-    // Floats gently across the active visualiser in idle mode, morphs across
-    // KAMEN -> KARST -> MNEMOSYNE -> ASPERITAS, and decays into symbolic prayers.
+    // LAYER 5: BOLD WHITE TITLE LITURGY WRAPPED IN 4X MICRO-SYMBOL FILIGREE
+    // Crisp, legible plain-text lettering surrounded & threaded by a 2x2 (4x
+    // density) sub-grid of micro-symbols that fizzle in/out, crumble at edges,
+    // and mutate into uncanny machine prayers over the 3-minute idle cycle.
     // =========================================================================
     if (state.idlePresence > 0.03) {
       const ip = state.idlePresence;
@@ -4206,88 +4064,122 @@
 
       const stageIdx = Math.floor(state.idleDuration / 45.0) % 4;
       const stageLocalSec = state.idleDuration % 45.0;
-      const pairIdx = Math.floor(stageLocalSec / 15.0) % 3;
+      const entryIdx = Math.floor(stageLocalSec / 15.0) % 3;
       const phrasePhase = (stageLocalSec % 15.0) / 15.0;
 
-      const stageObj = SUITE_LOGO_STAGES[stageIdx];
-      const pair = stageObj.pairs[pairIdx];
-      const logoKey = `${stageIdx}:${pairIdx}:${cols}:${rows}`;
-      if (state.lastLogoKey !== logoKey) {
-        state.lastLogoKey = logoKey;
-        rebuildDemosceneLogo(pair[0], pair[1], stageIdx);
-      }
+      const stageObj = SUITE_TITLE_STAGES[stageIdx];
+      const entry = stageObj.entries[entryIdx];
 
-      // Smooth anti-burn-in demoscene float across the active visualiser
-      const floatC = Math.sin(state.idleDuration * 0.16) * (cols * 0.13);
-      const floatR = Math.cos(state.idleDuration * 0.11) * (rows * 0.14);
+      // Subtle anti-burn-in Lissajous drift across the active visualiser
+      const driftPxX = Math.sin(state.idleDuration * 0.14) * (visCanvas.width * 0.14);
+      const driftPxY = Math.cos(state.idleDuration * 0.10) * (visCanvas.height * 0.11);
 
-      const arcDecay = clamp(state.idleDuration / 180.0, 0, 1);
+      const arcUncanny = clamp(state.idleDuration / 180.0, 0, 1);
       const cycleFade = isReleasing ? ip : Math.sin(phrasePhase * PI);
       const visibility = clamp(cycleFade * ip * 1.45, 0, 1);
 
       if (visibility > 0.04) {
-        const startC = Math.round(cx - logoW * 0.5 + floatC);
-        const startR = Math.round(cy - logoH * 0.5 + floatR);
-        const decayAmt = clamp((1.0 - cycleFade) * 0.70 + arcDecay * 0.45 + erosion * 0.35, 0, 1);
+        const ramp = state.activeGlyphs.length > 0 ? state.activeGlyphs : ['·', '∶', '┼', '◈'];
+        const decayAmt = clamp((1.0 - cycleFade) * 0.72 + arcUncanny * 0.50 + erosion * 0.35, 0, 1);
 
-        for (let lr = 0; lr < logoH; lr++) {
-          // MNEMOSYNE stage adds horizontal memory-slice tearing across scanlines
-          const sliceShift = (stageIdx === 2)
-            ? Math.round(Math.sin(lr * 0.65 + t * 2.5) * 2.2 * (0.4 + arcDecay))
-            : 0;
+        // Fixed readable pixel scale independent of 1X/2X grid toggle so text is always crisp
+        const mainFontPx = clamp(Math.round(Math.min(visCanvas.width, visCanvas.height) * 0.034), 16, 30);
+        const subFontPx = Math.max(11, Math.round(mainFontPx * 0.62));
+        const charAdvance = Math.round(mainFontPx * 0.72);
+        const microFontPx = Math.max(8, Math.round(mainFontPx * 0.36));
 
-          for (let lc = 0; lc < logoW; lc++) {
-            const lIdx = lr * logoW + lc;
-            let d = logoDensityBuf[lIdx];
-            if (d <= 0.04) continue;
+        const anchorX = visCanvas.width * 0.5 + driftPxX;
+        const anchorY = visCanvas.height * 0.24 + driftPxY;
 
-            const cellNoise = hash2(lc * 0.73 + stageIdx * 4.1, lr * 0.89 + pairIdx * 2.7);
-            if (visibility < cellNoise * 0.65) continue;
+        ctx.save();
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
 
-            let drawC = startC + lc + sliceShift;
-            let drawR = startR + lr;
+        const renderTitleLine = (rawText, lineIdx, isMain) => {
+          const len = rawText.length;
+          const fontPx = isMain ? mainFontPx : subFontPx;
+          const stepX = isMain ? charAdvance : Math.round(subFontPx * 0.66);
+          const baseLineY = anchorY + lineIdx * (mainFontPx * 1.45);
 
-            // Unpausing slewed disintegration: logo blocks unbolt & blow away on the wind!
-            if (isReleasing) {
-              const scatterAmt = (1.0 - ip) * 18.0;
-              drawC += Math.round(Math.cos(state.windAngle + cellNoise * 2.0) * scatterAmt * (0.4 + cellNoise));
-              drawR += Math.round(Math.sin(state.windAngle + cellNoise * 2.0) * scatterAmt * (0.4 + cellNoise));
+          for (let i = 0; i < len; i++) {
+            let ch = rawText[i];
+            if (ch === ' ') continue;
+            const u = i - (len - 1) * 0.5;
+
+            let px = anchorX + u * stepX;
+            let py = baseLineY;
+
+            // Suite-specific structural motion:
+            // KARST (stage 1): Tectonic fault step down the middle
+            if (stageIdx === 1 && Math.abs(u) < 2.2) {
+              py += (u < 0 ? -mainFontPx * 0.28 : mainFontPx * 0.28);
+            }
+            // MNEMOSYNE (stage 2): Sliced memory echo trailing behind bold letters
+            if (stageIdx === 2 && isMain && (i % 2 === 0)) {
+              ctx.font = `900 ${fontPx}px 'Courier New', Menlo, monospace`;
+              ctx.fillStyle = pal.rest;
+              ctx.fillText(ch, px - stepX * 0.85, py + 2);
             }
 
-            if (drawC < 0 || drawC >= cols || drawR < 0 || drawR >= rows) continue;
+            // Unpausing slewed disintegration: letters unbolt & blow away on the wind
+            if (isReleasing) {
+              const scatterPx = (1.0 - ip) * mainFontPx * 8.0;
+              const h = hash2(i * 1.9, lineIdx + 3.1);
+              px += Math.cos(state.windAngle + h * 1.6) * scatterPx * (0.4 + h);
+              py += Math.sin(state.windAngle + h * 1.6) * scatterPx * (0.4 + h);
+            }
 
-            let zRow = logoZoneBuf[lIdx];
-            let isCrest = logoCrestBuf[lIdx] === 1;
+            const charRoll = hash2(i * 1.37 + stageIdx * 5.0, entryIdx * 3.1 + lineIdx);
+            if (visibility < charRoll * 0.72) continue;
 
-            // As idle cycle deepens, bottom & outer bevel cells crumble into uncanny symbols & falling dust
-            if (decayAmt > 0.32 && cellNoise < (decayAmt - 0.28) * 0.85) {
-              d = Math.max(0.15, d * 0.42);
-              zRow = (frameTick + lc + lr) % 4;
-              isCrest = false;
-
-              if (state.lanesActive[1] && Math.random() < 0.015) {
-                const p = dustParticles[Math.floor(Math.random() * dustParticles.length)];
-                if (p) {
-                  p.nx = (drawC - cx) * invScale;
-                  p.ny = (drawR - cy) * invScale;
-                  p.vx = (Math.random() - 0.5) * 0.25;
-                  p.vy = 0.22 + Math.random() * 0.35;
-                  p.zDepth = 1.25;
-                  p.life = p.maxLife;
+            // 1. 4X MICRO-SYMBOL FILIGREE CLUSTER (2x2 sub-grid per character cell)
+            // Fizzles in and out of existence around & inside each letterform
+            if (isMain) {
+              ctx.font = `bold ${microFontPx}px 'Courier New', Menlo, monospace`;
+              const subOffsets = [
+                [-stepX * 0.34, -fontPx * 0.46],
+                [ stepX * 0.34, -fontPx * 0.46],
+                [-stepX * 0.34,  fontPx * 0.46],
+                [ stepX * 0.34,  fontPx * 0.46]
+              ];
+              for (let q = 0; q < 4; q++) {
+                const fizzlePhase = Math.sin(t * (2.4 + q * 0.9) + i * 1.7 + q * 2.1);
+                if (fizzlePhase > (0.15 - decayAmt * 0.45)) {
+                  const mGlyphIdx = Math.floor(hash2(i * 3 + q, Math.floor(t * 3 + q)) * ramp.length) % ramp.length;
+                  const mCh = toMonoChar(ramp[mGlyphIdx]);
+                  ctx.fillStyle = (q % 2 === 0) ? pal.domains[stageIdx % 4] : pal.rest;
+                  ctx.fillText(mCh, px + subOffsets[q][0], py + subOffsets[q][1]);
                 }
               }
             }
 
-            const gIdx = clamp(Math.floor(d * maxGlyphIdx + 0.25), 0, maxGlyphIdx);
-            const atlasRow = isCrest ? 5 : (1 + zRow);
+            // 2. Uncanny gibberish / prayer glyph mutation as the 3-minute cycle deepens
+            if (decayAmt > 0.36 && charRoll < (decayAmt - 0.32) * 0.85) {
+              const gIdx = Math.floor(hash2(i, frameTick * 0.06) * ramp.length) % ramp.length;
+              ch = toMonoChar(ramp[gIdx]);
+            }
 
-            ctx.drawImage(
-              atlasCanvas,
-              gIdx * cellPx, atlasRow * cellPx, cellPx, cellPx,
-              drawC * cellPx, drawR * cellPx, cellPx, cellPx
-            );
+            // 3. Crumbling debris shedding downward from bottom edges
+            if ((stageIdx === 3 || decayAmt > 0.42) && charRoll > 0.58) {
+              const dropProg = ((t * 1.9 + i * 0.65) % 3.5);
+              const crumbY = py + fontPx * 0.6 + dropProg * fontPx * 0.65;
+              const crumbX = px + Math.sin(t * 1.5 + i) * stepX * 0.35;
+              const crumbCh = toMonoChar(ramp[Math.min(ramp.length - 1, 1)]);
+              ctx.font = `bold ${microFontPx}px 'Courier New', Menlo, monospace`;
+              ctx.fillStyle = pal.domains[1];
+              ctx.fillText(crumbCh, crumbX, crumbY);
+            }
+
+            // 4. Crisp Bold White Primary Lettering (always bright & legible)
+            ctx.font = `900 ${fontPx}px 'Courier New', Menlo, monospace`;
+            ctx.fillStyle = isMain ? pal.highlight : pal.domains[2];
+            ctx.fillText(ch, px, py);
           }
-        }
+        };
+
+        renderTitleLine(entry.main, 0, true);
+        renderTitleLine(entry.sub, 1, false);
+        ctx.restore();
       }
     }
   }
@@ -4378,7 +4270,7 @@
   }
 
   /* ===========================================================================
-     SECTION I: LANE ENGAGEMENT, FX TOGGLES & ATELIER SHELF BUILDERS
+     SECTION I: LANE ENGAGEMENT, FX/DENSITY TOGGLES & ATELIER SHELF BUILDERS
      =========================================================================== */
   const LANE_NAMES = [
     'I. STRATA // Z-1 ARCHITECTURE, PAREIDOLIA & RELIC',
@@ -4430,6 +4322,14 @@
     state.spiritsActive = !state.spiritsActive;
     dom.btnSpirits.classList.toggle('active-amber', state.spiritsActive);
     showToast(`SPIRITS // HAUNTED ENTITIES & ORBS: ${state.spiritsActive ? 'SUMMONED' : 'DISMISSED'}`);
+  }
+
+  function toggleDensity2x() {
+    state.density2x = !state.density2x;
+    dom.btnDensity.textContent = state.density2x ? '[Z] 2X' : '[Z] 1X';
+    dom.btnDensity.classList.toggle('active-green', state.density2x);
+    resizeViewport();
+    showToast(state.density2x ? 'GRID DENSITY // 2X MICRO-ENGRAVING' : 'GRID DENSITY // 1X BRUTALIST TERMINAL');
   }
 
   function toggleVizScopeOverride() {
@@ -4830,6 +4730,7 @@
 
     dom.btnArtfx.addEventListener('click', toggleArtfx);
     dom.btnSpirits.addEventListener('click', toggleSpirits);
+    dom.btnDensity.addEventListener('click', toggleDensity2x);
     dom.btnAtelier.addEventListener('click', toggleAtelier);
     dom.btnFullscreen.addEventListener('click', toggleFullscreen);
     dom.btnHide.addEventListener('click', toggleHud);
@@ -4903,6 +4804,8 @@
         toggleArtfx();
       } else if (key === 'y') {
         toggleSpirits();
+      } else if (key === 'z') {
+        toggleDensity2x();
       } else if (key === 'v') {
         toggleVizScopeOverride();
       } else if (key === 'c') {
