@@ -256,7 +256,7 @@
   }
 
   /* =========================================================================
-     4. UPPER DECK COLUMN 1: SYSTEM & OLED
+     4. UPPER DECK COLUMN 1: SYSTEM & OLED (WITH [V] VIZ & [C] CAST)
      ========================================================================= */
   .oled-container {
     width: 100%;
@@ -374,13 +374,14 @@
     cursor: not-allowed;
   }
   .oled-btn.freeze {
+    flex: 1.35;
     background: #111111;
     border-color: var(--c-cyan);
     color: var(--c-cyan);
     font-weight: 600;
-    font-size: 10.5px;
+    font-size: 10px;
     padding: 4px 0;
-    letter-spacing: 1.8px;
+    letter-spacing: 1.5px;
   }
   .oled-btn.freeze:hover {
     background: rgba(0, 170, 255, 0.14);
@@ -389,6 +390,21 @@
     background: var(--c-cyan);
     color: #000000;
     box-shadow: 0 0 10px var(--c-cyan);
+  }
+  .oled-btn.cast {
+    flex: 1;
+    background: #111111;
+    border-color: var(--c-amber-dim);
+    color: var(--c-amber);
+    font-weight: 600;
+    font-size: 10px;
+    padding: 4px 0;
+    letter-spacing: 1.4px;
+  }
+  .oled-btn.cast:hover {
+    background: var(--c-amber);
+    color: #000000;
+    border-color: var(--c-amber);
   }
 
   /* =========================================================================
@@ -945,7 +961,7 @@
 
         <div class="panel-core">
 
-          <!-- COLUMN 1: SYSTEM & OLED -->
+          <!-- COLUMN 1: SYSTEM & OLED (WITH [V] VIZ & [C] CAST) -->
           <div class="column" data-col="sys">
             <div class="col-header">SYSTEM &amp; OLED</div>
             <div class="oled-container">
@@ -958,7 +974,10 @@
                 <button class="oled-btn" id="btn-scatter" title="Randomize Creative Dials &amp; Seed (Locks GAIN, GROW &amp; PRLX) [S]">SCATTER</button>
                 <button class="oled-btn" id="btn-drift" title="Slow Organic Random Walk on Creative Dials (Locks GAIN, GROW &amp; PRLX)">DRIFT</button>
               </div>
-              <button class="oled-btn freeze" id="btn-freeze" style="width:100%;" title="Freeze Current Trace in Mortar [X]">FREEZE</button>
+              <div class="oled-row">
+                <button class="oled-btn freeze" id="btn-freeze" title="Freeze Current Trace in Mortar [X]">FREEZE</button>
+                <button class="oled-btn cast" id="btn-cast" title="Export Patinated Archival PNG Plate [C]">[C] CAST</button>
+              </div>
             </div>
           </div>
 
@@ -1146,8 +1165,8 @@
   /* ===========================================================================
      SECTION A: HACKABLE CODEBOX (EDIT DIRECTLY LIKE A gen~ CODEBOX)
      ---------------------------------------------------------------------------
-     Pass 1: Dial-Gated Occult & Brutal-Organic Pareidolia Across All 8 Engines
-     + Engine IX (`IX. RELIC`) Drag-and-Drop Image Luminance & Edge Ingest.
+     Pass 2: `[C] CAST` Patinated Archival PNG Export + 3-Minute Anti-Burn-In
+     Morphing Title Liturgy across KAMEN, KARST, MNEMOSYNE & ASPERITAS.
      =========================================================================== */
 
   const FORMATIONS = [
@@ -1246,30 +1265,33 @@
     }
   ];
 
-  const IDLE_FRAGMENTS_A = [
-    'LISTEN TO THE MORTAR SETTLING',
-    'SIT WITH THE UNCOMFORTABILITY',
-    'CATCH A RAGGED SIGH IN THE STONE',
-    'REMAIN INSIDE THE UNCLOCKED PAUSE',
-    'LET THE SILENCE WEATHER THE TRACE',
-    'WATCH THE RUIN BREATHE WITHOUT HANDS',
-    'HOLD STILL WHERE THE GRID FRACTURES',
-    'HEAR THE RESIDUE BEFORE THE STRIKE'
+  // 4 Suite Aesthetic Stages over a 3-Minute (180s) Anti-Burn-In Idle Cycle
+  // Stage 0 (0:00-0:45): KAMEN (Lithic Block Pillars)
+  // Stage 1 (0:45-1:30): KARST (Tectonic Fault Shears)
+  // Stage 2 (1:30-2:15): MNEMOSYNE (Sliced Memory Trails)
+  // Stage 3 (2:15-3:00): ASPERITAS (Uncanny Eroded Mangling + Falling Rubble)
+  const SUITE_TITLE_STAGES = [
+    {
+      suite: 'KAMEN',
+      titles: ['QUIET MACHINERY', 'QUIET LITURGY', 'LITHIC SANCTUM'],
+      subs: ['STRATUM I // MONOLITHIC MORTAR', 'SIT WITH THE UNCOMFORTABILITY', 'AWAITING ACOUSTIC EXCITATION']
+    },
+    {
+      suite: 'KARST',
+      titles: ['QUIET PRAYER', 'FAULT MACHINERY', 'FRACTURED GRID'],
+      subs: ['STRATUM II // TECTONIC SHEAR', 'CATCH A RAGGED SIGH IN THE STONE', 'FRICTION IS THE ONLY WITNESS']
+    },
+    {
+      suite: 'MNEMOSYNE',
+      titles: ['QUIET MOMENTS', 'BURIED MEMENTO', 'RESIDUAL TRACE'],
+      subs: ['STRATUM III // SLICED BUFFER', 'NOTHING IS RETRIEVED WHOLE', 'MORTAR REMEMBERS EVERY TREMOR']
+    },
+    {
+      suite: 'ASPERITAS',
+      titles: ['QUIET RUIN', 'WEATHERED SIGH', 'HOLLOW ENGINE'],
+      subs: ['STRATUM IV // WIND EROSION', 'LET THE SILENCE CARVE THE CHAMBER', 'CYCLE COMPLETING // REFORMING']
+    }
   ];
-  const IDLE_FRAGMENTS_B = [
-    'NOTHING IS RETRIEVED WHOLE',
-    'FRICTION IS THE ONLY WITNESS',
-    'AWAITING THE NEXT BREATH OF AIR',
-    'SLOW EROSION CARVES THE CHAMBER',
-    'STILLNESS IS NOT ABSENCE',
-    'MORTAR REMEMBERS EVERY TREMOR'
-  ];
-
-  function generateMeditativeTransmission() {
-    const a = IDLE_FRAGMENTS_A[Math.floor(Math.random() * IDLE_FRAGMENTS_A.length)];
-    const b = IDLE_FRAGMENTS_B[Math.floor(Math.random() * IDLE_FRAGMENTS_B.length)];
-    return [a, b];
-  }
 
   const PI = Math.PI;
   const TAU = Math.PI * 2;
@@ -1300,7 +1322,6 @@
     return { x: nx * scale, y: ny * scale };
   }
 
-  // 1. Shrouded Watcher / Spectral Bust Silhouette
   function evaluateSpectralFigure(nx, ny, col, row, f, vGen, figureScale, offsetX, offsetY) {
     const { p0, p1, b0, b1, b2, b3, tess } = f;
     const safeScale = Math.max(0.1, figureScale || 1.0);
@@ -1377,31 +1398,22 @@
     return { density, zone, peak, isSkeleton };
   }
 
-  // 2. Monumental Stone Pareidolia Relief Mask (emerges out of III. MOSAIC & VII. CITADEL
-  //    as EROSION / GROW dials are explored — brow ridges, hollow eye sockets, nasal bridge, grimace)
   function evaluatePareidoliaMask(nx, ny, col, row, f, vGen) {
     const { p1, b1, b2, b3, tess } = f;
     const breath = Math.sin(p1 * 0.7 + vGen.seed) * 0.03;
     const ax = Math.abs(nx);
     const py = ny + breath;
 
-    // Cranial oval & cheekbones
     const skullDist = Math.hypot(ax / 0.54, (py + 0.04) / 0.74);
     if (skullDist > 1.05) return { density: 0, zone: 0, peak: false, isSkeleton: false };
 
-    // Deep hollow eye orbits
     const eyeDist = Math.hypot((ax - 0.19) / 0.11, (py + 0.14) / 0.075);
-    // Pronounced brow ridge
     const browArc = Math.abs(py + 0.24 - Math.cos(ax * 5.5) * 0.05);
-    // Sculpted nasal bridge
     const noseBridge = (ax < 0.065 && py > -0.14 && py < 0.18);
-    // Sunken vertical mouth / grimace slit
     const mouthSlit = (ax < 0.18 && Math.abs(py - 0.34 - Math.cos(ax * 9.0) * 0.025) < 0.032);
-    // Occult crescent horns / crown crest at high mutation
     const hornDist = Math.abs(Math.hypot(ax - 0.28, py + 0.68) - 0.22);
 
     if (eyeDist < 1.0) {
-      // Hollow dark socket with glowing pupil on Band III / Band IV hits
       const pupil = eyeDist < 0.36 && (b3 > 0.28 || b2 > 0.45);
       return { density: pupil ? 0.96 : 0.0, zone: 3, peak: pupil, isSkeleton: pupil };
     }
@@ -1418,7 +1430,6 @@
       return { density: 0.78 + b3 * 0.22, zone: 3, peak: b3 > 0.48, isSkeleton: true };
     }
 
-    // Sculpted halftone relief planes across cheeks and jaw
     const relief = 1.0 - skullDist;
     const contour = Math.cos((ax * 16.0 + py * 12.0) * (0.7 + tess * 0.6)) * 0.16;
     const dither = ((col + row) % 2 === 0) ? 0.12 : -0.06;
@@ -1431,18 +1442,14 @@
     };
   }
 
-  // 3. Brutal-Organic Fossil Ribcage / Vertebral Spine (emerges in IV. STRATA & VI. VAULT
-  //    when EROSION / GROW / FRACTURE dials are pushed)
   function evaluateFossilRibcage(nx, ny, f, vGen) {
-    const { p0, p1, b0, b1, b2, b3, tess } = f;
+    const { p1, b0, b1, b2, tess } = f;
     const ax = Math.abs(nx + Math.sin(ny * 3.0 + p1 * 0.5 + vGen.seed) * 0.04);
     if (ax > 0.58 || Math.abs(ny) > 0.72) return { density: 0, zone: 0, peak: false, isSkeleton: false };
 
-    // Central segmented vertebral column
     const isSpine = ax < 0.045;
     const vertebraJoint = Math.abs(((ny * (9 + tess * 6)) % 1) - 0.5) > 0.36;
 
-    // Sweeping curved rib arches
     const ribFreq = 7.0 + Math.round(tess * 5);
     const archCurve = ny + Math.pow(ax, 1.6) * 0.85;
     const ribPhase = Math.abs(((archCurve * ribFreq) % 1) - 0.5);
@@ -1467,7 +1474,6 @@
     return { density: 0, zone: 0, peak: false, isSkeleton: false };
   }
 
-  // 4. Engine-Specific Haunted Entities when [Y] SPIRITS is summoned
   function evaluateEngineSpiritEntity(fIdx, nx, ny, f, vGen) {
     const { p1, p2, b1, b2, b3 } = f;
     let density = 0;
@@ -1535,9 +1541,6 @@
 
   /**
    * 5. GENERATIVE ARCHITECTURAL, OCCULT PAREIDOLIA & RELIC IMAGE EVALUATOR
-   *    Dial-gated occult & brutal-organic pareidolia emerges as GROW / EROSION /
-   *    FRACTURE dials are explored (> 0.25), while IX. RELIC maps ingested
-   *    image luminance & Sobel edges across the 4-band audio strata.
    */
   function evaluateSingleFormation(fIdx, nx, ny, col, row, f, vGen) {
     const {
@@ -1555,12 +1558,9 @@
     let occludes = false;
 
     const mut = clamp(vGen.mutAmt || 0, 0, 1);
-    // Dial-gated occult emergence factor (0.0 at rest, blooms smoothly when GROW/EROSION/FRACTURE > 0.25)
     const occultEmergence = clamp((dialExplore - 0.22) * 1.45, 0, 1);
 
-    // -------------------------------------------------------------------------
     // ENGINE 1 — I. MONOLITH
-    // -------------------------------------------------------------------------
     if (fIdx === 0) {
       const asymSkew = (vGen.g1 - 0.5) * 0.24 * mut;
       const splitGap = (mut > 0.45 && vGen.g2 > 0.55) ? (vGen.g2 - 0.55) * 0.32 * mut : 0;
@@ -1666,9 +1666,7 @@
         }
       }
 
-    // -------------------------------------------------------------------------
-    // ENGINE 2 — II. SEAL (Emerges Crescent Lunar Horns & Halftone Ocular Bust as dials rise)
-    // -------------------------------------------------------------------------
+    // ENGINE 2 — II. SEAL
     } else if (fIdx === 1) {
       const eccX = (vGen.g1 - 0.5) * 0.14 * mut;
       const eccY = (vGen.g2 - 0.5) * 0.14 * mut;
@@ -1746,7 +1744,6 @@
           zone = 3;
         }
 
-        // Dial-gated occult pareidolia bust condensing inside the ritual circle
         if (occultEmergence > 0.12 && r < R * 0.62) {
           const bust = evaluateSpectralFigure(nx, ny, col, row, f, vGen, 0.78, eccX, eccY + 0.08);
           if (bust.density > density) {
@@ -1758,9 +1755,7 @@
         }
       }
 
-    // -------------------------------------------------------------------------
-    // ENGINE 3 — III. MOSAIC (Coffers slowly assemble a haunted stone face as dials explore)
-    // -------------------------------------------------------------------------
+    // ENGINE 3 — III. MOSAIC
     } else if (fIdx === 2) {
       if (Math.abs(ny) <= 0.86 && Math.abs(nx) <= (cols / Math.max(1, rows)) * 0.86) {
         const wMod = Math.round((vGen.g1 - 0.5) * 5 * mut);
@@ -1837,7 +1832,6 @@
               peak = tileEnergy > 0.66;
             }
 
-            // Dial-gated Pareidolia Face Relief emerging out of the mosaic tiles!
             if (occultEmergence > 0.10) {
               const mask = evaluatePareidoliaMask(nx, ny, col, row, f, vGen);
               const wMask = clamp(occultEmergence * (0.65 + b1 * 0.45), 0, 1);
@@ -1847,7 +1841,6 @@
                 peak = mask.peak;
                 isSkeleton = mask.isSkeleton;
               } else if (wMask > 0.45 && mask.density === 0) {
-                // Hollow eye sockets / grimace carve dark voids through the mosaic
                 occludes = false;
               }
             }
@@ -1855,9 +1848,7 @@
         }
       }
 
-    // -------------------------------------------------------------------------
-    // ENGINE 4 — IV. STRATA (Fossilized Ribcage & Vertebral Spine emerge in fault chasm)
-    // -------------------------------------------------------------------------
+    // ENGINE 4 — IV. STRATA
     } else if (fIdx === 3) {
       const dipSlope = (vGen.g1 - 0.5) * 0.55 * mut;
       const syncline = Math.cos(nx * (2.5 + vGen.g4 * 3.0)) * 0.24 * mut;
@@ -1917,7 +1908,6 @@
           }
         }
 
-        // Dial-gated Brutal-Organic Fossil Ribcage excavated from the geological strata
         if (occultEmergence > 0.15) {
           const fossil = evaluateFossilRibcage(nx, ny - riftCenter, f, vGen);
           if (fossil.density > 0.05) {
@@ -1929,9 +1919,7 @@
         }
       }
 
-    // -------------------------------------------------------------------------
     // ENGINE 5 — V. OBELISK
-    // -------------------------------------------------------------------------
     } else if (fIdx === 4) {
       const idolDrive = spiritsOn
         ? clamp(0.55 + (b1 + b2) * 0.55, 0.35, 1.0)
@@ -2042,9 +2030,7 @@
         }
       }
 
-    // -------------------------------------------------------------------------
-    // ENGINE 6 — VI. VAULT (Skeletal Arch Ribs & Watcher Silhouette in Corridor)
-    // -------------------------------------------------------------------------
+    // ENGINE 6 — VI. VAULT
     } else if (fIdx === 5) {
       const engage = clamp(erosion * 0.45 + fracture * 0.55 + tess * 0.25 + mut * 0.55, 0, 1.4);
       const warpX = Math.sin(p1 * 0.85 + vGen.seed) * 0.24 * engage;
@@ -2109,7 +2095,6 @@
           zone = onCeilingFloor ? 2 : 1;
         }
       } else if (cheb < coreVoid && occultEmergence > 0.18) {
-        // Distant watcher figure standing at the end of the dark corridor
         const watcher = evaluateSpectralFigure(tx, ty, col, row, f, vGen, 0.42, 0, 0.04);
         if (watcher.density > 0.05) {
           density = watcher.density * occultEmergence;
@@ -2118,9 +2103,7 @@
         }
       }
 
-    // -------------------------------------------------------------------------
-    // ENGINE 7 — VII. CITADEL (Horned Gargoyle Mask emerges above cathedral spires)
-    // -------------------------------------------------------------------------
+    // ENGINE 7 — VII. CITADEL
     } else if (fIdx === 6) {
       const safeAspect = Math.max(0.5, cols / Math.max(1, rows));
       const maxW = safeAspect * 0.88;
@@ -2170,7 +2153,6 @@
           peak = b3 > 0.44;
         }
 
-        // Dial-gated Sky Gargoyle / Celestial Watcher Face looming over the citadel spires
         if (occultEmergence > 0.18 && ny < 0.15) {
           const gargoyle = evaluatePareidoliaMask(nx * 1.15, (ny + 0.32) * 1.15, col, row, f, vGen);
           if (gargoyle.density > density) {
@@ -2182,9 +2164,7 @@
         }
       }
 
-    // -------------------------------------------------------------------------
-    // ENGINE 8 — VIII. HORIZON (Solar Eclipse -> Sculpted Halftone Spectral Bust)
-    // -------------------------------------------------------------------------
+    // ENGINE 8 — VIII. HORIZON
     } else if (fIdx === 7) {
       const shiftX = (vGen.g1 - 0.5) * 0.20 * mut;
       const shiftY = (vGen.g2 - 0.5) * 0.12 * mut;
@@ -2229,41 +2209,36 @@
         }
       }
 
-    // -------------------------------------------------------------------------
     // ENGINE 9 — IX. RELIC (Image-to-Strata Luminance & Sobel Edge Mapping)
-    // -------------------------------------------------------------------------
     } else if (fIdx === 8) {
       if (state.relicLoaded && relicLumaBuf.length === cols * rows && col >= 0 && col < cols && row >= 0 && row < rows) {
         const idx = row * cols + col;
         const luma = relicLumaBuf[idx];
         const edge = relicEdgeBuf[idx];
 
-        // Audio-reactive contrast expansion & Sobel edge illumination
-        const contrastBoost = 0.85 + b0 * 0.35 + b1 * 0.25;
-        const effLuma = clamp((luma - 0.12) * contrastBoost + edge * (0.35 + b2 * 0.55), 0, 1);
+        const contrastBoost = 0.88 + b0 * 0.35 + b1 * 0.25;
+        const effLuma = clamp((luma - 0.10) * contrastBoost + edge * (0.38 + b2 * 0.55), 0, 1);
 
         if (effLuma > 0.06) {
           density = effLuma;
           occludes = effLuma > 0.38;
           isSkeleton = edge > 0.28;
 
-          // Quantize image luminance + edge energy into the 4 mineral domain zones
           if (edge > 0.32) {
-            zone = 3; // Band IV (LETHE) sharp edge contours
+            zone = 3;
             peak = (b3 > 0.38 || b0 > 0.52);
           } else if (luma > 0.68) {
-            zone = 2; // Band III (SILICA) high-luminance highlights
+            zone = 2;
             peak = (b2 > 0.48 && luma > 0.84);
           } else if (luma > 0.38) {
-            zone = 1; // Band II (EROSION) sculpted midtones
+            zone = 1;
             peak = (b1 > 0.55);
           } else {
-            zone = 0; // Band I (STRATA) deep shadow relief
+            zone = 0;
             peak = (b0 > 0.60);
           }
         }
       } else {
-        // Default procedural Relic Mask Plate when no image has been dropped yet
         const mask = evaluatePareidoliaMask(nx, ny, col, row, f, vGen);
         density = mask.density;
         zone = mask.zone;
@@ -2273,7 +2248,6 @@
       }
     }
 
-    // Engine-Specific Haunted Entities when [Y] SPIRITS is engaged
     if (spiritsOn && density < 0.14 && fIdx !== 0 && fIdx !== 4 && fIdx !== 7) {
       const entity = evaluateEngineSpiritEntity(fIdx, nx, ny, f, vGen);
       if (entity.density > 0.08) {
@@ -2397,7 +2371,7 @@
   }
 
   /* ===========================================================================
-     SECTION B: APPLICATION STATE, PULSAR BUS SIDECHAIN & RELIC IMAGE STATE
+     SECTION B: APPLICATION STATE, PULSAR BUS SIDECHAIN & 3-MIN IDLE CYCLE
      =========================================================================== */
   function createVariantGenome(mutAmt) {
     return {
@@ -2435,7 +2409,6 @@
     artfxActive: false,
     spiritsActive: false,
 
-    // IX. RELIC Image-to-Strata state
     relicLoaded: false,
     relicImageObj: null,
     relicName: '',
@@ -2464,11 +2437,10 @@
     wasPlayingBeforeSuspend: false,
     isScrubbing: false,
 
+    // 3-Minute (180s) Anti-Burn-In Suite Title Morphing State
     idlePresence: 0.0,
     prevIdlePresence: 0.0,
     idleDuration: 0,
-    idlePhraseLines: generateMeditativeTransmission(),
-    idlePhraseTimer: 0,
 
     bandPhases: [0, 0, 0, 0],
     bassSidechain: 0.0,
@@ -2637,6 +2609,7 @@
     btnScatter: document.getElementById('btn-scatter'),
     btnDrift: document.getElementById('btn-drift'),
     btnFreeze: document.getElementById('btn-freeze'),
+    btnCast: document.getElementById('btn-cast'),
 
     btnMic: document.getElementById('btn-mic'),
     btnFile: document.getElementById('btn-file'),
@@ -2696,12 +2669,11 @@
   }
 
   /* ===========================================================================
-     SECTION D: HIGH-DPI OFFSCREEN GLYPH ATLAS, PRE-ALLOCATED BUFFERS & RELIC INGEST
+     SECTION D: HIGH-DPI OFFSCREEN GLYPH ATLAS, RELIC INGEST & [C] CAST SNAPSHOT
      =========================================================================== */
   const atlasCanvas = document.createElement('canvas');
   const atlasCtx = atlasCanvas.getContext('2d');
 
-  // Offscreen sampling canvas for IX. RELIC image-to-strata quantization
   const relicSampleCanvas = document.createElement('canvas');
   const relicSampleCtx = relicSampleCanvas.getContext('2d', { willReadFrequently: true });
 
@@ -2717,7 +2689,6 @@
   let z1ZoneBuf = new Uint8Array(1);
   let z1PeakBuf = new Uint8Array(1);
 
-  // Zero-allocation buffers for IX. RELIC image luminance & Sobel edges
   let relicLumaBuf = new Float32Array(1);
   let relicEdgeBuf = new Float32Array(1);
 
@@ -2735,7 +2706,6 @@
     relicSampleCtx.fillStyle = '#000000';
     relicSampleCtx.fillRect(0, 0, cols, rows);
 
-    // Aspect-fit image cleanly inside the central 84% of the viewport
     let drawW = cols * 0.84;
     let drawH = rows * 0.84;
     if (imgAspect > gridAspect) {
@@ -2755,13 +2725,21 @@
       relicEdgeBuf = new Float32Array(total);
     }
 
+    // Automatic histogram contrast normalization so low-contrast JPEGs resolve sharply
+    let minL = 1.0;
+    let maxL = 0.0;
     for (let i = 0; i < total; i++) {
       const p = i * 4;
       const luma = (0.299 * imgData[p] + 0.587 * imgData[p + 1] + 0.114 * imgData[p + 2]) / 255.0;
       relicLumaBuf[i] = luma;
+      if (luma < minL) minL = luma;
+      if (luma > maxL) maxL = luma;
+    }
+    const spanL = Math.max(0.15, maxL - minL);
+    for (let i = 0; i < total; i++) {
+      relicLumaBuf[i] = clamp((relicLumaBuf[i] - minL) / spanL, 0, 1);
     }
 
-    // Fast 3x3 Sobel gradient pass to extract crisp architectural/facial edge contours
     for (let r = 1; r < rows - 1; r++) {
       for (let c = 1; c < cols - 1; c++) {
         const idx = r * cols + c;
@@ -2790,7 +2768,7 @@
         state.relicLoaded = true;
         state.relicName = fileObj.name.toUpperCase();
         rebuildRelicBuffers();
-        selectFormation(8); // Switch directly to IX. RELIC [9]
+        selectFormation(8);
         if (!state.lanesActive[0]) {
           toggleVisualLane(0, true);
         }
@@ -2799,6 +2777,81 @@
       img.src = ev.target.result;
     };
     reader.readAsDataURL(fileObj);
+  }
+
+  // [C] CAST: Zero-Lag Archival Plate Capture with One-Time Mineral Patina & Stamped Margin
+  function triggerCastSnapshot() {
+    const pal = PALETTES[state.paletteIdx];
+    const fm = FORMATIONS[state.formationIdx];
+    const pad = Math.round(36 * dpr);
+    const footerH = Math.round(44 * dpr);
+
+    const outCanvas = document.createElement('canvas');
+    outCanvas.width = visCanvas.width + pad * 2;
+    outCanvas.height = visCanvas.height + pad * 2 + footerH;
+    const octx = outCanvas.getContext('2d');
+
+    // 1. Archival Dark / Vellum Plate Backing
+    octx.fillStyle = pal.bg;
+    octx.fillRect(0, 0, outCanvas.width, outCanvas.height);
+
+    // 2. Blit Live Visualiser Canvas at Full Retina/HDMI Resolution
+    octx.drawImage(visCanvas, pad, pad);
+
+    // 3. One-Time Unrepeatable Mineral Oxidation & Patina Wash
+    const tintHex = pal.domains[Math.floor(Math.random() * pal.domains.length)];
+    octx.save();
+    octx.globalCompositeOperation = 'screen';
+    octx.globalAlpha = 0.08 + Math.random() * 0.06;
+    octx.fillStyle = tintHex;
+    octx.fillRect(pad, pad, visCanvas.width, visCanvas.height);
+    octx.restore();
+
+    // Subtle edge vignetting & fine lithic grain stipple
+    const grad = octx.createRadialGradient(
+      outCanvas.width * 0.5, pad + visCanvas.height * 0.5, visCanvas.height * 0.28,
+      outCanvas.width * 0.5, pad + visCanvas.height * 0.5, Math.max(visCanvas.width, visCanvas.height) * 0.72
+    );
+    grad.addColorStop(0, 'rgba(0,0,0,0)');
+    grad.addColorStop(1, 'rgba(0,0,0,0.42)');
+    octx.fillStyle = grad;
+    octx.fillRect(pad, pad, visCanvas.width, visCanvas.height);
+
+    // 4. Hairline Mnemosyne Technical Plate Border & Stamped Metadata
+    octx.strokeStyle = pal.rest;
+    octx.lineWidth = Math.max(1, Math.round(1.5 * dpr));
+    octx.strokeRect(pad - 4, pad - 4, visCanvas.width + 8, visCanvas.height + 8);
+
+    const fontPx = Math.max(11, Math.round(11 * dpr));
+    octx.font = `bold ${fontPx}px 'Courier New', Menlo, monospace`;
+    octx.textBaseline = 'middle';
+    const metaY = pad + visCanvas.height + Math.round(footerH * 0.52);
+
+    const p = state.params;
+    const leftStamp = `QUIET MACHINERY // ${fm.label} [${pal.name}]`;
+    const rightStamp = `E:${p.erosion.toFixed(2)} T:${p.tessellation.toFixed(2)} F:${p.fracture.toFixed(2)} G:${p.grow.toFixed(2)} P:${p.prlx.toFixed(2)} // ${new Date().toISOString().slice(0, 19).replace('T', ' ')}`;
+
+    octx.fillStyle = pal.highlight;
+    octx.textAlign = 'left';
+    octx.fillText(leftStamp, pad, metaY);
+
+    octx.fillStyle = pal.rest;
+    octx.textAlign = 'right';
+    octx.fillText(rightStamp, outCanvas.width - pad, metaY);
+
+    outCanvas.toBlob((blob) => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+      a.href = url;
+      a.download = `QM_CAST_${fm.label.replace(/[^A-Z0-9]/gi, '_')}_${stamp}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+      showToast(`CAST // ARCHIVAL PLATE ENTOMBED (${fm.label})`);
+    }, 'image/png');
   }
 
   function rebuildGlyphAtlas() {
@@ -3164,15 +3217,10 @@
     state.idlePresence += (targetIdle - state.idlePresence) * Math.min(1, dtSec * slewSpeed);
 
     if (targetIdle > 0.5) {
-      state.idleDuration += dtSec;
-      state.idlePhraseTimer += dtSec;
-      if (state.idlePhraseTimer > 8.5) {
-        state.idlePhraseTimer = 0;
-        state.idlePhraseLines = generateMeditativeTransmission();
-      }
+      // 3-Minute (180-second) anti-burn-in idle clock cycling through KAMEN, KARST, MNEMOSYNE, ASPERITAS
+      state.idleDuration = (state.idleDuration + dtSec) % 180.0;
     } else {
       state.idleDuration = 0;
-      state.idlePhraseTimer = 0;
     }
 
     const aspect = Math.max(0.5, cols / Math.max(1, rows));
@@ -3469,7 +3517,7 @@
   }
 
   /* ===========================================================================
-     SECTION G2: TRUE 2.5D PARALLAX, CONTINUOUS ARTFX BACKGLOW & HIGH-FIDELITY MASS
+     SECTION G2: 5-LAYER PARALLAX & 3-MINUTE ANTI-BURN-IN SUITE TITLE LITURGY
      =========================================================================== */
   function renderVisualiser(nowMs, dtSec) {
     const pal = PALETTES[state.paletteIdx];
@@ -3508,8 +3556,6 @@
     const scDuck = clamp(1.0 - Math.pow(state.bassSidechain, 1.35) * 0.78, 0.22, 1.0);
     const driveTearBias = Math.max(0, (gainNorm - 0.50) * 0.75);
     const effFrac = clamp(Math.max(fracture, driveTearBias), 0, 1.2);
-
-    // Combined dial exploration metric for dial-gated occult & brutal-organic pareidolia
     const dialExplore = clamp(Math.max(grow, erosion * 0.92, fracture * 0.85), 0, 1);
 
     const transientPulse = clamp(b0 * 0.35 + (b2 * 0.85 + b3 * 0.95) * scDuck, 0, 1.3);
@@ -4001,13 +4047,16 @@
     }
 
     // =========================================================================
-    // LAYER 5: ARCHITECTURAL IDLE LITURGY & SLEWED DISINTEGRATION
+    // LAYER 5: 3-MINUTE ANTI-BURN-IN SUITE TITLE LITURGY & WORD MORPHING
+    // Slowly drifts across a slow Lissajous anti-burn-in path while morphing
+    // across KAMEN -> KARST -> MNEMOSYNE -> ASPERITAS and mutating words over 180s.
     // =========================================================================
     if (state.idlePresence > 0.03) {
       const ip = state.idlePresence;
       const isReleasing = (ip < state.prevIdlePresence);
       const fIdx = state.formationIdx;
 
+      // 1. Standing harmonic oscilloscope wave breathing through the architecture
       const waveIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.42)), maxGlyphIdx);
       for (let c = 4; c < cols - 4; c += 2) {
         const nx = (c - cx) * invScale;
@@ -4019,44 +4068,109 @@
         }
       }
 
-      if (state.idleDuration > 1.6 || isReleasing) {
-        const cycleFade = isReleasing ? ip : Math.sin(clamp(state.idlePhraseTimer / 8.5, 0, 1) * PI);
-        const visibility = clamp(cycleFade * ip * 1.35, 0, 1);
+      // 2. 3-Minute (180s) Suite Aesthetic & Word-Morphing Engine
+      if (state.idleDuration > 1.4 || isReleasing) {
+        const stageIdx = Math.floor(state.idleDuration / 45.0) % 4; // 45s per suite stage = 180s cycle
+        const stageLocalSec = state.idleDuration % 45.0;
+        const phraseIdx = Math.floor(stageLocalSec / 15.0) % 3;
+        const phrasePhase = (stageLocalSec % 15.0) / 15.0; // 0.0 -> 1.0 over 15s
+
+        const stageObj = SUITE_TITLE_STAGES[stageIdx];
+        const rawTitle = stageObj.titles[phraseIdx];
+        const rawSub = stageObj.subs[phraseIdx];
+
+        // Anti-burn-in slow Lissajous drift across the viewport so no pixel stays static
+        const driftC = Math.sin(state.idleDuration * 0.07) * (cols * 0.14);
+        const driftR = Math.cos(state.idleDuration * 0.05) * (rows * 0.12);
+
+        // Erosion & uncanny mangling climbs across each 15s phrase & across the 3-minute arc
+        const arcUncanny = clamp(state.idleDuration / 180.0, 0, 1);
+        const cycleFade = isReleasing ? ip : Math.sin(phrasePhase * PI);
+        const visibility = clamp(cycleFade * ip * 1.4, 0, 1);
 
         if (visibility > 0.05) {
-          const line1 = state.idlePhraseLines[0];
-          const line2 = state.idlePhraseLines[1];
+          const ramp = state.activeGlyphs.length > 0 ? state.activeGlyphs : ['◈', '╬', '▓'];
+          const pillarGlyph = toMonoChar(ramp[Math.min(ramp.length - 1, Math.floor(ramp.length * 0.72))]);
+          const crumbGlyph = toMonoChar(ramp[Math.min(ramp.length - 1, 1)]);
 
           ctx.save();
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          const fontPx = Math.floor(cellPx * 0.84);
-          ctx.font = `bold ${fontPx}px 'Courier New', Menlo, monospace`;
 
-          const renderEmbeddedText = (text, lineOffset) => {
+          // Render KAMEN flanking architectural pillars on Stage 0 (or MONOLITH)
+          if (stageIdx === 0 || fIdx === 0) {
+            const halfSpan = Math.floor(rawTitle.length * 0.5) + 3;
+            const anchorC = Math.round(cx + driftC);
+            const anchorR = Math.round(cy - halfScale * 0.46 + driftR);
+            ctx.font = `bold ${Math.floor(cellPx * 0.88)}px 'Courier New', Menlo, monospace`;
+            ctx.fillStyle = pal.domains[0];
+            for (let dy = -1; dy <= 2; dy++) {
+              const pr = anchorR + dy;
+              if (pr >= 1 && pr < rows - 1) {
+                if (anchorC - halfSpan >= 1) ctx.fillText(pillarGlyph, (anchorC - halfSpan) * cellPx + cellPx * 0.5, pr * cellPx + cellPx * 0.52);
+                if (anchorC + halfSpan < cols - 1) ctx.fillText(pillarGlyph, (anchorC + halfSpan) * cellPx + cellPx * 0.5, pr * cellPx + cellPx * 0.52);
+              }
+            }
+          }
+
+          const renderSuiteLine = (text, lineOffset, isMainTitle) => {
             const len = text.length;
+            const fontPx = Math.floor(cellPx * (isMainTitle ? 0.90 : 0.72));
+            ctx.font = `bold ${fontPx}px 'Courier New', Menlo, monospace`;
+
             for (let i = 0; i < len; i++) {
-              const ch = text[i];
+              let ch = text[i];
               if (ch === ' ') continue;
               const u = (i - (len - 1) * 0.5);
 
-              let colPos = cx + u;
-              let rowPos = cy + lineOffset;
+              // Base position merges with active formation geometry + anti-burn-in drift
+              let colPos = cx + u + driftC;
+              let rowPos = cy - halfScale * 0.46 + lineOffset * 1.5 + driftR;
 
               if (fIdx === 1 || fIdx === 7) {
                 const rad = (fIdx === 1 ? 0.56 : 0.62) + lineOffset * 0.08;
                 const arcSpan = Math.min(PI * 0.78, len * 0.055);
-                const ang = PI * 0.5 - (u / Math.max(1, len * 0.5)) * (arcSpan * 0.5) + Math.sin(t * 0.3) * 0.08;
-                colPos = cx + Math.cos(ang) * rad * halfScale;
-                rowPos = cy + Math.sin(ang) * rad * halfScale;
-              } else if (fIdx === 5) {
-                rowPos = cy + (lineOffset === 0 ? -0.52 : 0.52) * halfScale;
-              } else if (fIdx === 0 || fIdx === 4) {
-                rowPos = cy + (lineOffset === 0 ? -0.62 : 0.76) * halfScale;
-              } else {
-                rowPos = cy + (lineOffset === 0 ? -0.18 : 0.24) * halfScale + Math.sin((colPos - cx) * 0.12 + t * 0.5) * 0.8;
+                const ang = PI * 0.5 - (u / Math.max(1, len * 0.5)) * (arcSpan * 0.5) + Math.sin(t * 0.25) * 0.12;
+                colPos = cx + Math.cos(ang) * rad * halfScale + driftC * 0.4;
+                rowPos = cy + Math.sin(ang) * rad * halfScale + driftR * 0.4;
               }
 
+              // Suite-specific aesthetic transformations:
+              // Stage 1 (KARST): Tectonic fault shear splitting upper/lower halves
+              if (stageIdx === 1 && Math.abs(u) < 2.5) {
+                rowPos += (u < 0 ? -0.45 : 0.45);
+              }
+              // Stage 2 (MNEMOSYNE): Sliced memory echo trailing behind letters
+              if (stageIdx === 2 && isMainTitle && (i % 3 === 0)) {
+                const echoC = Math.round(colPos - 2);
+                const echoR = Math.round(rowPos);
+                if (echoC >= 1 && echoC < cols - 1 && echoR >= 1 && echoR < rows - 1) {
+                  ctx.fillStyle = pal.rest;
+                  ctx.fillText(ch, echoC * cellPx + cellPx * 0.5, echoR * cellPx + cellPx * 0.52);
+                }
+              }
+              // Stage 3 (ASPERITAS) or late phrase decay: Uncanny glyph mangling & falling rubble
+              const decayAmt = clamp((1.0 - cycleFade) * 0.75 + arcUncanny * 0.55, 0, 1);
+              const charRoll = hash2(i * 1.37 + stageIdx * 5.0, phraseIdx * 3.1 + lineOffset);
+
+              if (decayAmt > 0.35 && charRoll < (decayAmt - 0.30) * 0.85) {
+                // Mangle character into an occult symbol from the active lexicon
+                const gIdx = Math.floor(hash2(i, frameTick * 0.05) * ramp.length) % ramp.length;
+                ch = toMonoChar(ramp[gIdx]);
+              }
+
+              // Shed falling ASCII rubble particles below crumbling letters
+              if ((stageIdx === 3 || decayAmt > 0.45) && charRoll > 0.62) {
+                const fallDrop = ((t * 2.2 + i * 0.7) % 4.0);
+                const crumbR = Math.round(rowPos + fallDrop);
+                const crumbC = Math.round(colPos + Math.sin(t + i) * 0.6);
+                if (crumbC >= 1 && crumbC < cols - 1 && crumbR >= 1 && crumbR < rows - 1) {
+                  ctx.fillStyle = pal.domains[1];
+                  ctx.fillText(crumbGlyph, crumbC * cellPx + cellPx * 0.5, crumbR * cellPx + cellPx * 0.52);
+                }
+              }
+
+              // Unpausing slewed disintegration: letters blow away on the wind
               if (isReleasing) {
                 const scatterAmt = (1.0 - ip) * 14.0;
                 const h = hash2(i * 1.9, lineOffset + 3.1);
@@ -4068,16 +4182,15 @@
               const rGrid = Math.round(rowPos);
               if (cGrid < 1 || cGrid >= cols - 1 || rGrid < 1 || rGrid >= rows - 1) continue;
 
-              const charAppear = hash2(i * 0.61, lineOffset * 2.3);
-              if (visibility < charAppear * 0.85) continue;
+              if (visibility < charRoll * 0.75) continue;
 
-              ctx.fillStyle = (lineOffset === 0) ? pal.highlight : pal.domains[2];
+              ctx.fillStyle = isMainTitle ? pal.highlight : pal.domains[stageIdx % 4];
               ctx.fillText(ch, cGrid * cellPx + cellPx * 0.5, rGrid * cellPx + cellPx * 0.52);
             }
           };
 
-          renderEmbeddedText(line1, 0);
-          renderEmbeddedText(line2, 1);
+          renderSuiteLine(rawTitle, 0, true);
+          renderSuiteLine(rawSub, 1, false);
           ctx.restore();
         }
       }
@@ -4569,6 +4682,7 @@
     dom.btnScatter.addEventListener('click', triggerScatter);
     dom.btnDrift.addEventListener('click', toggleDrift);
     dom.btnFreeze.addEventListener('click', toggleFreeze);
+    dom.btnCast.addEventListener('click', triggerCastSnapshot);
 
     dom.btnMic.addEventListener('click', engageMicInput);
     dom.btnFile.addEventListener('click', () => dom.fileUpload.click());
@@ -4696,6 +4810,8 @@
         toggleSpirits();
       } else if (key === 'v') {
         toggleVizScopeOverride();
+      } else if (key === 'c') {
+        triggerCastSnapshot();
       } else if (key >= '1' && key <= '9') {
         selectFormation(Number(key) - 1);
       } else if (key === 'm') {
