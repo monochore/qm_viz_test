@@ -188,7 +188,7 @@
   #chassis {
     pointer-events: auto;
     width: 100%;
-    max-width: 1220px;
+    max-width: 1250px;
     background: rgba(17, 17, 17, 0.95);
     border: 2px solid var(--border-main);
     outline: 2px solid var(--border-main);
@@ -225,7 +225,7 @@
 
   .panel-core {
     display: grid;
-    grid-template-columns: 192px minmax(220px, 1.05fr) minmax(278px, 1.25fr) minmax(222px, 1.02fr);
+    grid-template-columns: 188px minmax(215px, 1.02fr) minmax(310px, 1.32fr) minmax(226px, 1.04fr);
     border-left: 1px solid var(--col-div);
     border-right: 1px solid var(--col-div);
     min-width: 0;
@@ -360,6 +360,12 @@
     border-color: var(--c-green);
     box-shadow: 0 0 8px rgba(0, 255, 68, 0.38);
   }
+  .oled-btn.active-cyan {
+    background: var(--c-cyan);
+    color: #000000;
+    border-color: var(--c-cyan);
+    box-shadow: 0 0 8px rgba(0, 170, 255, 0.38);
+  }
   .oled-btn:disabled,
   .oled-btn.locked-iso {
     background: #090909;
@@ -489,12 +495,12 @@
   }
 
   /* =========================================================================
-     6. UPPER DECK COLUMN 3: FIVE DOMAIN DIALS (GAIN, EROSION, TESS, FRACTURE, GROW)
+     6. UPPER DECK COLUMN 3: SIX DOMAIN DIALS (GAIN, EROSION, TESS, FRACTURE, GROW, PRLX)
      ========================================================================= */
   .dials-row {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 3px;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 2px;
     align-items: center;
     justify-items: center;
     margin: auto 0;
@@ -507,16 +513,16 @@
     position: relative;
   }
   .knob-label {
-    font-size: 8.5px;
+    font-size: 8px;
     font-weight: 500;
     margin-bottom: 4px;
-    letter-spacing: 0.7px;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
     white-space: nowrap;
   }
   .knob-svg {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     cursor: ns-resize;
     overflow: visible;
     filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.55));
@@ -534,7 +540,7 @@
   .knob-readout {
     margin-top: 3px;
     font-family: 'Courier New', Menlo, monospace;
-    font-size: 8.5px;
+    font-size: 8px;
     color: #969696;
   }
   .knob-container:hover .knob-readout,
@@ -552,6 +558,8 @@
   .d-red   .knob-label { color: var(--c-red); }
   .d-sage  .knob-bg { stroke: #9ab8ad; }
   .d-sage  .knob-label { color: #b5cfc5; }
+  .d-slate .knob-bg { stroke: #8aa3ba; }
+  .d-slate .knob-label { color: #a7bfd6; }
 
   .dials-hint {
     font-family: 'Courier New', Menlo, monospace;
@@ -564,23 +572,23 @@
   }
 
   /* =========================================================================
-     7. UPPER DECK COLUMN 4: STRATA LANES & VIEW CONTROLS
+     7. UPPER DECK COLUMN 4: STRATA LANES, FX TOGGLES & VIEW CONTROLS
      ========================================================================= */
   .strata-stack {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     flex: 1;
-    gap: 6px;
+    gap: 4px;
   }
 
   .meters-block {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
     background: var(--oled);
     border: 1px solid #262626;
-    padding: 5px 7px;
+    padding: 4px 6px;
   }
   .meter-row {
     display: grid;
@@ -601,7 +609,7 @@
     opacity: 0.52;
   }
   .meter-track {
-    height: 5px;
+    height: 4px;
     background: #101010;
     border: 1px solid #242424;
     overflow: hidden;
@@ -612,8 +620,8 @@
   }
 
   .lane-toggle-sq {
-    width: 12px;
-    height: 12px;
+    width: 11px;
+    height: 11px;
     padding: 0;
     margin: 0;
     background: #0a0a0a;
@@ -644,6 +652,12 @@
     background: var(--c-red-dim);
     border-color: var(--c-red);
     box-shadow: 0 0 6px rgba(255, 68, 68, 0.55);
+  }
+
+  .fx-btn-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
   }
 
   .view-btn-row {
@@ -848,7 +862,7 @@
     height: 100%;
   }
 
-  @media (max-width: 1040px) {
+  @media (max-width: 1080px) {
     .upper-deck {
       grid-template-columns: 1fr;
     }
@@ -941,8 +955,8 @@
               </div>
               <div class="oled-row">
                 <button class="oled-btn" id="btn-activate" title="Initialize, Resume, or Suspend Audio Engine (Idle Liturgy When Silent)">ACTIVATE</button>
-                <button class="oled-btn" id="btn-scatter" title="Randomize Creative Dials &amp; Seed (Locks GAIN &amp; GROW) [S]">SCATTER</button>
-                <button class="oled-btn" id="btn-drift" title="Slow Organic Random Walk on Creative Dials (Locks GAIN &amp; GROW)">DRIFT</button>
+                <button class="oled-btn" id="btn-scatter" title="Randomize Creative Dials &amp; Seed (Locks GAIN, GROW &amp; PRLX) [S]">SCATTER</button>
+                <button class="oled-btn" id="btn-drift" title="Slow Organic Random Walk on Creative Dials (Locks GAIN, GROW &amp; PRLX)">DRIFT</button>
               </div>
               <button class="oled-btn freeze" id="btn-freeze" style="width:100%;" title="Freeze Current Trace in Mortar [X]">FREEZE</button>
             </div>
@@ -973,7 +987,7 @@
             </div>
           </div>
 
-          <!-- COLUMN 3: DOMAIN DIALS (5 KNOBS: GAIN, EROSION, TESSELLATION, FRACTURE, GROW) -->
+          <!-- COLUMN 3: DOMAIN DIALS (6 KNOBS: GAIN, EROSION, TESSELLATION, FRACTURE, GROW, PRLX) -->
           <div class="column" data-col="dials">
             <div class="col-header" id="hdr-dials">DOMAIN DIALS</div>
             <div class="dials-row">
@@ -1026,11 +1040,21 @@
                 </svg>
                 <div class="knob-readout" id="readout-grow">0.00</div>
               </div>
+
+              <!-- PRLX: 2.5D Z-Plane Depth Separation & Fisheye Optical Warp (>0.45) -->
+              <div class="knob-container d-slate">
+                <div class="knob-label">PRLX</div>
+                <svg class="knob-svg" id="knob-prlx" data-param="prlx" data-val="0.25" data-default="0.25" viewBox="0 0 44 44" title="2.5D Z-Plane Depth Separation &amp; Barrel/Fisheye Optical Warp (>0.45) | Default: 0.25">
+                  <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
+                  <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
+                </svg>
+                <div class="knob-readout" id="readout-prlx">0.25</div>
+              </div>
             </div>
             <div class="dials-hint">DRAG · SHIFT FINE · DBL-CLK RESET</div>
           </div>
 
-          <!-- COLUMN 4: STRATA LANES & VIEW -->
+          <!-- COLUMN 4: STRATA LANES, FX SWITCHES & VIEW CONTROLS -->
           <div class="column" data-col="strata">
             <div class="col-header">STRATA &amp; VIEW</div>
             <div class="strata-stack">
@@ -1055,6 +1079,12 @@
                   <div class="meter-track"><div class="meter-fill" id="meter-3" style="background: var(--c-red-dim);"></div></div>
                   <button type="button" class="lane-toggle-sq" id="lane-btn-3" data-lane="3" aria-pressed="false" title="Engage Z-0/Z-1 Borders (Shatters Inward on High Transients) [R]"></button>
                 </div>
+              </div>
+
+              <!-- Discoverable FX Toggles (Booted OFF: [T] ARTFX & [Y] SPIRITS) -->
+              <div class="fx-btn-row">
+                <button type="button" class="oled-btn" id="btn-artfx" title="Engage Silhouette Occlusion, Volumetric Backlighting &amp; Lightning Rim-Cast [T]">[T] ARTFX</button>
+                <button type="button" class="oled-btn" id="btn-spirits" title="Summon Spectral Apparitions &amp; Haunted Watchers Across All Engines [Y]">[Y] SPIRITS</button>
               </div>
 
               <div class="view-btn-row">
@@ -1118,7 +1148,7 @@
      SECTION A: HACKABLE CODEBOX (EDIT DIRECTLY LIKE A gen~ CODEBOX)
      ---------------------------------------------------------------------------
      Pulsar-23 Asymmetric Bus Sidechain + 4 Independent Layer Clocks +
-     Differential Transient Detection + Engine-Specific Dust Geometries.
+     PRLX 2.5D Depth Separation & Fisheye Lens Warp + [T] ARTFX + [Y] SPIRITS.
      =========================================================================== */
 
   const FORMATIONS = [
@@ -1263,6 +1293,14 @@
     return d - radius;
   }
 
+  // Radial Barrel / Fisheye Optical Warp driven by PRLX > 0.45
+  function applyFisheyeWarp(nx, ny, warpK) {
+    if (warpK <= 0.001) return { x: nx, y: ny };
+    const r2 = nx * nx + ny * ny;
+    const scale = 1.0 + warpK * r2;
+    return { x: nx * scale, y: ny * scale };
+  }
+
   function evaluateSpectralFigure(nx, ny, col, row, f, vGen, figureScale, offsetX, offsetY) {
     const { p0, p1, b0, b1, b2, b3, tess } = f;
     const safeScale = Math.max(0.1, figureScale || 1.0);
@@ -1341,21 +1379,23 @@
 
   /**
    * 4. GENERATIVE ARCHITECTURAL & ORGANIC EVALUATOR
-   *    Driven by 4 Independent Band Clocks (`p0, p1, p2, p3`) so lows, low-mids,
-   *    hi-mids, and highs animate distinct structural tiers at their own tempos.
+   *    Returns `occludes` (true when solid masonry blocks Z-Plane 0 behind it,
+   *    leaving open doorways, eclipse cores, and sky voids transparent for ARTFX).
    */
   function evaluateSingleFormation(fIdx, nx, ny, col, row, f, vGen) {
     const {
       p0, p1, p2, p3,
       seed, b0, b1, b2, b3,
       tess, erosion, fracture,
-      gateShear, gateDrop, cols, rows, frameTick
+      gateShear, gateDrop, cols, rows, frameTick,
+      spiritsOn
     } = f;
 
     let density = 0;
     let zone = 0;
     let peak = false;
     let isSkeleton = false;
+    let occludes = false;
 
     const mut = clamp(vGen.mutAmt || 0, 0, 1);
 
@@ -1382,6 +1422,7 @@
         const inSanctum = (splitGap === 0) && (ax < doorW && ny > doorTop && ny < botY - 0.07);
 
         if (!inSanctum) {
+          occludes = true; // Solid stone frame occludes Z-Plane 0 behind it
           const dOuterX = outerW - ax;
           const dSplitX = ax - splitGap;
           const dOuterY = Math.min(ny - topY, botY - ny);
@@ -1398,13 +1439,11 @@
 
           const isPlinth = (ny > botY - 0.09);
 
-          // Pillar ribs move on Band II clock (p1)
           const ribFreq = 10.0 + tess * 16.0;
           const ribPhase = b1 * 2.4 + Math.sin(p1 * 0.55 + seed) * 0.45;
           const inPillarZone = (ax > doorW + 0.065 && ax < outerW - 0.065 && ny > doorTop && ny < botY - 0.09);
           const pillarRib = inPillarZone && (Math.cos((ax - doorW) * ribFreq * PI - ribPhase) > 0.42);
 
-          // Upper lintel frieze runes shimmer on Band III & Band IV fast clocks (p2, p3)
           const inLintel = (ny > topY + 0.065 && ny < doorTop - 0.065 && ax < outerW - 0.065);
           const lintelBand = inLintel && (Math.sin(ny * (16 + tess * 14) + p2 * 0.8) > 0.25);
           const lintelRune = inLintel && (Math.cos(ax * (18 + tess * 18) + seed * 3.0 + p3 * 0.6) * Math.sin(ny * 24) > (0.58 - b3 * 0.42));
@@ -1437,10 +1476,12 @@
             }
           }
         } else {
-          if (mut > 0.18) {
+          // Open sanctum doorway remains transparent (`occludes = false`) so backlit clouds & lightning shine behind the figure!
+          const spiritDrive = spiritsOn ? clamp(0.45 + (b1 + b2) * 0.65 - b0 * 0.35, 0.25, 1.0) : (mut > 0.18 ? clamp((mut - 0.15) * 1.35, 0, 1) : 0);
+          if (spiritDrive > 0.08) {
             const ghost = evaluateSpectralFigure(nx, ny, col, row, f, vGen, 0.62, 0, 0.22);
             if (ghost.density > 0.04) {
-              density = ghost.density * clamp((mut - 0.15) * 1.35, 0, 1);
+              density = ghost.density * spiritDrive;
               zone = ghost.zone;
               peak = ghost.peak;
               isSkeleton = ghost.isSkeleton;
@@ -1466,7 +1507,7 @@
       }
 
     // -------------------------------------------------------------------------
-    // ENGINE 2 — II. SEAL (Counter-rotating polygons driven by Band II & III clocks)
+    // ENGINE 2 — II. SEAL
     // -------------------------------------------------------------------------
     } else if (fIdx === 1) {
       const eccX = (vGen.g1 - 0.5) * 0.14 * mut;
@@ -1507,25 +1548,30 @@
           zone = 0;
           peak = b0 > 0.55;
           isSkeleton = true;
+          occludes = true;
         } else if (isTick) {
           density = 0.42 + b3 * 0.56;
           zone = 3;
           peak = b3 > 0.46;
+          occludes = true;
         } else if (dPoly1 < 0.024) {
           density = 0.66 + b1 * 0.34;
           zone = 1;
           peak = b1 > 0.55;
           isSkeleton = true;
+          occludes = true;
         } else if (dPoly2 < 0.022 || isPetal) {
           density = 0.58 + b2 * 0.40;
           zone = 2;
           peak = b2 > 0.52;
           isSkeleton = true;
+          occludes = true;
         } else if (dOculus < 0.022) {
           density = 0.64 + b0 * 0.36;
           zone = 0;
           peak = b0 > 0.50;
           isSkeleton = true;
+          occludes = true;
         } else if (dPoly3 < 0.018 && r > 0.15) {
           density = 0.38 + b2 * 0.42;
           zone = 2;
@@ -1578,6 +1624,7 @@
         if (!tileDropped) {
           const isGrout = (lx === 0 || ly === 0);
           if (!isGrout) {
+            occludes = true;
             const innerW = Math.max(1, tileW - 1);
             const innerH = Math.max(1, tileH - 1);
             const ix = lx - 1;
@@ -1639,43 +1686,46 @@
         const dRift = Math.abs(ny - riftCenter);
 
         if (dRift < riftHalf) {
-          density = 0;
-        } else if (dRift < riftHalf + 0.048) {
-          density = 0.76 + b0 * 0.24;
-          zone = 3;
-          peak = b0 > 0.45 || b3 > 0.45;
-          isSkeleton = true;
+          density = 0; // Open chasm reveals Z-0 behind it
         } else {
-          const strataCount = 4 + Math.round(tess * 6);
-          const depthShift = (ny < riftCenter ? -1 : 1) * (b0 * 0.08 + b1 * 0.12);
-          const sy = (ny - horizonTop + depthShift) * strataCount;
-          const stratumIdx = Math.floor(sy);
-          const sFrac = sy - stratumIdx;
-
-          const isSeam = (sFrac < 0.14 || sFrac > 0.88);
-          const sZone = ((stratumIdx % 4) + 4) % 4;
-          const bandVals = [b0, b1, b2, b3];
-          const sEnergy = bandVals[sZone] || 0;
-
-          zone = sZone;
-          if (isSeam) {
-            density = 0.52 + sEnergy * 0.44;
-            peak = sEnergy > 0.58;
+          occludes = true;
+          if (dRift < riftHalf + 0.048) {
+            density = 0.76 + b0 * 0.24;
+            zone = 3;
+            peak = b0 > 0.45 || b3 > 0.45;
             isSkeleton = true;
           } else {
-            const layerType = (((stratumIdx + Math.floor(vGen.g3 * 3)) % 3) + 3) % 3;
-            if (layerType === 0) {
-              if (col % 3 === 0) {
-                density = 0.32 + b0 * 0.38 + sEnergy * 0.24;
-              }
-            } else if (layerType === 1) {
-              if (row % 2 === 0 && ((col + stratumIdx * 2) % 2 === 0)) {
-                density = 0.26 + b1 * 0.42 + sEnergy * 0.22;
-              }
+            const strataCount = 4 + Math.round(tess * 6);
+            const depthShift = (ny < riftCenter ? -1 : 1) * (b0 * 0.08 + b1 * 0.12);
+            const sy = (ny - horizonTop + depthShift) * strataCount;
+            const stratumIdx = Math.floor(sy);
+            const sFrac = sy - stratumIdx;
+
+            const isSeam = (sFrac < 0.14 || sFrac > 0.88);
+            const sZone = ((stratumIdx % 4) + 4) % 4;
+            const bandVals = [b0, b1, b2, b3];
+            const sEnergy = bandVals[sZone] || 0;
+
+            zone = sZone;
+            if (isSeam) {
+              density = 0.52 + sEnergy * 0.44;
+              peak = sEnergy > 0.58;
+              isSkeleton = true;
             } else {
-              if (Math.abs(sFrac - 0.5) < 0.16 && ((col + stratumIdx) % 4 === 0)) {
-                density = 0.30 + b2 * 0.46 + b3 * 0.24;
-                peak = b3 > 0.50;
+              const layerType = (((stratumIdx + Math.floor(vGen.g3 * 3)) % 3) + 3) % 3;
+              if (layerType === 0) {
+                if (col % 3 === 0) {
+                  density = 0.32 + b0 * 0.38 + sEnergy * 0.24;
+                }
+              } else if (layerType === 1) {
+                if (row % 2 === 0 && ((col + stratumIdx * 2) % 2 === 0)) {
+                  density = 0.26 + b1 * 0.42 + sEnergy * 0.22;
+                }
+              } else {
+                if (Math.abs(sFrac - 0.5) < 0.16 && ((col + stratumIdx) % 4 === 0)) {
+                  density = 0.30 + b2 * 0.46 + b3 * 0.24;
+                  peak = b3 > 0.50;
+                }
               }
             }
           }
@@ -1686,12 +1736,13 @@
     // ENGINE 5 — V. OBELISK
     // -------------------------------------------------------------------------
     } else if (fIdx === 4) {
-      if (mut > 0.55 && (vGen.g6 || 0) > 0.42) {
+      if ((mut > 0.55 && (vGen.g6 || 0) > 0.42) || (spiritsOn && (b1 + b2 > 0.42))) {
         const idol = evaluateSpectralFigure(nx, ny, col, row, f, vGen, 1.05, 0, 0.04);
         density = idol.density;
         zone = idol.zone;
         peak = idol.peak;
         isSkeleton = idol.isSkeleton;
+        occludes = idol.density > 0.35;
       } else {
         const forkSplit = (mut > 0.35 && vGen.g1 > 0.52) ? (vGen.g1 - 0.52) * 0.24 * mut : 0;
         const ax = Math.abs(nx);
@@ -1706,6 +1757,7 @@
           if (ny < capBase) {
             const capW = ((ny - topTip) / capSpan) * (0.14 + b0 * 0.04 + forkSplit);
             if (ax <= capW && ax >= forkSplit * 0.6) {
+              occludes = true;
               const isCapEdge = (capW - ax < 0.032) || (capBase - ny < 0.03);
               zone = 3;
               density = isCapEdge ? (0.78 + b3 * 0.22) : (0.30 + b3 * 0.48);
@@ -1718,6 +1770,7 @@
             const shaftW = 0.13 + shaftProg * 0.06 + b0 * 0.055 + forkSplit + geoBulge;
 
             if (ax <= shaftW && ax >= forkSplit) {
+              occludes = true;
               const isEdge = (shaftW - ax < 0.032) || (forkSplit > 0 && ax - forkSplit < 0.028);
               const inSpineGroove = (forkSplit === 0 && ax < 0.036);
 
@@ -1727,7 +1780,6 @@
                 peak = b0 > 0.55;
                 isSkeleton = true;
               } else if (inSpineGroove) {
-                // Central spine channel pulses on Band III fast clock (p2)
                 const pulse = Math.sin(ny * (14 + tess * 12) - p2 * 2.4) * 0.5 + 0.5;
                 if (pulse > (0.68 - b2 * 0.45)) {
                   density = 0.44 + b2 * 0.54;
@@ -1760,6 +1812,7 @@
                 zone = 1;
                 peak = b1 > 0.58;
                 isSkeleton = true;
+                occludes = true;
               } else if (Math.abs(ax - plumb1) < 0.015 && ny > capBase + 0.06 && ny < plinthTop - 0.04) {
                 const nodeHit = Math.abs((ribPos % 1) - 0.5) > 0.38;
                 density = nodeHit ? (0.62 + b2 * 0.36) : (0.20 + b2 * 0.25);
@@ -1777,6 +1830,7 @@
           } else {
             const plinthW = (ny < plinthTop + 0.07) ? 0.32 + b0 * 0.06 : 0.44 + b0 * 0.08;
             if (ax <= plinthW) {
+              occludes = true;
               const isEdge = (plinthW - ax < 0.035) || (ny - plinthTop < 0.03) || (plinthBot - ny < 0.03);
               density = isEdge ? (0.72 + b0 * 0.28) : (0.26 + b0 * 0.28);
               zone = 0;
@@ -1788,7 +1842,7 @@
       }
 
     // -------------------------------------------------------------------------
-    // ENGINE 6 — VI. VAULT (Forward surge driven by Band I + Band III clocks)
+    // ENGINE 6 — VI. VAULT
     // -------------------------------------------------------------------------
     } else if (fIdx === 5) {
       const engage = clamp(erosion * 0.45 + fracture * 0.55 + tess * 0.25 + mut * 0.55, 0, 1.4);
@@ -1842,11 +1896,13 @@
           zone = aZone;
           peak = (archFrac < 0.09) && (aEnergy > 0.50 || b0 > 0.56);
           isSkeleton = true;
+          occludes = true;
         } else if (isMiter) {
           density = (0.48 + b3 * 0.46) * depthVis;
           zone = 3;
           peak = b3 > 0.50;
           isSkeleton = true;
+          occludes = true;
         } else if (isCofferStrut && (archFrac > 0.45 && archFrac < 0.68)) {
           density = (0.28 + b1 * 0.36 + b2 * 0.26) * depthVis;
           zone = onCeilingFloor ? 2 : 1;
@@ -1871,6 +1927,7 @@
         const roofY = 0.18 - skylineArch * (0.68 + b0 * 0.14) - (tHash * 0.30) + Math.sin(towerId * 2.1 + p1 * 0.4) * 0.03;
 
         if (ny >= roofY) {
+          occludes = true;
           const isSpireTip = (ny < roofY + 0.12) && Math.abs(tFrac - 0.5) < (0.12 + (ny - roofY) * 2.5);
           const isTowerWall = (tFrac < 0.12 || tFrac > 0.88);
           const isBattlement = (ny >= roofY && ny < roofY + 0.05) && (Math.floor(tFrac * 4) % 2 === 0);
@@ -1926,22 +1983,44 @@
           zone = 3;
           peak = true;
           isSkeleton = true;
+          occludes = true;
         } else if (waveRing > (0.35 - coronaBand * 0.55 - b2 * 0.30)) {
           density = clamp(0.24 + coronaBand * 0.55 + b1 * 0.25 + b2 * 0.25, 0, 1);
           zone = coronaBand > 0.45 ? 1 : 2;
           peak = (coronaBand > 0.65 && b2 > 0.48);
           isSkeleton = coronaBand > 0.78;
+          occludes = coronaBand > 0.42;
         } else if (rays > 0.78 && r < 0.75) {
           density = 0.20 + b3 * 0.45;
           zone = 3;
         }
-      } else if (r < eclipseR && mut > 0.22) {
-        const bust = evaluateSpectralFigure(nx, ny, col, row, f, vGen, 0.72, shiftX, shiftY + 0.10);
-        if (bust.density > 0.04) {
-          density = bust.density * clamp((mut - 0.20) * 1.3, 0, 1);
-          zone = bust.zone;
-          peak = bust.peak;
-          isSkeleton = bust.isSkeleton;
+      } else if (r < eclipseR) {
+        // Open eclipse core remains transparent (`occludes = false`) for backlit clouds & spectral bust!
+        const spiritDrive = spiritsOn ? clamp(0.50 + (b1 + b2) * 0.60 - b0 * 0.30, 0.30, 1.0) : (mut > 0.22 ? clamp((mut - 0.20) * 1.3, 0, 1) : 0);
+        if (spiritDrive > 0.08) {
+          const bust = evaluateSpectralFigure(nx, ny, col, row, f, vGen, 0.72, shiftX, shiftY + 0.10);
+          if (bust.density > 0.04) {
+            density = bust.density * spiritDrive;
+            zone = bust.zone;
+            peak = bust.peak;
+            isSkeleton = bust.isSkeleton;
+          }
+        }
+      }
+    }
+
+    // Universal [Y] SPIRITS Summoning across Engines 2, 3, 4, 6, 7 when engaged
+    if (spiritsOn && density < 0.12 && fIdx !== 0 && fIdx !== 4 && fIdx !== 7) {
+      const spiritDrive = clamp(0.35 + (b1 + b2) * 0.65 - b0 * 0.45, 0, 0.95);
+      if (spiritDrive > 0.12) {
+        const yOff = (fIdx === 6) ? -0.36 : 0.06;
+        const sc = (fIdx === 5) ? 0.55 : 0.76;
+        const apparition = evaluateSpectralFigure(nx, ny, col, row, f, vGen, sc, 0, yOff);
+        if (apparition.density > 0.08) {
+          density = apparition.density * spiritDrive;
+          zone = apparition.zone;
+          peak = apparition.peak;
+          isSkeleton = apparition.isSkeleton;
         }
       }
     }
@@ -1950,7 +2029,8 @@
       density: clamp(density, 0, 1),
       zone: ((zone % 4) + 4) % 4,
       peak: !!peak,
-      isSkeleton: !!isSkeleton
+      isSkeleton: !!isSkeleton,
+      occludes: !!occludes
     };
   }
 
@@ -1971,6 +2051,7 @@
     let zone = resA.zone;
     let peak = resA.peak;
     let isSkeleton = resA.isSkeleton;
+    let occludes = resA.occludes;
 
     if (morphAlpha > 0.01) {
       const resB = evaluateSingleFormation(fIdx, nx, ny, col, row, fCtx, variantB);
@@ -1980,6 +2061,7 @@
       zone = wB > 0.5 ? resB.zone : resA.zone;
       peak = wB > 0.5 ? resB.peak : resA.peak;
       isSkeleton = wB > 0.5 ? resB.isSkeleton : resA.isSkeleton;
+      occludes = wB > 0.5 ? resB.occludes : resA.occludes;
     }
 
     let dissolvedToParticle = false;
@@ -2005,6 +2087,7 @@
 
       if (sweepFront < dissolveThreshold) {
         dissolvedToParticle = true;
+        occludes = false;
         const distBehind = dissolveThreshold - sweepFront;
         if (distBehind < 0.22 && (row % 2 === 0) && hash2(col * 0.21, row * 0.83) < 0.48) {
           density = 0.24 + b2 * 0.36;
@@ -2036,6 +2119,7 @@
         } else {
           density = 0;
           peak = false;
+          occludes = false;
         }
       } else if (wakeScar > 0.35) {
         zone = 3;
@@ -2051,12 +2135,12 @@
       density: clamp(density, 0, 1),
       zone: ((zone % 4) + 4) % 4,
       peak,
-      dissolvedToParticle
+      occludes
     };
   }
 
   /* ===========================================================================
-     SECTION B: APPLICATION STATE, PULSAR BUS SIDECHAIN & 4 BAND CLOCKS
+     SECTION B: APPLICATION STATE, PULSAR BUS SIDECHAIN & FX STATES
      =========================================================================== */
   function createVariantGenome(mutAmt) {
     return {
@@ -2077,7 +2161,8 @@
       erosion: 0.00,
       tessellation: 0.50,
       fracture: 0.00,
-      grow: 0.00
+      grow: 0.00,
+      prlx: 0.25          // Default 2.5D Z-plane parallax separation (fisheye > 0.45)
     },
 
     formationIdx: 0,
@@ -2090,6 +2175,8 @@
     dissolveMode: 0,
 
     vizScopeMode: false,
+    artfxActive: false,   // [T] ARTFX: Occlusion mask, volumetric backlighting & rim-cast (booted OFF)
+    spiritsActive: false, // [Y] SPIRITS: Haunted apparitions across all engines (booted OFF)
 
     lexiconIdx: 0,
     paletteIdx: 0,
@@ -2121,9 +2208,8 @@
     idlePhraseLines: generateMeditativeTransmission(),
     idlePhraseTimer: 0,
 
-    // 4 Independent Band Phase Clocks (Tectonic Lows -> Micro-Transient Highs)
     bandPhases: [0, 0, 0, 0],
-    bassSidechain: 0.0, // Pulsar-23 master bus compression envelope
+    bassSidechain: 0.0,
 
     morphTime: 0,
     morphSeed: 1.0,
@@ -2131,7 +2217,6 @@
     frozenSeed: 1.0,
     frozenBands: [0, 0, 0, 0],
 
-    // Dual-envelope (envFast + envSlow) per band so rapid hat rolls never lock out
     bands: [
       { env: 0, slowEnv: 0, prevEnv: 0, prevAbove: false, lastFire: 0 },
       { env: 0, slowEnv: 0, prevEnv: 0, prevAbove: false, lastFire: 0 },
@@ -2142,7 +2227,7 @@
     gates: {
       shear: { env: 0, start: 0, dur: 85, seed: 1 },
       drop:  { env: 0, start: 0, dur: 95, seed: 1 },
-      lightning: { env: 0, start: 0, dur: 115, angle: 0.3, offset: 0.0, lastFlash: 0 }
+      lightning: { env: 0, start: 0, dur: 135, angle: 0.3, offset: 0.0, lastFlash: 0 }
     },
 
     shockwaves: [],
@@ -2165,13 +2250,11 @@
     const sign = Math.random() < 0.5 ? -1 : 1;
 
     if (fIdx === 0 || fIdx === 4) {
-      // I. MONOLITH & V. OBELISK: Vertical rising ash pillars & incense trails flanking core
       p.nx = sign * (0.18 + r1 * 0.42);
       p.ny = -0.30 + r2 * 1.15;
       p.vx = sign * (0.02 + Math.random() * 0.06);
       p.vy = -0.16 - Math.random() * 0.28;
     } else if (fIdx === 1 || fIdx === 7) {
-      // II. SEAL & VIII. HORIZON: Counter-rotating orbital spark rings & corona spokes
       const ang = r1 * TAU;
       const rad = (fIdx === 1 ? 0.68 : 0.34) + (r2 - 0.5) * 0.14;
       p.nx = Math.cos(ang) * rad;
@@ -2179,7 +2262,6 @@
       p.vx = -Math.sin(ang) * 0.28 + Math.cos(ang) * 0.08;
       p.vy = Math.cos(ang) * 0.28 + Math.sin(ang) * 0.08;
     } else if (fIdx === 2 || fIdx === 6) {
-      // III. MOSAIC & VII. CITADEL: Grid-snapped falling ember rain tracing vertical seams
       const gridCols = 12;
       const colSlot = (Math.floor(r1 * gridCols) - gridCols * 0.5 + 0.5) / (gridCols * 0.5);
       p.nx = colSlot * aspect * 0.78;
@@ -2187,7 +2269,6 @@
       p.vx = 0;
       p.vy = 0.18 + Math.random() * 0.28;
     } else {
-      // IV. STRATA & VI. VAULT: High-velocity horizontal wind-shear streaks across fault / tunnel
       p.nx = (r1 * 2 - 1) * aspect * 0.85;
       p.ny = (fIdx === 3)
         ? Math.sin(p.nx * 2.8 + seed) * 0.11 + (r2 - 0.5) * 0.08
@@ -2203,7 +2284,6 @@
     p.life = resetLife ? Math.random() * p.maxLife : p.maxLife;
   }
 
-  // Emits geometric particle formations tailored to the active engine on high-end hat bursts
   function emitEngineDustPattern(strength, fIdx, aspect, seed) {
     if (!state.lanesActive[1]) return;
     const count = 12 + Math.floor(strength * 16);
@@ -2216,13 +2296,11 @@
       const sign = (k % 2 === 0) ? 1 : -1;
 
       if (fIdx === 0 || fIdx === 4) {
-        // Twin symmetrical ash plumes erupting vertically alongside temple/obelisk
         p.nx = sign * (0.24 + Math.random() * 0.28);
         p.ny = 0.65 - u * 1.2;
         p.vx = sign * (0.12 + Math.random() * 0.25);
         p.vy = -baseSpeed * (0.8 + Math.random() * 0.6);
       } else if (fIdx === 1 || fIdx === 7) {
-        // Radial orbital burst spinning off the astrolabe ring / eclipse corona
         const ang = u * TAU + seed;
         const rad = fIdx === 1 ? 0.72 : 0.34;
         p.nx = Math.cos(ang) * rad;
@@ -2230,13 +2308,11 @@
         p.vx = (-Math.sin(ang) * 0.8 + Math.cos(ang) * 0.6) * baseSpeed;
         p.vy = (Math.cos(ang) * 0.8 + Math.sin(ang) * 0.6) * baseSpeed;
       } else if (fIdx === 2 || fIdx === 6) {
-        // Crisp vertical ember curtains dropping down coffer & tower columns
         p.nx = ((u * 2 - 1) * aspect * 0.78);
         p.ny = -0.78 + (Math.random() - 0.5) * 0.16;
         p.vx = 0;
         p.vy = baseSpeed * (0.85 + Math.random() * 0.5);
       } else {
-        // Razor horizontal wind-shear jets ripping across fault rift / corridor
         p.nx = -sign * aspect * 0.65;
         p.ny = (u * 2 - 1) * 0.55;
         p.vx = sign * baseSpeed * 1.35;
@@ -2331,6 +2407,8 @@
       document.getElementById('lane-btn-3')
     ],
 
+    btnArtfx: document.getElementById('btn-artfx'),
+    btnSpirits: document.getElementById('btn-spirits'),
     btnAtelier: document.getElementById('btn-atelier'),
     btnFullscreen: document.getElementById('btn-fullscreen'),
     btnHide: document.getElementById('btn-hide'),
@@ -2356,7 +2434,7 @@
   }
 
   /* ===========================================================================
-     SECTION D: HIGH-DPI OFFSCREEN MONOCHROME GLYPH ATLAS (60FPS BLIT CACHE)
+     SECTION D: HIGH-DPI OFFSCREEN MONOCHROME GLYPH ATLAS & PRE-ALLOCATED BUFFERS
      =========================================================================== */
   const atlasCanvas = document.createElement('canvas');
   const atlasCtx = atlasCanvas.getContext('2d');
@@ -2364,18 +2442,20 @@
   let dpr = Math.min(window.devicePixelRatio || 1, 2);
   let cellCss = 16;
   let cellPx = 16;
-  let bgCellPx = 10;
-  let fgCellPx = 22;
   let cols = 0;
   let rows = 0;
+
+  // Pre-allocated zero-GC cell buffers for Z-Plane 1 evaluation & ARTFX occlusion
   let wakeGrid = new Float32Array(1);
+  let occlusionMask = new Uint8Array(1);
+  let z1DensityBuf = new Float32Array(1);
+  let z1ZoneBuf = new Uint8Array(1);
+  let z1PeakBuf = new Uint8Array(1);
 
   function rebuildGlyphAtlas() {
     const pal = PALETTES[state.paletteIdx];
     const ramp = state.activeGlyphs.length > 0 ? state.activeGlyphs : ['·'];
     cellPx = Math.max(12, Math.round(cellCss * dpr));
-    bgCellPx = Math.max(8, Math.round(cellPx * 0.65));
-    fgCellPx = Math.max(15, Math.round(cellPx * 1.35));
 
     atlasCanvas.width = Math.max(cellPx, ramp.length * cellPx);
     atlasCanvas.height = 6 * cellPx;
@@ -2421,7 +2501,14 @@
     const prevCols = cols;
     cols = Math.max(28, Math.ceil(visCanvas.width / cellPx));
     rows = Math.max(20, Math.ceil(visCanvas.height / cellPx));
-    wakeGrid = new Float32Array(cols * rows);
+    const totalCells = cols * rows;
+
+    wakeGrid = new Float32Array(totalCells);
+    occlusionMask = new Uint8Array(totalCells);
+    z1DensityBuf = new Float32Array(totalCells);
+    z1ZoneBuf = new Uint8Array(totalCells);
+    z1PeakBuf = new Uint8Array(totalCells);
+
     if (prevCols === 0 || dustParticles.length === 0) {
       initDustParticles();
     }
@@ -2705,7 +2792,6 @@
   }
 
   function processAudioAndGates(nowMs, dtSec) {
-    // Distinct ballistic decay rates per band: slow tectonic lows -> razor-fast 0ms highs
     const decayPerSec = [2.6, 4.2, 8.5, 14.0];
     const slowDecayPerSec = [1.1, 1.6, 2.4, 3.2];
     const spectralComp = [1.15, 1.65, 2.25, 3.20];
@@ -2734,7 +2820,7 @@
     }
 
     const aspect = Math.max(0.5, cols / Math.max(1, rows));
-    const gainNorm = state.params.gain; // 0.0 (0.25x) -> 0.50 (1.00x) -> 1.0 (4.00x)
+    const gainNorm = state.params.gain;
     const drivePush = clamp(0.65 + gainNorm * 1.15, 0.65, 1.80);
 
     if (audioRunning) {
@@ -2759,7 +2845,6 @@
           b.env = Math.max(0, b.env - decayPerSec[i] * dtSec);
         }
 
-        // Slow adaptive average follower so rapid hi-hat rolls still register upward transients
         if (level > b.slowEnv) {
           b.slowEnv += (level - b.slowEnv) * Math.min(1, dtSec * 5.5);
         } else {
@@ -2787,24 +2872,18 @@
       }
     }
 
-    // -------------------------------------------------------------------------
-    // PULSAR-23 MASTER BUS SIDECHAIN HIERARCHY:
-    // Band I (140Hz kick) physically ducks high-end tearing on impact,
-    // while interludes / kick dropouts let high-end hats bloom into full range.
-    // -------------------------------------------------------------------------
     const b0 = state.bands[0].env;
     const b1 = state.bands[1].env;
     const b2 = state.bands[2].env;
     const b3 = state.bands[3].env;
 
     if (b0 > state.bassSidechain) {
-      state.bassSidechain = b0; // Instant 0ms compressor clamp on kick impact
+      state.bassSidechain = b0;
     } else {
-      state.bassSidechain = Math.max(0, state.bassSidechain - 6.5 * dtSec); // ~150ms release
+      state.bassSidechain = Math.max(0, state.bassSidechain - 6.5 * dtSec);
     }
     const scDuck = clamp(1.0 - Math.pow(state.bassSidechain, 1.35) * 0.78, 0.22, 1.0);
 
-    // Advance 4 Independent Layer Clocks at distinct musical tempo multipliers
     if (!state.frozen) {
       state.bandPhases[0] += dtSec * (0.18 + b0 * 1.15 * drivePush);
       state.bandPhases[1] += dtSec * (0.28 + b1 * 1.65 * drivePush);
@@ -2812,7 +2891,6 @@
       state.bandPhases[3] += dtSec * (0.65 + b3 * 4.20 * scDuck * drivePush);
     }
 
-    // Engine-Locked GROW evolution (pushed and pulled rhythmically by drivePush & transients)
     const grow = state.params.grow;
     if (!state.frozen && grow > 0.01) {
       state.variantB.mutAmt = clamp(0.30 + grow * 0.70, 0.30, 1.0);
@@ -2823,7 +2901,6 @@
       state.morphAlpha = 0.0;
     }
 
-    // Band I (STRATA) sub-bass shockwave + transient shatter jump
     const b1Band = state.bands[0];
     const above1 = b1Band.env > 0.52;
     if (audioRunning && above1 && !b1Band.prevAbove && (nowMs - b1Band.lastFire > 140)) {
@@ -2851,19 +2928,14 @@
       }
     }
 
-    // Directional gale gust dynamics
     const attackSpike = Math.max(0, b1 - state.bands[1].prevEnv) * 2.5 +
                         Math.max(0, b2 - state.bands[2].prevEnv) * 3.2 * scDuck;
     const targetGust = clamp((b1 * 0.45 + b2 * 0.75 * scDuck + attackSpike + state.params.erosion * 0.45) * drivePush, 0, 2.2);
     state.windGust += (targetGust - state.windGust) * Math.min(1, dtSec * 8.5);
     state.windAngle += Math.sin(nowMs * 0.0007) * 0.35 * dtSec;
 
-    // -------------------------------------------------------------------------
-    // ADAPTIVE DIFFERENTIAL TRANSIENT DETECTOR (envFast - envSlow > deltaThr)
-    // Works at both low GAIN and high GAIN, and never locks out on fast hat rolls!
-    // -------------------------------------------------------------------------
     const frac = state.params.fracture;
-    const driveTearBias = Math.max(0, (gainNorm - 0.50) * 0.75); // Pushing GAIN past unity adds rhythmic tearing
+    const driveTearBias = Math.max(0, (gainNorm - 0.50) * 0.75);
     const effFrac = clamp(Math.max(frac, driveTearBias, (grow - 0.50) * 1.1), 0, 1.2);
 
     if (audioRunning && (effFrac > 0.02 || b2 > 0.18 || b3 > 0.18)) {
@@ -2894,7 +2966,6 @@
         state.gates.drop.seed = Math.floor(Math.random() * 9973) + 1;
         emitEngineDustPattern(hatStrength, state.formationIdx, aspect, state.morphSeed);
 
-        // Hi-hats rhythmically push GROW dissolution during interludes when kick ducks out
         if (!state.frozen && grow > 0.35 && scDuck > 0.65) {
           advanceMorphCycle(Math.pow((grow - 0.35) / 0.65, 1.3) * 0.16 * hatStrength);
         }
@@ -2911,7 +2982,7 @@
           });
         }
 
-        if (effFrac > 0.35 && hatStrength > 0.55 && (nowMs - state.gates.lightning.lastFlash > 220) && Math.random() < effFrac * 0.65) {
+        if ((effFrac > 0.32 || state.artfxActive) && hatStrength > 0.50 && (nowMs - state.gates.lightning.lastFlash > 210) && Math.random() < Math.max(effFrac, 0.45) * 0.65) {
           state.gates.lightning.env = 1.0;
           state.gates.lightning.start = nowMs;
           state.gates.lightning.lastFlash = nowMs;
@@ -3042,7 +3113,7 @@
   }
 
   /* ===========================================================================
-     SECTION G2: 5-LAYER PARALLAX, PULSAR SIDECHAIN & ENGINE DUST GEOMETRIES
+     SECTION G2: 2.5D Z-PARALLAX, FISHEYE WARP, ARTFX VOLUMETRIC LIGHTING & SPIRITS
      =========================================================================== */
   function renderVisualiser(nowMs, dtSec) {
     const pal = PALETTES[state.paletteIdx];
@@ -3075,6 +3146,7 @@
     const tess = state.params.tessellation;
     const fracture = state.params.fracture;
     const grow = state.params.grow;
+    const prlx = state.params.prlx;
     const gainNorm = state.params.gain;
 
     const scDuck = clamp(1.0 - Math.pow(state.bassSidechain, 1.35) * 0.78, 0.22, 1.0);
@@ -3104,6 +3176,18 @@
       else wakeGrid[i] = 0;
     }
 
+    // Clear occlusion mask each frame (populated by Z-Plane 1 solid stone walls when ARTFX is ON)
+    occlusionMask.fill(0);
+
+    // 2.5D Stereokinetic Parallax Drift & Dynamic Z-Plane Scale Spread driven by PRLX
+    const camAmp = prlx * (0.045 + b0 * 0.06);
+    const camX = Math.sin(p0 * 0.42 + seed) * camAmp;
+    const camY = Math.cos(p0 * 0.31 + seed * 1.3) * camAmp * 0.75;
+    const warpK = prlx > 0.45 ? Math.pow((prlx - 0.45) / 0.55, 1.35) * 0.44 : 0;
+
+    const dynBgCellPx = Math.max(7, Math.round(cellPx * clamp(0.72 - prlx * 0.22, 0.48, 0.72)));
+    const dynFgCellPx = Math.max(15, Math.round(cellPx * clamp(1.22 + prlx * 0.45, 1.22, 1.68)));
+
     const dialDissolve = Math.max(0, (erosion - 0.50) * 1.4, (effFrac - 0.50) * 1.4);
     const growDissolve = grow > 0.01 ? Math.sin(state.morphCyclePhase * PI) * (0.35 + grow * 0.85) : 0;
     const dissolveThreshold = clamp(Math.max(dialDissolve * (0.45 + transientPulse * 0.65), growDissolve), 0, 1.35);
@@ -3130,21 +3214,89 @@
       seed, b0, b1, b2, b3,
       tess, erosion, fracture: effFrac,
       gateShear, gateDrop,
-      cols, rows, frameTick
+      cols, rows, frameTick,
+      spiritsOn: state.spiritsActive
     };
 
     const shearSeed = state.gates.shear.seed;
     const dropSeed = state.gates.drop.seed;
 
     // =========================================================================
-    // Z-PLANE 0: DEEP BACKGROUND (0.65x SCALE — SHEET LIGHTNING & PATINA WALL)
+    // PRE-EVALUATE Z-PLANE 1 (MIDGROUND MONUMENT) INTO ZERO-ALLOCATION BUFFERS
+    // Populates `occlusionMask` so ARTFX masks Z-Plane 0 behind solid stone walls
+    // while leaving open doorways, sanctums & eclipse cores transparent.
     // =========================================================================
-    const bgCols = Math.ceil(visCanvas.width / bgCellPx);
-    const bgRows = Math.ceil(visCanvas.height / bgCellPx);
+    if (state.lanesActive[0]) {
+      for (let r = 0; r < rows; r++) {
+        const rawNy = (r - cy) * invScale + camY;
+
+        let rowShiftCols = 0;
+        if (gateShear > 0.04) {
+          const bandBand = Math.floor(r / 3);
+          const h = hash2(bandBand + shearSeed, frameTick * 0.25);
+          if (h > (1.0 - gateShear * 0.65)) {
+            const dir = (bandBand % 2 === 0) ? 1 : -1;
+            rowShiftCols = Math.round(dir * (2 + gateShear * 9));
+          }
+        }
+
+        for (let c = 0; c < cols; c++) {
+          const idx = r * cols + c;
+          const srcCol = c + rowShiftCols;
+          const rawNx = (srcCol - cx) * invScale + camX;
+          const warped = applyFisheyeWarp(rawNx, rawNy, warpK);
+          const wakeScar = wakeGrid[idx] || 0;
+
+          const cell = computeFormationCell(fCtx, warped.x, warped.y, srcCol, r, wakeScar);
+
+          if (cell.dissolvedToParticle && state.lanesActive[1] && Math.random() < 0.045) {
+            const p = dustParticles[Math.floor(Math.random() * dustParticles.length)];
+            if (p) {
+              p.nx = rawNx;
+              p.ny = rawNy;
+              p.vx = Math.cos(state.windAngle) * (0.55 + Math.random() * 0.75);
+              p.vy = Math.sin(state.windAngle) * (0.40 + Math.random() * 0.60);
+              p.zDepth = 1.18;
+              p.life = p.maxLife;
+            }
+          }
+
+          if (cell.occludes && state.artfxActive) {
+            occlusionMask[idx] = 1;
+          }
+
+          if (!Number.isFinite(cell.density) || cell.density <= 0.02) {
+            z1DensityBuf[idx] = 0;
+            continue;
+          }
+
+          if (gateDrop > 0.06 && state.formationIdx !== 2) {
+            const dh = hash2(Math.floor(c / 4) + dropSeed, Math.floor(r / 2) + dropSeed);
+            if (dh < gateDrop * 0.50) {
+              z1DensityBuf[idx] = 0;
+              continue;
+            }
+          }
+
+          z1DensityBuf[idx] = clamp(cell.density * idleBreath, 0, 1);
+          z1ZoneBuf[idx] = cell.zone;
+          z1PeakBuf[idx] = cell.peak ? 1 : 0;
+        }
+      }
+    } else {
+      z1DensityBuf.fill(0);
+    }
+
+    // =========================================================================
+    // Z-PLANE 0: DEEP BACKGROUND (SHEET LIGHTNING, VOLUMETRIC BACKGLOW & PATINA)
+    // =========================================================================
+    const bgCols = Math.ceil(visCanvas.width / dynBgCellPx);
+    const bgRows = Math.ceil(visCanvas.height / dynBgCellPx);
     const bgCx = (bgCols - 1) * 0.5;
     const bgCy = (bgRows - 1) * 0.5;
     const bgInvScale = 1.0 / Math.max(1, Math.min(bgCols, bgRows) * 0.48);
 
+    // 1. Sheet Lightning & ARTFX Volumetric Backlit Cloud Glow inside open sanctums/voids
     if (lightningEnv > 0.04) {
       const lAngle = state.gates.lightning.angle;
       const lOffset = state.gates.lightning.offset;
@@ -3152,28 +3304,44 @@
       const sinA = Math.sin(lAngle);
       const boltIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.85)), maxGlyphIdx);
       const haloIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.35)), maxGlyphIdx);
+      const cloudIdx = Math.min(Math.max(1, Math.floor(maxGlyphIdx * 0.22)), maxGlyphIdx);
 
       for (let r = 0; r < bgRows; r += 2) {
-        const ny = (r - bgCy) * bgInvScale;
-        const drawY = r * bgCellPx;
+        const ny = (r - bgCy) * bgInvScale + camY * 0.2;
+        const drawY = r * dynBgCellPx;
         for (let c = 0; c < bgCols; c += 2) {
-          const nx = (c - bgCx) * bgInvScale;
+          const nx = (c - bgCx) * bgInvScale + camX * 0.2;
+
+          // Map background cell back to Z-Plane 1 grid to check ARTFX occlusion
+          const mCol = Math.round(cx + (nx - camX * 0.2) * halfScale);
+          const mRow = Math.round(cy + (ny - camY * 0.2) * halfScale);
+          const isOccluded = (state.artfxActive && mCol >= 0 && mCol < cols && mRow >= 0 && mRow < rows)
+            ? (occlusionMask[mRow * cols + mCol] === 1)
+            : false;
+          if (isOccluded) continue;
+
           const jag = Math.sin(ny * 14.0 + seed * 5.0) * 0.06 + Math.cos(nx * 19.0) * 0.04;
           const dLine = Math.abs(nx * sinA + ny * cosA - lOffset + jag);
+          const rCenter = Math.hypot(nx, ny);
+
           if (dLine < 0.045 * lightningEnv) {
-            ctx.drawImage(atlasCanvas, boltIdx * cellPx, 5 * cellPx, cellPx, cellPx, c * bgCellPx, drawY, bgCellPx, bgCellPx);
+            ctx.drawImage(atlasCanvas, boltIdx * cellPx, 5 * cellPx, cellPx, cellPx, c * dynBgCellPx, drawY, dynBgCellPx, dynBgCellPx);
           } else if (dLine < 0.24 * lightningEnv && hash2(c * 0.7, r * 0.9) < 0.45 * lightningEnv) {
-            ctx.drawImage(atlasCanvas, haloIdx * cellPx, 3 * cellPx, cellPx, cellPx, c * bgCellPx, drawY, bgCellPx, bgCellPx);
+            ctx.drawImage(atlasCanvas, haloIdx * cellPx, 3 * cellPx, cellPx, cellPx, c * dynBgCellPx, drawY, dynBgCellPx, dynBgCellPx);
+          } else if (state.artfxActive && rCenter < 0.58 && hash2(c * 0.43 + frameTick * 0.1, r * 0.57) < 0.52 * lightningEnv) {
+            // Volumetric backlit cloud glow illuminating open doorways/cores behind spectral figures
+            ctx.drawImage(atlasCanvas, cloudIdx * cellPx, 5 * cellPx, cellPx, cellPx, c * dynBgCellPx, drawY, dynBgCellPx, dynBgCellPx);
           }
         }
       }
     }
 
+    // 2. Layer III (III. SILICA) Deep Background Patina Wall (occluded behind Z-1 stone when ARTFX is ON)
     if (state.lanesActive[2]) {
       const silicaEnergy = clamp((b2 * 0.95 * scDuck + erosion * 0.25 + 0.08), 0.03, 0.88);
 
-      const panX = Math.cos(state.windAngle) * p2 * 0.06;
-      const panY = Math.sin(state.windAngle) * p2 * 0.04;
+      const panX = Math.cos(state.windAngle) * p2 * 0.06 + camX * 0.22;
+      const panY = Math.sin(state.windAngle) * p2 * 0.04 + camY * 0.22;
       const bandDensity = 6.0 + tess * 9.0;
       const sweepSpeed = p2 * 0.85 + seed;
 
@@ -3186,20 +3354,23 @@
         const waveH = Math.sin(ny * bandDensity + sweepSpeed);
         if (waveH < (0.76 - silicaEnergy * 0.48)) continue;
 
-        const drawY = r * bgCellPx;
+        const drawY = r * dynBgCellPx;
         for (let c = (r % 4); c < bgCols; c += 2) {
           const nx = (c - bgCx) * bgInvScale + panX;
           const interference = Math.sin(nx * (5.0 + tess * 7.0) + ny * 3.5 - sweepSpeed * 0.7);
           const grain = hash2(c * 0.51 + frameTick * 0.08, r * 0.67 + seed);
           if (interference + grain * 0.5 < (1.12 - silicaEnergy * 0.68)) continue;
 
-          if (b2 * scDuck > 0.22) {
-            const mCol = Math.round(cx + (nx - panX) * halfScale);
-            const mRow = Math.round(cy + (ny - panY) * halfScale);
-            if (mCol >= 0 && mCol < cols && mRow >= 0 && mRow < rows) {
-              const wIdx = mRow * cols + mCol;
+          const mCol = Math.round(cx + (nx - panX) * halfScale);
+          const mRow = Math.round(cy + (ny - panY) * halfScale);
+
+          if (mCol >= 0 && mCol < cols && mRow >= 0 && mRow < rows) {
+            const wIdx = mRow * cols + mCol;
+            if (b2 * scDuck > 0.22) {
               wakeGrid[wIdx] = Math.min(1.0, wakeGrid[wIdx] + b2 * scDuck * 0.16);
             }
+            // When ARTFX is ON, solid Z-Plane 1 stone occludes background patina so details never muddle
+            if (state.artfxActive && occlusionMask[wIdx] === 1) continue;
           }
 
           const isSpark = (b2 * scDuck > 0.52 && grain > 0.86) || (lightningEnv > 0.4 && grain > 0.75);
@@ -3209,7 +3380,7 @@
           ctx.drawImage(
             atlasCanvas,
             gIdx * cellPx, atlasRow * cellPx, cellPx, cellPx,
-            c * bgCellPx, drawY, bgCellPx, bgCellPx
+            c * dynBgCellPx, drawY, dynBgCellPx, dynBgCellPx
           );
         }
       }
@@ -3256,14 +3427,22 @@
           const gIdx = isMajor ? sigilIdx : tickIdx;
           const aRow = (isMajor && (b3 * scDuck > 0.30 || borderShatter > 0.5) ? 5 : (b3 > 0.16 || borderShatter > 0.25 ? 4 : 0));
 
-          ctx.drawImage(atlasCanvas, gIdx * cellPx, aRow * cellPx, cellPx, cellPx, colL * cellPx, drawY, cellPx, cellPx);
-          ctx.drawImage(atlasCanvas, gIdx * cellPx, aRow * cellPx, cellPx, cellPx, colR * cellPx, drawY, cellPx, cellPx);
+          if (!state.artfxActive || occlusionMask[r * cols + colL] === 0) {
+            ctx.drawImage(atlasCanvas, gIdx * cellPx, aRow * cellPx, cellPx, cellPx, colL * cellPx, drawY, cellPx, cellPx);
+          }
+          if (!state.artfxActive || occlusionMask[r * cols + colR] === 0) {
+            ctx.drawImage(atlasCanvas, gIdx * cellPx, aRow * cellPx, cellPx, cellPx, colR * cellPx, drawY, cellPx, cellPx);
+          }
         }
 
         if (wave > (0.76 - letheEnergy * 0.42 - borderShatter * 0.25)) {
           const aRow = (b3 * scDuck > 0.42 || borderShatter > 0.6 ? 5 : 4);
-          ctx.drawImage(atlasCanvas, runeIdx * cellPx, aRow * cellPx, cellPx, cellPx, railL * cellPx, drawY, cellPx, cellPx);
-          ctx.drawImage(atlasCanvas, runeIdx * cellPx, aRow * cellPx, cellPx, cellPx, railR * cellPx, drawY, cellPx, cellPx);
+          if (!state.artfxActive || occlusionMask[r * cols + railL] === 0) {
+            ctx.drawImage(atlasCanvas, runeIdx * cellPx, aRow * cellPx, cellPx, cellPx, railL * cellPx, drawY, cellPx, cellPx);
+          }
+          if (!state.artfxActive || occlusionMask[r * cols + railR] === 0) {
+            ctx.drawImage(atlasCanvas, runeIdx * cellPx, aRow * cellPx, cellPx, cellPx, railR * cellPx, drawY, cellPx, cellPx);
+          }
         }
       }
 
@@ -3283,58 +3462,44 @@
     }
 
     // =========================================================================
-    // Z-PLANE 1: MIDGROUND MONUMENT (1.0x SCALE — LAYER I STRATA + DISSOLVE/REFORM)
+    // Z-PLANE 1: BLIT MIDGROUND MONUMENT + ARTFX LIGHTNING RIM-CAST
     // =========================================================================
     if (state.lanesActive[0]) {
-      for (let r = 0; r < rows; r++) {
-        const ny = (r - cy) * invScale;
-        const drawY = r * cellPx;
+      const boltDirX = Math.cos(state.gates.lightning.angle);
+      const boltDirY = Math.sin(state.gates.lightning.angle);
 
-        let rowShiftCols = 0;
-        if (gateShear > 0.04) {
-          const bandBand = Math.floor(r / 3);
-          const h = hash2(bandBand + shearSeed, frameTick * 0.25);
-          if (h > (1.0 - gateShear * 0.65)) {
-            const dir = (bandBand % 2 === 0) ? 1 : -1;
-            rowShiftCols = Math.round(dir * (2 + gateShear * 9));
-          }
-        }
+      for (let r = 0; r < rows; r++) {
+        const drawY = r * cellPx;
+        const ny = (r - cy) * invScale;
 
         for (let c = 0; c < cols; c++) {
-          const srcCol = c + rowShiftCols;
-          const nx = (srcCol - cx) * invScale;
-          const wakeScar = wakeGrid[r * cols + c] || 0;
+          const idx = r * cols + c;
+          const d = z1DensityBuf[idx];
+          if (d <= 0.02) continue;
 
-          const cell = computeFormationCell(fCtx, nx, ny, srcCol, r, wakeScar);
+          const z = z1ZoneBuf[idx];
+          let isPk = z1PeakBuf[idx] === 1;
 
-          if (cell.dissolvedToParticle && state.lanesActive[1] && Math.random() < 0.045) {
-            const p = dustParticles[Math.floor(Math.random() * dustParticles.length)];
-            if (p) {
-              p.nx = nx;
-              p.ny = ny;
-              p.vx = Math.cos(state.windAngle) * (0.55 + Math.random() * 0.75);
-              p.vy = Math.sin(state.windAngle) * (0.40 + Math.random() * 0.60);
-              p.zDepth = 1.18;
-              p.life = p.maxLife;
+          // ARTFX Directional Rim-Lighting: lightning bolt illuminates stone edges facing the discharge
+          if (state.artfxActive && lightningEnv > 0.12) {
+            const nx = (c - cx) * invScale;
+            const facing = nx * boltDirX + ny * boltDirY;
+            const isEdgeCell = (c > 0 && z1DensityBuf[idx - 1] <= 0.02) ||
+                               (c < cols - 1 && z1DensityBuf[idx + 1] <= 0.02) ||
+                               (r > 0 && z1DensityBuf[idx - cols] <= 0.02) ||
+                               (r < rows - 1 && z1DensityBuf[idx + cols] <= 0.02);
+            if (isEdgeCell && facing > -0.15) {
+              isPk = true;
             }
           }
 
-          if (!Number.isFinite(cell.density) || cell.density <= 0.02) continue;
-
-          if (gateDrop > 0.06 && state.formationIdx !== 2) {
-            const dh = hash2(Math.floor(c / 4) + dropSeed, Math.floor(r / 2) + dropSeed);
-            if (dh < gateDrop * 0.50) continue;
-          }
-
-          const finalDensity = clamp(cell.density * idleBreath, 0, 1);
-          const gIdx = clamp(Math.floor(finalDensity * maxGlyphIdx + 0.25), 0, maxGlyphIdx);
-
+          const gIdx = clamp(Math.floor(d * maxGlyphIdx + 0.25), 0, maxGlyphIdx);
           let atlasRow = 0;
-          const zoneEnergy = bandEnvs[cell.zone] || 0;
-          if (cell.peak && zoneEnergy > 0.40) {
+          const zoneEnergy = bandEnvs[z] || 0;
+          if (isPk && (zoneEnergy > 0.38 || (state.artfxActive && lightningEnv > 0.15))) {
             atlasRow = 5;
           } else if (zoneEnergy > 0.14 || (state.frozen && zoneEnergy > 0.10)) {
-            atlasRow = 1 + cell.zone;
+            atlasRow = 1 + z;
           } else {
             atlasRow = 0;
           }
@@ -3393,7 +3558,7 @@
     }
 
     // =========================================================================
-    // Z-PLANE 2: FOREGROUND ENGINE-SPECIFIC DUST & HAT PATTERNS (LAYER II)
+    // Z-PLANE 2: FOREGROUND ENGINE-SPECIFIC DUST & HAT PATTERNS (WITH PRLX)
     // =========================================================================
     if (state.lanesActive[1]) {
       const highPresence = clamp((b2 * 0.80 + b3 * 1.15) * scDuck + b1 * 0.25 + erosion * 0.45, 0, 2.0);
@@ -3437,8 +3602,13 @@
           p.ny += ((p.vy * speedScale + windVy + shockVy + swirlY) * zVel) * dtSec;
         }
 
-        const col = Math.round(cx + p.nx * halfScale);
-        const row = Math.round(cy + p.ny * halfScale);
+        // Apply 2.5D foreground camera parallax (1.8x) and optional fisheye lens warp
+        const pCamX = p.nx - camX * (1.8 * p.zDepth);
+        const pCamY = p.ny - camY * (1.8 * p.zDepth);
+        const warpedP = applyFisheyeWarp(pCamX, pCamY, warpK * 0.75);
+
+        const col = Math.round(cx + warpedP.x * halfScale);
+        const row = Math.round(cy + warpedP.y * halfScale);
         if (col < 0 || col >= cols || row < 0 || row >= rows) continue;
 
         if (highPresence > 0.45 && p.zDepth > 0.85) {
@@ -3460,7 +3630,7 @@
           atlasRow = 2;
         }
 
-        const drawSize = p.zDepth > 1.05 ? fgCellPx : (p.zDepth < 0.72 ? bgCellPx : cellPx);
+        const drawSize = p.zDepth > 1.05 ? dynFgCellPx : (p.zDepth < 0.72 ? dynBgCellPx : cellPx);
         const drawX = Math.round(col * cellPx + (cellPx - drawSize) * 0.5);
         const drawY = Math.round(row * cellPx + (cellPx - drawSize) * 0.5);
 
@@ -3642,7 +3812,7 @@
   }
 
   /* ===========================================================================
-     SECTION I: LANE ENGAGEMENT & ATELIER SHELF BUILDERS
+     SECTION I: LANE ENGAGEMENT, FX TOGGLES & ATELIER SHELF BUILDERS
      =========================================================================== */
   const LANE_NAMES = [
     'I. STRATA // Z-1 ARCHITECTURE & APPARITIONS',
@@ -3682,6 +3852,18 @@
     state.lanesActive = [target, target, target, target];
     syncLaneEngagementUI();
     showToast(`ALL VISUAL LAYERS: ${target ? 'ENGAGED' : 'DISENGAGED'}`);
+  }
+
+  function toggleArtfx() {
+    state.artfxActive = !state.artfxActive;
+    dom.btnArtfx.classList.toggle('active-cyan', state.artfxActive);
+    showToast(`ARTFX // OCCLUSION & VOLUMETRIC BACKLIGHT: ${state.artfxActive ? 'ON' : 'OFF'}`);
+  }
+
+  function toggleSpirits() {
+    state.spiritsActive = !state.spiritsActive;
+    dom.btnSpirits.classList.toggle('active-amber', state.spiritsActive);
+    showToast(`SPIRITS // SPECTRAL APPARITIONS: ${state.spiritsActive ? 'SUMMONED' : 'DISMISSED'}`);
   }
 
   function toggleVizScopeOverride() {
@@ -3901,7 +4083,7 @@
   function triggerScatter() {
     knobEls.forEach((knob) => {
       const p = knob.dataset.param;
-      if (p === 'gain' || p === 'grow') return;
+      if (p === 'gain' || p === 'grow' || p === 'prlx') return;
       setKnobValue(knob, Math.random() * 0.85);
     });
     state.morphSeed = 0.5 + Math.random() * 25.0;
@@ -3912,20 +4094,20 @@
       state.frozenSeed = state.morphSeed;
     }
     initDustParticles();
-    showToast('SCATTER // DIALS & SEED ROLLED (GAIN & GROW LOCKED)');
+    showToast('SCATTER // DIALS & SEED ROLLED (GAIN/GROW/PRLX LOCKED)');
   }
 
   function toggleDrift() {
     state.driftActive = !state.driftActive;
     dom.btnDrift.classList.toggle('active', state.driftActive);
-    showToast(`DRIFT: ${state.driftActive ? 'ON (GAIN & GROW LOCKED)' : 'OFF'}`);
+    showToast(`DRIFT: ${state.driftActive ? 'ON (GAIN/GROW/PRLX LOCKED)' : 'OFF'}`);
   }
 
   setInterval(() => {
     if (!state.driftActive) return;
     knobEls.forEach((knob) => {
       const p = knob.dataset.param;
-      if (p === 'gain' || p === 'grow') return;
+      if (p === 'gain' || p === 'grow' || p === 'prlx') return;
       const cur = state.params[p];
       const next = clamp(cur + (Math.random() - 0.5) * 0.012, 0.0, 0.92);
       setKnobValue(knob, next);
@@ -4060,6 +4242,8 @@
     }
     syncLaneEngagementUI();
 
+    dom.btnArtfx.addEventListener('click', toggleArtfx);
+    dom.btnSpirits.addEventListener('click', toggleSpirits);
     dom.btnAtelier.addEventListener('click', toggleAtelier);
     dom.btnFullscreen.addEventListener('click', toggleFullscreen);
     dom.btnHide.addEventListener('click', toggleHud);
@@ -4131,6 +4315,10 @@
         toggleVisualLane(3);
       } else if (key === 'a') {
         toggleAllVisualLanes();
+      } else if (key === 't') {
+        toggleArtfx();
+      } else if (key === 'y') {
+        toggleSpirits();
       } else if (key === 'v') {
         toggleVizScopeOverride();
       } else if (key >= '1' && key <= '8') {
