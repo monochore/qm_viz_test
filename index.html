@@ -5,27 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>QUIET MACHINERY // VISUALISER</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&display=swap');
-
   /* =========================================================================
-     1. QUIET MACHINERY / MNEMOSYNE HARDWARE DESIGN TOKENS
+     1. QUIET MACHINERY // IN-WORLD ETCHED MINERAL & SONGS OF SYX TOKENS
      ========================================================================= */
   :root {
-    --bg: #0c0c0c;
-    --panel: #111111;
-    --oled: #040404;
-    --border-main: #ffffff;
-    --col-div: rgba(255, 255, 255, 0.22);
-    --c-green: #00ff44;
-    --c-amber: #ff9d00;
-    --c-cyan: #00aaff;
-    --c-red: #ff4444;
-    --c-green-dim: #52a869;
-    --c-amber-dim: #bf893b;
-    --c-cyan-dim: #498eb8;
-    --c-red-dim: #b85454;
-    --stone-sage: #446252;
-    --text-dim: #bbbbbb;
+    --bg: #050605;
+    --panel: rgba(9, 11, 10, 0.94);
+    --well: #040504;
+    --border-main: #5d786a;
+    --border-inner: #27342d;
+    --col-div: rgba(93, 120, 106, 0.28);
+
+    /* De-saturated mineral domain inks matching the ASCII visualiser */
+    --c-green: #57b570;
+    --c-amber: #c9913e;
+    --c-cyan: #4f99c7;
+    --c-red: #c45858;
+    --c-sage: #7a9c8b;
+    --c-slate: #738ca3;
+    --vellum: #e6e3da;
+    --text-main: #c7d1cc;
+    --text-dim: #6e8277;
+    --mono: 'Courier New', Menlo, Monaco, Consolas, monospace;
   }
 
   * {
@@ -49,22 +50,34 @@
     height: 100%;
     overflow: hidden;
     background-color: var(--bg);
-    color: #ffffff;
-    font-family: 'Oswald', sans-serif;
+    color: var(--text-main);
+    font-family: var(--mono);
     touch-action: manipulation;
   }
 
   /* =========================================================================
-     2. FULL-SCREEN EDGE-TO-EDGE ASCII CANVAS (100vw x 100vh)
+     2. STAGE-FRAMED ASCII CANVAS (SUPPORTS FULL, 9:16 VERTICAL & 16:9 WIDE)
      ========================================================================= */
-  #visualiser-canvas {
+  #stage-viewport {
     position: fixed;
     inset: 0;
-    width: 100vw;
-    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #030403;
+    z-index: 1;
+  }
+
+  #visualiser-canvas {
     display: block;
     background-color: #060606;
-    z-index: 1;
+    transition: box-shadow 0.2s ease;
+  }
+  #visualiser-canvas.framed {
+    border: 1px solid var(--border-main);
+    outline: 1px solid var(--border-inner);
+    outline-offset: -4px;
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.95);
   }
 
   #corner-toggle {
@@ -72,25 +85,27 @@
     top: 12px;
     right: 14px;
     z-index: 40;
-    background: rgba(17, 17, 17, 0.88);
-    border: 1px solid rgba(255, 255, 255, 0.45);
-    color: var(--text-dim);
-    font-family: 'Oswald', sans-serif;
+    background: var(--panel);
+    border: 1px solid var(--border-main);
+    outline: 1px solid var(--border-inner);
+    outline-offset: -3px;
+    color: var(--text-main);
+    font-family: var(--mono);
     font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 2px;
+    font-weight: bold;
+    letter-spacing: 1.8px;
     padding: 4px 10px;
     cursor: pointer;
     text-transform: uppercase;
     transition: background 0.12s, color 0.12s, border-color 0.12s, opacity 0.2s;
   }
   #corner-toggle:hover {
-    background: #ffffff;
-    color: #000000;
-    border-color: #ffffff;
+    background: var(--vellum);
+    color: #050605;
+    border-color: var(--vellum);
   }
   #corner-toggle.stealth {
-    opacity: 0.32;
+    opacity: 0.30;
   }
   #corner-toggle.stealth:hover {
     opacity: 1;
@@ -103,16 +118,17 @@
     transform: translateX(-50%);
     z-index: 50;
     pointer-events: none;
-    background: rgba(12, 12, 12, 0.96);
+    background: rgba(6, 8, 7, 0.96);
     border: 1px solid var(--border-main);
-    outline: 1px solid rgba(255, 255, 255, 0.35);
+    outline: 1px solid var(--border-inner);
     outline-offset: -4px;
     padding: 5px 15px;
-    font-family: 'Courier New', Menlo, monospace;
-    font-size: 11px;
-    letter-spacing: 1.6px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: #ffffff;
+    color: var(--vellum);
     opacity: 0;
     transition: opacity 0.15s ease;
     white-space: nowrap;
@@ -131,7 +147,7 @@
     display: none;
     align-items: center;
     justify-content: center;
-    background: rgba(6, 6, 6, 0.92);
+    background: rgba(4, 5, 4, 0.92);
     pointer-events: none;
   }
   #drop-overlay.active {
@@ -139,32 +155,32 @@
   }
   .drop-plaque {
     background: var(--panel);
-    border: 2px solid var(--border-main);
-    outline: 2px solid var(--border-main);
-    outline-offset: -8px;
+    border: 1px solid var(--border-main);
+    outline: 1px solid var(--border-inner);
+    outline-offset: -6px;
     padding: 26px 44px;
     text-align: center;
     box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.92), 0 20px 60px rgba(0, 0, 0, 0.9);
   }
   .drop-title {
-    font-family: 'Oswald', sans-serif;
-    font-size: 24px;
-    font-weight: 500;
-    letter-spacing: 6px;
-    color: #ffffff;
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 4px;
+    color: var(--vellum);
     text-transform: uppercase;
   }
   .drop-sub {
     margin-top: 8px;
-    font-family: 'Courier New', Menlo, monospace;
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: var(--c-green-dim);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 1.8px;
+    color: var(--c-green);
     text-transform: uppercase;
   }
 
   /* =========================================================================
-     3. COMPACT TWO-TIER MNEMOSYNE HARDWARE CHASSIS (BOTTOM-CENTERED)
+     3. IN-WORLD ETCHED STONE & ASCII HARDWARE CHASSIS (BOTTOM-CENTERED)
      ========================================================================= */
   #chassis-dock {
     position: fixed;
@@ -186,24 +202,46 @@
   }
 
   #chassis {
+    position: relative;
     pointer-events: auto;
     width: 100%;
-    max-width: 1250px;
-    background: rgba(17, 17, 17, 0.95);
-    border: 2px solid var(--border-main);
-    outline: 2px solid var(--border-main);
-    outline-offset: -6px;
+    max-width: 1260px;
+    background: var(--panel);
+    border: 1px solid var(--border-main);
+    outline: 1px solid var(--border-inner);
+    outline-offset: -5px;
     padding: 10px 8px 9px 8px;
-    box-shadow: inset 0 0 44px rgba(0, 0, 0, 0.92), 0 16px 48px rgba(0, 0, 0, 0.88);
+    box-shadow: inset 0 0 44px rgba(0, 0, 0, 0.94), 0 16px 48px rgba(0, 0, 0, 0.92);
     display: flex;
     flex-direction: column;
     max-height: calc(100vh - 54px);
     overflow-y: auto;
   }
 
+  /* ASCII corner registration marks */
+  #chassis::before,
+  #chassis::after {
+    position: absolute;
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1;
+    color: var(--border-main);
+    pointer-events: none;
+  }
+  #chassis::before {
+    content: '◈';
+    top: 2px;
+    left: 3px;
+  }
+  #chassis::after {
+    content: '◈';
+    top: 2px;
+    right: 3px;
+  }
+
   .upper-deck {
     display: grid;
-    grid-template-columns: 28px 1fr 28px;
+    grid-template-columns: 26px 1fr 26px;
     align-items: stretch;
     width: 100%;
   }
@@ -212,9 +250,9 @@
     writing-mode: vertical-rl;
     transform: rotate(180deg);
     text-align: center;
-    font-size: 10.5px;
-    font-weight: 500;
-    letter-spacing: 4px;
+    font-size: 9.5px;
+    font-weight: bold;
+    letter-spacing: 3.5px;
     color: var(--text-dim);
     display: flex;
     align-items: center;
@@ -225,7 +263,7 @@
 
   .panel-core {
     display: grid;
-    grid-template-columns: 188px minmax(215px, 1.02fr) minmax(310px, 1.32fr) minmax(232px, 1.06fr);
+    grid-template-columns: 192px minmax(215px, 1.02fr) minmax(312px, 1.32fr) minmax(242px, 1.08fr);
     border-left: 1px solid var(--col-div);
     border-right: 1px solid var(--col-div);
     min-width: 0;
@@ -244,29 +282,32 @@
   }
 
   .col-header {
-    font-size: 10.5px;
-    font-weight: 500;
-    letter-spacing: 2.2px;
+    font-size: 9.5px;
+    font-weight: bold;
+    letter-spacing: 1.8px;
     text-transform: uppercase;
     color: var(--text-dim);
     text-align: center;
     margin-bottom: 6px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid var(--border-inner);
     line-height: 1.1;
-    transition: color 0.25s ease, text-shadow 0.25s ease;
   }
+  .col-header::before { content: '· '; color: var(--border-main); }
+  .col-header::after  { content: ' ·'; color: var(--border-main); }
 
   /* =========================================================================
-     4. UPPER DECK COLUMN 1: SYSTEM & OLED (WITH [V] VIZ & [C] CAST)
+     4. UPPER DECK COLUMN 1: SYSTEM & OLED
      ========================================================================= */
   .oled-container {
     width: 100%;
-    background: var(--oled);
-    border: 1px solid #333333;
+    background: var(--well);
+    border: 1px solid var(--border-inner);
     padding: 5px;
     display: flex;
     flex-direction: column;
     gap: 5px;
-    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.85);
   }
 
   .scope-strip {
@@ -280,21 +321,21 @@
     flex: 1;
     min-width: 0;
     height: 36px;
-    background: var(--oled);
-    border: 1px solid #222222;
+    background: #030403;
+    border: 1px solid var(--border-inner);
     cursor: pointer;
     display: block;
   }
 
   #btn-viz-scope {
     flex: 0 0 34px;
-    background: #090909;
-    border: 1px solid #444444;
+    background: #070908;
+    border: 1px solid var(--border-inner);
     color: var(--text-dim);
-    font-family: 'Oswald', sans-serif;
-    font-size: 9px;
-    font-weight: 500;
-    letter-spacing: 1px;
+    font-family: var(--mono);
+    font-size: 8.5px;
+    font-weight: bold;
+    letter-spacing: 0.8px;
     padding: 0 2px;
     cursor: pointer;
     text-transform: uppercase;
@@ -304,15 +345,14 @@
     transition: 0.1s;
   }
   #btn-viz-scope:hover {
-    background: #242424;
-    color: #ffffff;
-    border-color: #999999;
+    background: #161d19;
+    color: var(--vellum);
+    border-color: var(--border-main);
   }
   #btn-viz-scope.active {
     background: var(--c-green);
-    color: #000000;
+    color: #050605;
     border-color: var(--c-green);
-    box-shadow: 0 0 8px rgba(0, 255, 68, 0.45);
   }
 
   .oled-row {
@@ -324,14 +364,14 @@
 
   .oled-btn {
     flex: 1;
-    background: transparent;
-    border: 1px solid #555555;
-    color: #ffffff;
-    font-family: 'Oswald', sans-serif;
-    font-size: 9px;
-    font-weight: 500;
-    letter-spacing: 0.8px;
-    padding: 3px 2px;
+    background: #080a09;
+    border: 1px solid #35453c;
+    color: var(--text-main);
+    font-family: var(--mono);
+    font-size: 8.5px;
+    font-weight: bold;
+    letter-spacing: 0.6px;
+    padding: 3.5px 2px;
     cursor: pointer;
     text-transform: uppercase;
     transition: 0.1s;
@@ -340,75 +380,69 @@
     min-width: 0;
   }
   .oled-btn:hover:not(:disabled) {
-    background: #2b2b2b;
-    border-color: #999999;
+    background: #151c18;
+    border-color: var(--border-main);
+    color: var(--vellum);
   }
   .oled-btn.active {
-    background: var(--border-main);
-    color: #000000;
-    border-color: var(--border-main);
+    background: var(--vellum);
+    color: #050605;
+    border-color: var(--vellum);
   }
   .oled-btn.active-amber {
     background: var(--c-amber);
-    color: #000000;
+    color: #050605;
     border-color: var(--c-amber);
-    box-shadow: 0 0 8px rgba(255, 157, 0, 0.35);
   }
   .oled-btn.active-green {
     background: var(--c-green);
-    color: #000000;
+    color: #050605;
     border-color: var(--c-green);
-    box-shadow: 0 0 8px rgba(0, 255, 68, 0.38);
   }
   .oled-btn.active-cyan {
     background: var(--c-cyan);
-    color: #000000;
+    color: #050605;
     border-color: var(--c-cyan);
-    box-shadow: 0 0 8px rgba(0, 170, 255, 0.38);
   }
   .oled-btn:disabled,
   .oled-btn.locked-iso {
-    background: #090909;
-    border-color: #383838;
-    color: #666666;
+    background: #050605;
+    border-color: #1f2823;
+    color: #46544c;
     cursor: not-allowed;
   }
   .oled-btn.freeze {
     flex: 1.35;
-    background: #111111;
+    background: #080b0a;
     border-color: var(--c-cyan);
     color: var(--c-cyan);
-    font-weight: 600;
-    font-size: 10px;
+    font-size: 9px;
     padding: 4px 0;
-    letter-spacing: 1.5px;
+    letter-spacing: 1.2px;
   }
   .oled-btn.freeze:hover {
-    background: rgba(0, 170, 255, 0.14);
+    background: rgba(79, 153, 199, 0.16);
   }
   .oled-btn.freeze.active {
     background: var(--c-cyan);
-    color: #000000;
-    box-shadow: 0 0 10px var(--c-cyan);
+    color: #050605;
   }
   .oled-btn.cast {
     flex: 1;
-    background: #111111;
-    border-color: var(--c-amber-dim);
+    background: #0b0907;
+    border-color: var(--c-amber);
     color: var(--c-amber);
-    font-weight: 600;
-    font-size: 10px;
+    font-size: 9px;
     padding: 4px 0;
-    letter-spacing: 1.4px;
+    letter-spacing: 1px;
   }
   .oled-btn.cast:hover {
     background: var(--c-amber);
-    color: #000000;
-    border-color: var(--c-amber);
+    color: #050605;
   }
 
   /* =========================================================================
-     5. UPPER DECK COLUMN 2: INGEST & TRANSPORT
+     5. UPPER DECK COLUMN 2: BESPOKE INGEST & HARDWARE SCRUBBER
      ========================================================================= */
   .ingest-stack {
     display: flex;
@@ -418,40 +452,61 @@
     justify-content: space-between;
   }
 
-  #mic-device {
+  .select-wrap {
+    position: relative;
     width: 100%;
-    background: var(--oled);
-    color: #d4d4d4;
-    border: 1px solid #3a3a3a;
-    font-family: 'Courier New', Menlo, monospace;
-    font-size: 9.5px;
-    padding: 3px 5px;
+    background: var(--well);
+    border: 1px solid #35453c;
+  }
+  .select-wrap::after {
+    content: '▼';
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 8px;
+    color: var(--text-dim);
+    pointer-events: none;
+  }
+
+  #mic-device {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    background: transparent;
+    color: var(--text-main);
+    border: none;
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 3.5px 18px 3.5px 5px;
     outline: none;
     cursor: pointer;
     text-overflow: ellipsis;
   }
   #mic-device:focus {
-    border-color: var(--c-green);
-    color: #ffffff;
+    color: var(--vellum);
+  }
+  #mic-device option {
+    background: #090b0a;
+    color: var(--text-main);
   }
 
   #file-name-display {
     width: 100%;
-    background: var(--oled);
-    border: 1px solid #363636;
-    color: #e6e6e6;
-    font-family: 'Courier New', Menlo, monospace;
-    font-size: 10px;
+    background: var(--well);
+    border: 1px solid var(--border-inner);
+    color: var(--vellum);
+    font-family: var(--mono);
+    font-size: 9.5px;
     font-weight: bold;
     padding: 4px 6px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    letter-spacing: 0.4px;
-    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.9);
+    letter-spacing: 0.3px;
   }
   #file-name-display.empty {
-    color: #777777;
+    color: var(--text-dim);
     font-weight: normal;
   }
 
@@ -464,9 +519,9 @@
 
   #btn-play-pause {
     flex: 0 0 auto;
-    width: 34px;
+    width: 32px;
     padding: 3px 0;
-    font-size: 9.5px;
+    font-size: 9px;
   }
 
   #file-scrub {
@@ -474,44 +529,44 @@
     appearance: none;
     flex: 1;
     min-width: 48px;
-    height: 6px;
-    background: var(--oled);
-    border: 1px solid #3a3a3a;
+    height: 8px;
+    background: var(--well);
+    border: 1px solid #35453c;
     outline: none;
     cursor: pointer;
   }
   #file-scrub::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 8px;
+    width: 7px;
     height: 12px;
-    background: #ffffff;
-    border: 1px solid #000000;
+    background: var(--vellum);
+    border: 1px solid #050605;
     cursor: pointer;
   }
   #file-scrub::-moz-range-thumb {
-    width: 8px;
+    width: 7px;
     height: 12px;
-    background: #ffffff;
-    border: 1px solid #000000;
+    background: var(--vellum);
+    border: 1px solid #050605;
     border-radius: 0;
     cursor: pointer;
   }
   #file-scrub:disabled {
-    opacity: 0.38;
+    opacity: 0.35;
     cursor: default;
   }
 
   #file-timecode {
-    font-family: 'Courier New', Menlo, monospace;
-    font-size: 9.5px;
+    font-family: var(--mono);
+    font-size: 9px;
     color: var(--text-dim);
     white-space: nowrap;
     flex-shrink: 0;
   }
 
   /* =========================================================================
-     6. UPPER DECK COLUMN 3: SIX DOMAIN DIALS
+     6. UPPER DECK COLUMN 3: MACHINED HARDWARE POTENTIOMETERS (6 DIALS)
      ========================================================================= */
   .dials-row {
     display: grid;
@@ -529,66 +584,75 @@
     position: relative;
   }
   .knob-label {
-    font-size: 8px;
-    font-weight: 500;
-    margin-bottom: 4px;
-    letter-spacing: 0.5px;
+    font-size: 7.5px;
+    font-weight: bold;
+    margin-bottom: 3px;
+    letter-spacing: 0.4px;
     text-transform: uppercase;
     white-space: nowrap;
   }
   .knob-svg {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     cursor: ns-resize;
     overflow: visible;
-    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.55));
+    filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.75));
     touch-action: none;
   }
-  .knob-bg {
-    fill: #1c1c1c;
-    stroke-width: 2.5px;
+  .knob-ticks {
+    stroke: #3b4a42;
+    stroke-width: 1.2px;
+  }
+  .knob-bezel {
+    fill: #0b0e0c;
+    stroke-width: 1.8px;
+  }
+  .knob-cap {
+    fill: #131715;
+    stroke: #2c3831;
+    stroke-width: 1px;
   }
   .knob-indicator {
-    stroke: #ffffff;
-    stroke-width: 2.5px;
-    stroke-linecap: round;
+    stroke: var(--vellum);
+    stroke-width: 2.2px;
+    stroke-linecap: butt;
   }
   .knob-readout {
-    margin-top: 3px;
-    font-family: 'Courier New', Menlo, monospace;
+    margin-top: 2px;
+    font-family: var(--mono);
     font-size: 8px;
-    color: #969696;
+    color: var(--text-dim);
   }
   .knob-container:hover .knob-readout,
   .knob-container.dragging .knob-readout {
-    color: #ffffff;
+    color: var(--vellum);
   }
 
-  .d-green .knob-bg { stroke: var(--c-green); }
+  .d-green .knob-bezel { stroke: var(--c-green); }
   .d-green .knob-label { color: var(--c-green); }
-  .d-amber .knob-bg { stroke: var(--c-amber); }
+  .d-amber .knob-bezel { stroke: var(--c-amber); }
   .d-amber .knob-label { color: var(--c-amber); }
-  .d-cyan  .knob-bg { stroke: var(--c-cyan); }
+  .d-cyan  .knob-bezel { stroke: var(--c-cyan); }
   .d-cyan  .knob-label { color: var(--c-cyan); }
-  .d-red   .knob-bg { stroke: var(--c-red); }
+  .d-red   .knob-bezel { stroke: var(--c-red); }
   .d-red   .knob-label { color: var(--c-red); }
-  .d-sage  .knob-bg { stroke: #9ab8ad; }
-  .d-sage  .knob-label { color: #b5cfc5; }
-  .d-slate .knob-bg { stroke: #8aa3ba; }
-  .d-slate .knob-label { color: #a7bfd6; }
+  .d-sage  .knob-bezel { stroke: var(--c-sage); }
+  .d-sage  .knob-label { color: var(--c-sage); }
+  .d-slate .knob-bezel { stroke: var(--c-slate); }
+  .d-slate .knob-label { color: var(--c-slate); }
 
   .dials-hint {
-    font-family: 'Courier New', Menlo, monospace;
-    font-size: 8.5px;
-    color: #666666;
+    font-family: var(--mono);
+    font-size: 8px;
+    color: #516359;
     text-align: center;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
     text-transform: uppercase;
-    margin-top: 3px;
+    margin-top: 2px;
   }
 
   /* =========================================================================
-     7. UPPER DECK COLUMN 4: STRATA LANES, FX/DENSITY SWITCHES & VIEW CONTROLS
+     7. UPPER DECK COLUMN 4: STRATA LANES, FX/DENSITY & ASPECT FRAMING
      ========================================================================= */
   .strata-stack {
     display: flex;
@@ -602,21 +666,21 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
-    background: var(--oled);
-    border: 1px solid #262626;
+    background: var(--well);
+    border: 1px solid var(--border-inner);
     padding: 4px 6px;
   }
   .meter-row {
     display: grid;
-    grid-template-columns: 76px 1fr 12px;
+    grid-template-columns: 78px 1fr 12px;
     align-items: center;
     gap: 6px;
   }
   .meter-label {
-    font-family: 'Courier New', Menlo, monospace;
+    font-family: var(--mono);
     font-size: 8.5px;
     font-weight: bold;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.2px;
     white-space: nowrap;
     cursor: pointer;
     transition: opacity 0.12s;
@@ -626,8 +690,8 @@
   }
   .meter-track {
     height: 4px;
-    background: #101010;
-    border: 1px solid #242424;
+    background: #0a0d0b;
+    border: 1px solid #1e2822;
     overflow: hidden;
   }
   .meter-fill {
@@ -640,34 +704,30 @@
     height: 11px;
     padding: 0;
     margin: 0;
-    background: #0a0a0a;
-    border: 1px solid #444444;
+    background: #060807;
+    border: 1px solid #35453c;
     cursor: pointer;
     display: block;
-    transition: background-color 0.1s, border-color 0.1s, box-shadow 0.1s;
+    transition: background-color 0.1s, border-color 0.1s;
   }
   .lane-toggle-sq:hover {
-    border-color: #ffffff;
+    border-color: var(--vellum);
   }
   .lane-toggle-sq[data-lane="0"].active {
-    background: var(--c-green-dim);
-    border-color: var(--c-green);
-    box-shadow: 0 0 6px rgba(0, 255, 68, 0.55);
+    background: var(--c-green);
+    border-color: var(--vellum);
   }
   .lane-toggle-sq[data-lane="1"].active {
-    background: var(--c-amber-dim);
-    border-color: var(--c-amber);
-    box-shadow: 0 0 6px rgba(255, 157, 0, 0.55);
+    background: var(--c-amber);
+    border-color: var(--vellum);
   }
   .lane-toggle-sq[data-lane="2"].active {
-    background: var(--c-cyan-dim);
-    border-color: var(--c-cyan);
-    box-shadow: 0 0 6px rgba(0, 170, 255, 0.55);
+    background: var(--c-cyan);
+    border-color: var(--vellum);
   }
   .lane-toggle-sq[data-lane="3"].active {
-    background: var(--c-red-dim);
-    border-color: var(--c-red);
-    box-shadow: 0 0 6px rgba(255, 68, 68, 0.55);
+    background: var(--c-red);
+    border-color: var(--vellum);
   }
 
   .fx-btn-row {
@@ -678,8 +738,8 @@
 
   .view-btn-row {
     display: grid;
-    grid-template-columns: 1.1fr 1.1fr 0.8fr;
-    gap: 4px;
+    grid-template-columns: 1fr 1.05fr 0.85fr 0.85fr;
+    gap: 3px;
   }
 
   /* =========================================================================
@@ -689,7 +749,7 @@
     border-top: 1px solid var(--col-div);
     margin-top: 7px;
     padding: 8px 10px 4px 10px;
-    background: rgba(4, 4, 4, 0.72);
+    background: rgba(4, 5, 4, 0.82);
     display: flex;
     flex-direction: column;
     gap: 7px;
@@ -706,10 +766,10 @@
   }
 
   .shelf-label {
-    flex: 0 0 92px;
-    font-size: 9.5px;
-    font-weight: 500;
-    letter-spacing: 1.8px;
+    flex: 0 0 96px;
+    font-size: 9px;
+    font-weight: bold;
+    letter-spacing: 1.4px;
     color: var(--text-dim);
     text-transform: uppercase;
     white-space: nowrap;
@@ -725,13 +785,13 @@
   }
 
   .shelf-btn {
-    background: #080808;
-    border: 1px solid #444444;
+    background: #070908;
+    border: 1px solid #324038;
     color: var(--text-dim);
-    font-family: 'Oswald', sans-serif;
-    font-size: 9px;
-    font-weight: 500;
-    letter-spacing: 0.9px;
+    font-family: var(--mono);
+    font-size: 8.5px;
+    font-weight: bold;
+    letter-spacing: 0.6px;
     padding: 3px 5px;
     cursor: pointer;
     text-transform: uppercase;
@@ -739,21 +799,21 @@
     white-space: nowrap;
   }
   .shelf-btn:hover {
-    background: #222222;
-    color: #ffffff;
-    border-color: #888888;
+    background: #151c18;
+    color: var(--vellum);
+    border-color: var(--border-main);
   }
   .shelf-btn.active {
-    background: #ffffff;
-    color: #000000;
-    border-color: #ffffff;
+    background: var(--vellum);
+    color: #050605;
+    border-color: var(--vellum);
   }
 
   #formation-subtitle {
-    font-family: 'Courier New', Menlo, monospace;
-    font-size: 9.5px;
-    letter-spacing: 1px;
-    color: var(--c-green-dim);
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.8px;
+    color: var(--c-green);
     text-transform: uppercase;
     white-space: nowrap;
     margin-left: auto;
@@ -765,7 +825,7 @@
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
-    padding-left: 100px;
+    padding-left: 104px;
   }
 
   #glyph-strip {
@@ -773,8 +833,8 @@
     align-items: center;
     gap: 3px;
     flex-wrap: wrap;
-    background: var(--oled);
-    border: 1px solid #2b2b2b;
+    background: var(--well);
+    border: 1px solid var(--border-inner);
     padding: 3px 4px;
   }
 
@@ -784,10 +844,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: #141414;
-    border: 1px solid #555555;
-    color: #f0f0f0;
-    font-family: 'Courier New', Menlo, monospace;
+    background: #0c0f0d;
+    border: 1px solid #3a4a41;
+    color: var(--vellum);
+    font-family: var(--mono);
     font-size: 12px;
     font-weight: bold;
     cursor: pointer;
@@ -796,13 +856,13 @@
     transition: 0.1s;
   }
   .glyph-tile:hover {
-    border-color: #ffffff;
-    background: #262626;
+    border-color: var(--vellum);
+    background: #1a221e;
   }
   .glyph-tile.muted {
-    background: #070707;
-    border-color: #262626;
-    color: #444444;
+    background: #050605;
+    border-color: #1b221e;
+    color: #3a4740;
     text-decoration: line-through;
     opacity: 0.55;
   }
@@ -815,18 +875,18 @@
   }
 
   .custom-tag {
-    font-size: 9px;
-    letter-spacing: 1.4px;
-    color: #888888;
+    font-size: 8.5px;
+    letter-spacing: 1.2px;
+    color: var(--text-dim);
     text-transform: uppercase;
   }
 
   #custom-glyph-input {
     width: 148px;
-    background: var(--oled);
-    border: 1px solid #444444;
-    color: #ffffff;
-    font-family: 'Courier New', Menlo, monospace;
+    background: var(--well);
+    border: 1px solid #35453c;
+    color: var(--vellum);
+    font-family: var(--mono);
     font-size: 11px;
     padding: 3px 6px;
     outline: none;
@@ -839,13 +899,13 @@
   }
 
   .pal-btn {
-    background: #080808;
-    border: 1px solid #404040;
+    background: #070908;
+    border: 1px solid #324038;
     color: var(--text-dim);
-    font-family: 'Oswald', sans-serif;
-    font-size: 9px;
-    font-weight: 500;
-    letter-spacing: 0.9px;
+    font-family: var(--mono);
+    font-size: 8.5px;
+    font-weight: bold;
+    letter-spacing: 0.6px;
     padding: 3px 6px 4px 6px;
     cursor: pointer;
     text-transform: uppercase;
@@ -857,21 +917,21 @@
     min-width: 78px;
   }
   .pal-btn:hover {
-    background: #1e1e1e;
-    color: #ffffff;
-    border-color: #888888;
+    background: #151c18;
+    color: var(--vellum);
+    border-color: var(--border-main);
   }
   .pal-btn.active {
-    background: #ffffff;
-    color: #000000;
-    border-color: #ffffff;
+    background: var(--vellum);
+    color: #050605;
+    border-color: var(--vellum);
   }
   .pal-swatches {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     height: 3px;
     width: 100%;
-    border: 1px solid rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(0, 0, 0, 0.55);
   }
   .pal-swatches span {
     display: block;
@@ -932,8 +992,10 @@
 </head>
 <body>
 
-  <!-- FULL-SCREEN EDGE-TO-EDGE ARCHITECTURAL ASCII CANVAS -->
-  <canvas id="visualiser-canvas" aria-label="QUIET MACHINERY Architectural Visualiser"></canvas>
+  <!-- CENTERED STAGE VIEWPORT (SUPPORTS FULL, 9:16 VERTICAL & 16:9 WIDE) -->
+  <div id="stage-viewport">
+    <canvas id="visualiser-canvas" aria-label="QUIET MACHINERY Architectural Visualiser"></canvas>
+  </div>
 
   <!-- TOP-RIGHT STAGE PROJECTION TOGGLE -->
   <button id="corner-toggle" title="Hide or Restore Console [H]">HIDE [H]</button>
@@ -949,7 +1011,7 @@
     </div>
   </div>
 
-  <!-- COMPACT TWO-TIER MNEMOSYNE HARDWARE CHASSIS -->
+  <!-- COMPACT TWO-TIER ETCHED MINERAL HARDWARE CHASSIS -->
   <div id="chassis-dock">
     <div id="chassis">
 
@@ -961,7 +1023,7 @@
 
         <div class="panel-core">
 
-          <!-- COLUMN 1: SYSTEM & OLED (WITH [V] VIZ & [C] CAST) -->
+          <!-- COLUMN 1: SYSTEM & OLED -->
           <div class="column" data-col="sys">
             <div class="col-header">SYSTEM &amp; OLED</div>
             <div class="oled-container">
@@ -976,7 +1038,7 @@
               </div>
               <div class="oled-row">
                 <button class="oled-btn freeze" id="btn-freeze" title="Freeze Current Trace in Mortar [X]">FREEZE</button>
-                <button class="oled-btn cast" id="btn-cast" title="Export Patinated Archival PNG Plate [C]">[C] CAST</button>
+                <button class="oled-btn cast" id="btn-cast" title="Export Patinated Archival PNG Plate in Active Aspect Ratio [C]">[C] CAST</button>
               </div>
             </div>
           </div>
@@ -987,16 +1049,19 @@
             <div class="ingest-stack">
               <div class="oled-row">
                 <button class="oled-btn" id="btn-mic" title="Engage Live DI / Microphone Input (Isolated From Speakers)">MIC</button>
-                <button class="oled-btn" id="btn-file" title="Upload Audio File or Drag &amp; Drop Audio / Image Anywhere">FILE</button>
+                <button class="oled-btn" id="btn-file" title="Upload Audio or Image File (iPadOS &amp; Desktop Compatible)">FILE</button>
                 <button class="oled-btn active-amber" id="btn-mon" title="Toggle Speaker Monitor for File Playback">MON: ON</button>
-                <input type="file" id="file-upload" accept="audio/*,image/*" style="display:none;">
+                <!-- Explicit extensions so iPadOS Safari Files browser enables both audio & image files -->
+                <input type="file" id="file-upload" accept=".wav,.mp3,.m4a,.flac,.ogg,.aiff,.aif,.png,.jpg,.jpeg,.webp" style="display:none;">
               </div>
 
-              <select id="mic-device" title="Select Audio Interface / Microphone Channel">
-                <option value="">DEFAULT AUDIO INPUT (CLICK MIC)</option>
-              </select>
+              <div class="select-wrap">
+                <select id="mic-device" title="Select Audio Interface / Microphone Channel">
+                  <option value="">DEFAULT AUDIO INPUT</option>
+                </select>
+              </div>
 
-              <div id="file-name-display" class="empty" title="No audio file loaded">NO FILE LOADED // DROP AUDIO OR IMAGE</div>
+              <div id="file-name-display" class="empty" title="No audio file loaded">NO FILE // DROP AUDIO OR IMAGE</div>
 
               <div class="transport-row">
                 <button class="oled-btn" id="btn-play-pause" title="Play / Pause Loaded Audio File [Space]">&#9654;</button>
@@ -1006,7 +1071,7 @@
             </div>
           </div>
 
-          <!-- COLUMN 3: DOMAIN DIALS (6 KNOBS) -->
+          <!-- COLUMN 3: DOMAIN DIALS (6 MACHINED SYNTH POTENTIOMETERS) -->
           <div class="column" data-col="dials">
             <div class="col-header" id="hdr-dials">DOMAIN DIALS</div>
             <div class="dials-row">
@@ -1014,8 +1079,18 @@
               <div class="knob-container d-green">
                 <div class="knob-label">GAIN</div>
                 <svg class="knob-svg" id="knob-gain" data-param="gain" data-val="0.50" data-default="0.50" viewBox="0 0 44 44" title="Bus Drive &amp; Input Gain (0.25x - 4.00x) | Push Past Unity for Rhythmic Tearing | Dbl-Click Reset">
-                  <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
-                  <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
+                  <g class="knob-ticks">
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-135,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-90,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-45,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(0,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(45,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(90,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(135,22,22)"/>
+                  </g>
+                  <circle class="knob-bezel" cx="22" cy="22" r="15.5"></circle>
+                  <circle class="knob-cap" cx="22" cy="22" r="11.5"></circle>
+                  <line class="knob-indicator" x1="22" y1="22" x2="22" y2="7.5"></line>
                 </svg>
                 <div class="knob-readout" id="readout-gain">1.00x</div>
               </div>
@@ -1024,8 +1099,18 @@
               <div class="knob-container d-amber">
                 <div class="knob-label">EROSION</div>
                 <svg class="knob-svg" id="knob-erosion" data-param="erosion" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Stone Weathering, Gale Gusts &amp; Pareidolia Relief Emergence (>0.25) | Default: 0.00">
-                  <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
-                  <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
+                  <g class="knob-ticks">
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-135,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-90,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-45,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(0,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(45,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(90,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(135,22,22)"/>
+                  </g>
+                  <circle class="knob-bezel" cx="22" cy="22" r="15.5"></circle>
+                  <circle class="knob-cap" cx="22" cy="22" r="11.5"></circle>
+                  <line class="knob-indicator" x1="22" y1="22" x2="22" y2="7.5"></line>
                 </svg>
                 <div class="knob-readout" id="readout-erosion">0.00</div>
               </div>
@@ -1034,8 +1119,18 @@
               <div class="knob-container d-cyan">
                 <div class="knob-label">TESSELLATION</div>
                 <svg class="knob-svg" id="knob-tessellation" data-param="tessellation" data-val="0.50" data-default="0.50" viewBox="0 0 44 44" title="Subdivision, Ring Count &amp; Tile Scale | Default: 0.50">
-                  <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
-                  <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
+                  <g class="knob-ticks">
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-135,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-90,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-45,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(0,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(45,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(90,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(135,22,22)"/>
+                  </g>
+                  <circle class="knob-bezel" cx="22" cy="22" r="15.5"></circle>
+                  <circle class="knob-cap" cx="22" cy="22" r="11.5"></circle>
+                  <line class="knob-indicator" x1="22" y1="22" x2="22" y2="7.5"></line>
                 </svg>
                 <div class="knob-readout" id="readout-tessellation">0.50</div>
               </div>
@@ -1044,8 +1139,18 @@
               <div class="knob-container d-red">
                 <div class="knob-label">FRACTURE</div>
                 <svg class="knob-svg" id="knob-fracture" data-param="fracture" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Sheet Lightning, Masonry Calving &amp; Inward Border Shatter (>0.45) | Default: 0.00">
-                  <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
-                  <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
+                  <g class="knob-ticks">
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-135,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-90,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-45,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(0,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(45,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(90,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(135,22,22)"/>
+                  </g>
+                  <circle class="knob-bezel" cx="22" cy="22" r="15.5"></circle>
+                  <circle class="knob-cap" cx="22" cy="22" r="11.5"></circle>
+                  <line class="knob-indicator" x1="22" y1="22" x2="22" y2="7.5"></line>
                 </svg>
                 <div class="knob-readout" id="readout-fracture">0.00</div>
               </div>
@@ -1054,8 +1159,18 @@
               <div class="knob-container d-sage">
                 <div class="knob-label">GROW</div>
                 <svg class="knob-svg" id="knob-grow" data-param="grow" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Evolves Selected Engine &amp; Emergent Occult Pareidolia Within Domain Rules | Locked on SCATTER">
-                  <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
-                  <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
+                  <g class="knob-ticks">
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-135,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-90,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-45,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(0,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(45,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(90,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(135,22,22)"/>
+                  </g>
+                  <circle class="knob-bezel" cx="22" cy="22" r="15.5"></circle>
+                  <circle class="knob-cap" cx="22" cy="22" r="11.5"></circle>
+                  <line class="knob-indicator" x1="22" y1="22" x2="22" y2="7.5"></line>
                 </svg>
                 <div class="knob-readout" id="readout-grow">0.00</div>
               </div>
@@ -1064,8 +1179,18 @@
               <div class="knob-container d-slate">
                 <div class="knob-label">PRLX</div>
                 <svg class="knob-svg" id="knob-prlx" data-param="prlx" data-val="0.25" data-default="0.25" viewBox="0 0 44 44" title="2.5D Z-Plane Parallax Separation &amp; Wide-Angle Perspective (>0.45) | Default: 0.25">
-                  <circle class="knob-bg" cx="22" cy="22" r="18"></circle>
-                  <line class="knob-indicator" x1="22" y1="22" x2="22" y2="8"></line>
+                  <g class="knob-ticks">
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-135,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-90,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-45,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(0,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(45,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(90,22,22)"/>
+                    <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(135,22,22)"/>
+                  </g>
+                  <circle class="knob-bezel" cx="22" cy="22" r="15.5"></circle>
+                  <circle class="knob-cap" cx="22" cy="22" r="11.5"></circle>
+                  <line class="knob-indicator" x1="22" y1="22" x2="22" y2="7.5"></line>
                 </svg>
                 <div class="knob-readout" id="readout-prlx">0.25</div>
               </div>
@@ -1073,29 +1198,29 @@
             <div class="dials-hint">DRAG · SHIFT FINE · DBL-CLK RESET</div>
           </div>
 
-          <!-- COLUMN 4: STRATA LANES, FX/DENSITY SWITCHES & VIEW CONTROLS -->
+          <!-- COLUMN 4: STRATA LANES, FX/DENSITY & ASPECT FRAMING -->
           <div class="column" data-col="strata">
             <div class="col-header">STRATA &amp; VIEW</div>
             <div class="strata-stack">
               <div class="meters-block" title="Click Square or Label to Engage Visual Layer [Q / W / E / R] · [A] Toggle All">
                 <div class="meter-row disengaged" id="mrow-0">
-                  <span class="meter-label" data-lane="0" style="color: var(--c-green-dim);">I. STRATA [Q]</span>
-                  <div class="meter-track"><div class="meter-fill" id="meter-0" style="background: var(--c-green-dim);"></div></div>
+                  <span class="meter-label" data-lane="0" style="color: var(--c-green);">I. STRATA [Q]</span>
+                  <div class="meter-track"><div class="meter-fill" id="meter-0" style="background: var(--c-green);"></div></div>
                   <button type="button" class="lane-toggle-sq" id="lane-btn-0" data-lane="0" aria-pressed="false" title="Engage Z-1 Midground: Lithic Architecture, Pareidolia &amp; Relic [Q]"></button>
                 </div>
                 <div class="meter-row disengaged" id="mrow-1">
-                  <span class="meter-label" data-lane="1" style="color: var(--c-amber-dim);">II. EROSION [W]</span>
-                  <div class="meter-track"><div class="meter-fill" id="meter-1" style="background: var(--c-amber-dim);"></div></div>
+                  <span class="meter-label" data-lane="1" style="color: var(--c-amber);">II. EROSION [W]</span>
+                  <div class="meter-track"><div class="meter-fill" id="meter-1" style="background: var(--c-amber);"></div></div>
                   <button type="button" class="lane-toggle-sq" id="lane-btn-1" data-lane="1" aria-pressed="false" title="Engage Z-2 Foreground: Engine-Specific Dust Geometries [W]"></button>
                 </div>
                 <div class="meter-row disengaged" id="mrow-2">
-                  <span class="meter-label" data-lane="2" style="color: var(--c-cyan-dim);">III. SILICA [E]</span>
-                  <div class="meter-track"><div class="meter-fill" id="meter-2" style="background: var(--c-cyan-dim);"></div></div>
+                  <span class="meter-label" data-lane="2" style="color: var(--c-cyan);">III. SILICA [E]</span>
+                  <div class="meter-track"><div class="meter-fill" id="meter-2" style="background: var(--c-cyan);"></div></div>
                   <button type="button" class="lane-toggle-sq" id="lane-btn-2" data-lane="2" aria-pressed="false" title="Engage Z-0 Deep Background: Patina Wall &amp; Sheet Lightning [E]"></button>
                 </div>
                 <div class="meter-row disengaged" id="mrow-3">
-                  <span class="meter-label" data-lane="3" style="color: var(--c-red-dim);">IV. LETHE [R]</span>
-                  <div class="meter-track"><div class="meter-fill" id="meter-3" style="background: var(--c-red-dim);"></div></div>
+                  <span class="meter-label" data-lane="3" style="color: var(--c-red);">IV. LETHE [R]</span>
+                  <div class="meter-track"><div class="meter-fill" id="meter-3" style="background: var(--c-red);"></div></div>
                   <button type="button" class="lane-toggle-sq" id="lane-btn-3" data-lane="3" aria-pressed="false" title="Engage Z-0/Z-1 Borders (Shatters Inward on High Transients) [R]"></button>
                 </div>
               </div>
@@ -1107,8 +1232,9 @@
               </div>
 
               <div class="view-btn-row">
+                <button class="oled-btn" id="btn-aspect" title="Cycle Stage Framing: FULL / 9:16 VERTICAL / 16:9 WIDE [O]">[O] FULL</button>
                 <button class="oled-btn active" id="btn-atelier" title="Toggle Formation, Symbol &amp; Palette Shelf [D]">[D] ATELIER</button>
-                <button class="oled-btn" id="btn-fullscreen" title="Toggle Fullscreen [F]">[F] FULL</button>
+                <button class="oled-btn" id="btn-fullscreen" title="Toggle Fullscreen [F]">[F] SCRN</button>
                 <button class="oled-btn" id="btn-hide" title="Hide Console [H]">[H] HIDE</button>
               </div>
             </div>
@@ -1166,9 +1292,8 @@
   /* ===========================================================================
      SECTION A: HACKABLE CODEBOX (EDIT DIRECTLY LIKE A gen~ CODEBOX)
      ---------------------------------------------------------------------------
-     Includes `[Z] 1X / 2X` Grid Density Switch + Crisp Bold-White Title
-     Wrapped in 4x Micro-Symbol Filigree Halos that Crumble & Mutate into
-     Machine-Composed Prayers over a 3-Minute Anti-Burn-In Cycle.
+     Gold Core Engine + Etched Mineral Hardware Chassis + `[O] FULL / 9:16 / 16:9`
+     Stage Framing + iPadOS Safari File Picker Compatibility.
      =========================================================================== */
 
   const FORMATIONS = [
@@ -1267,9 +1392,6 @@
     }
   ];
 
-  // 4 Suite Title Liturgy Stages over a 3-Minute (180s) Anti-Burn-In Cycle
-  // Crisp bold white text threaded with 4x micro-symbol halos that fizzle,
-  // crumble, and mutate into machine-composed prayers & symbolic gibberish.
   const SUITE_TITLE_STAGES = [
     {
       suite: 'KAMEN',
@@ -2383,7 +2505,7 @@
   }
 
   /* ===========================================================================
-     SECTION B: APPLICATION STATE, PULSAR BUS SIDECHAIN & 2X DENSITY STATE
+     SECTION B: APPLICATION STATE, PULSAR BUS SIDECHAIN & ASPECT FRAMING STATE
      =========================================================================== */
   function createVariantGenome(mutAmt) {
     return {
@@ -2397,6 +2519,8 @@
       mutAmt: clamp(mutAmt, 0, 1)
     };
   }
+
+  const ASPECT_MODES = ['FULL', '9:16', '16:9'];
 
   const state = {
     params: {
@@ -2420,7 +2544,8 @@
     vizScopeMode: false,
     artfxActive: false,
     spiritsActive: false,
-    density2x: false,    // [Z] 1X vs 2X High-Density Songs of Syx Micro-Engraving Grid
+    density2x: false,
+    aspectModeIdx: 0, // 0: FULL, 1: 9:16 VERTICAL, 2: 16:9 WIDE
 
     relicLoaded: false,
     relicImageObj: null,
@@ -2657,6 +2782,7 @@
     btnArtfx: document.getElementById('btn-artfx'),
     btnSpirits: document.getElementById('btn-spirits'),
     btnDensity: document.getElementById('btn-density'),
+    btnAspect: document.getElementById('btn-aspect'),
     btnAtelier: document.getElementById('btn-atelier'),
     btnFullscreen: document.getElementById('btn-fullscreen'),
     btnHide: document.getElementById('btn-hide'),
@@ -2794,8 +2920,9 @@
   function triggerCastSnapshot() {
     const pal = PALETTES[state.paletteIdx];
     const fm = FORMATIONS[state.formationIdx];
-    const pad = Math.round(36 * dpr);
-    const footerH = Math.round(44 * dpr);
+    const aspectLabel = ASPECT_MODES[state.aspectModeIdx];
+    const pad = Math.round(28 * dpr);
+    const footerH = Math.round(40 * dpr);
 
     const outCanvas = document.createElement('canvas');
     outCanvas.width = visCanvas.width + pad * 2;
@@ -2828,14 +2955,14 @@
     octx.lineWidth = Math.max(1, Math.round(1.5 * dpr));
     octx.strokeRect(pad - 4, pad - 4, visCanvas.width + 8, visCanvas.height + 8);
 
-    const fontPx = Math.max(11, Math.round(11 * dpr));
+    const fontPx = Math.max(10, Math.round(10 * dpr));
     octx.font = `bold ${fontPx}px 'Courier New', Menlo, monospace`;
     octx.textBaseline = 'middle';
     const metaY = pad + visCanvas.height + Math.round(footerH * 0.52);
 
     const p = state.params;
-    const leftStamp = `QUIET MACHINERY // ${fm.label} [${pal.name}]`;
-    const rightStamp = `E:${p.erosion.toFixed(2)} T:${p.tessellation.toFixed(2)} F:${p.fracture.toFixed(2)} G:${p.grow.toFixed(2)} P:${p.prlx.toFixed(2)} // ${new Date().toISOString().slice(0, 19).replace('T', ' ')}`;
+    const leftStamp = `QM // ${fm.label} [${pal.name}]`;
+    const rightStamp = `${aspectLabel} · E:${p.erosion.toFixed(2)} F:${p.fracture.toFixed(2)} G:${p.grow.toFixed(2)}`;
 
     octx.fillStyle = pal.highlight;
     octx.textAlign = 'left';
@@ -2856,7 +2983,7 @@
       a.click();
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 2000);
-      showToast(`CAST // ARCHIVAL PLATE ENTOMBED (${fm.label})`);
+      showToast(`CAST // PLATE ENTOMBED (${fm.label} · ${aspectLabel})`);
     }, 'image/png');
   }
 
@@ -2897,18 +3024,49 @@
 
   function resizeViewport() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    visCanvas.width = Math.floor(w * dpr);
-    visCanvas.height = Math.floor(h * dpr);
+    const winW = window.innerWidth;
+    const winH = window.innerHeight;
+
+    let stageW = winW;
+    let stageH = winH;
+    const mode = state.aspectModeIdx;
+
+    if (mode === 1) {
+      // 9:16 Vertical Stage Pillar (Social / Mobile Frame)
+      const targetRatio = 9 / 16;
+      stageH = winH;
+      stageW = Math.min(winW, Math.round(stageH * targetRatio));
+      if (stageW / stageH > targetRatio) {
+        stageH = Math.round(stageW / targetRatio);
+      }
+      visCanvas.classList.add('framed');
+    } else if (mode === 2) {
+      // 16:9 Widescreen Cinema Frame
+      const targetRatio = 16 / 9;
+      if (winW / winH > targetRatio) {
+        stageH = winH;
+        stageW = Math.round(stageH * targetRatio);
+      } else {
+        stageW = winW;
+        stageH = Math.round(stageW / targetRatio);
+      }
+      visCanvas.classList.add('framed');
+    } else {
+      visCanvas.classList.remove('framed');
+    }
+
+    visCanvas.style.width = `${stageW}px`;
+    visCanvas.style.height = `${stageH}px`;
+    visCanvas.width = Math.floor(stageW * dpr);
+    visCanvas.height = Math.floor(stageH * dpr);
     ctx.imageSmoothingEnabled = false;
 
-    const baseCss = clamp(Math.round(Math.min(w, h) / 56), 13, 18);
+    const baseCss = clamp(Math.round(Math.min(winW, winH) / 56), 13, 18);
     cellCss = state.density2x ? Math.max(7, Math.round(baseCss * 0.52)) : baseCss;
     rebuildGlyphAtlas();
 
     const prevCols = cols;
-    cols = Math.max(28, Math.ceil(visCanvas.width / cellPx));
+    cols = Math.max(20, Math.ceil(visCanvas.width / cellPx));
     rows = Math.max(20, Math.ceil(visCanvas.height / cellPx));
     const totalCells = cols * rows;
 
@@ -3078,7 +3236,7 @@
       if (inputs.length === 0) {
         const opt = document.createElement('option');
         opt.value = '';
-        opt.textContent = 'NO AUDIO INPUTS DETECTED';
+        opt.textContent = 'NO AUDIO INPUTS';
         dom.micDevice.appendChild(opt);
         return;
       }
@@ -3086,7 +3244,7 @@
       inputs.forEach((dev, idx) => {
         const opt = document.createElement('option');
         opt.value = dev.deviceId;
-        opt.textContent = dev.label || `AUDIO INPUT CHANNEL ${idx + 1}`;
+        opt.textContent = (dev.label || `AUDIO INPUT ${idx + 1}`).toUpperCase();
         if (dev.deviceId === current) opt.selected = true;
         dom.micDevice.appendChild(opt);
       });
@@ -4054,9 +4212,6 @@
 
     // =========================================================================
     // LAYER 5: BOLD WHITE TITLE LITURGY WRAPPED IN 4X MICRO-SYMBOL FILIGREE
-    // Crisp, legible plain-text lettering surrounded & threaded by a 2x2 (4x
-    // density) sub-grid of micro-symbols that fizzle in/out, crumble at edges,
-    // and mutate into uncanny machine prayers over the 3-minute idle cycle.
     // =========================================================================
     if (state.idlePresence > 0.03) {
       const ip = state.idlePresence;
@@ -4070,7 +4225,6 @@
       const stageObj = SUITE_TITLE_STAGES[stageIdx];
       const entry = stageObj.entries[entryIdx];
 
-      // Subtle anti-burn-in Lissajous drift across the active visualiser
       const driftPxX = Math.sin(state.idleDuration * 0.14) * (visCanvas.width * 0.14);
       const driftPxY = Math.cos(state.idleDuration * 0.10) * (visCanvas.height * 0.11);
 
@@ -4082,10 +4236,9 @@
         const ramp = state.activeGlyphs.length > 0 ? state.activeGlyphs : ['·', '∶', '┼', '◈'];
         const decayAmt = clamp((1.0 - cycleFade) * 0.72 + arcUncanny * 0.50 + erosion * 0.35, 0, 1);
 
-        // Fixed readable pixel scale independent of 1X/2X grid toggle so text is always crisp
-        const mainFontPx = clamp(Math.round(Math.min(visCanvas.width, visCanvas.height) * 0.034), 16, 30);
-        const subFontPx = Math.max(11, Math.round(mainFontPx * 0.62));
-        const charAdvance = Math.round(mainFontPx * 0.72);
+        const mainFontPx = clamp(Math.round(Math.min(visCanvas.width, visCanvas.height) * 0.034), 15, 28);
+        const subFontPx = Math.max(10, Math.round(mainFontPx * 0.62));
+        const charAdvance = Math.round(mainFontPx * 0.70);
         const microFontPx = Math.max(8, Math.round(mainFontPx * 0.36));
 
         const anchorX = visCanvas.width * 0.5 + driftPxX;
@@ -4098,7 +4251,7 @@
         const renderTitleLine = (rawText, lineIdx, isMain) => {
           const len = rawText.length;
           const fontPx = isMain ? mainFontPx : subFontPx;
-          const stepX = isMain ? charAdvance : Math.round(subFontPx * 0.66);
+          const stepX = isMain ? charAdvance : Math.round(subFontPx * 0.65);
           const baseLineY = anchorY + lineIdx * (mainFontPx * 1.45);
 
           for (let i = 0; i < len; i++) {
@@ -4109,19 +4262,15 @@
             let px = anchorX + u * stepX;
             let py = baseLineY;
 
-            // Suite-specific structural motion:
-            // KARST (stage 1): Tectonic fault step down the middle
             if (stageIdx === 1 && Math.abs(u) < 2.2) {
               py += (u < 0 ? -mainFontPx * 0.28 : mainFontPx * 0.28);
             }
-            // MNEMOSYNE (stage 2): Sliced memory echo trailing behind bold letters
             if (stageIdx === 2 && isMain && (i % 2 === 0)) {
               ctx.font = `900 ${fontPx}px 'Courier New', Menlo, monospace`;
               ctx.fillStyle = pal.rest;
               ctx.fillText(ch, px - stepX * 0.85, py + 2);
             }
 
-            // Unpausing slewed disintegration: letters unbolt & blow away on the wind
             if (isReleasing) {
               const scatterPx = (1.0 - ip) * mainFontPx * 8.0;
               const h = hash2(i * 1.9, lineIdx + 3.1);
@@ -4132,8 +4281,6 @@
             const charRoll = hash2(i * 1.37 + stageIdx * 5.0, entryIdx * 3.1 + lineIdx);
             if (visibility < charRoll * 0.72) continue;
 
-            // 1. 4X MICRO-SYMBOL FILIGREE CLUSTER (2x2 sub-grid per character cell)
-            // Fizzles in and out of existence around & inside each letterform
             if (isMain) {
               ctx.font = `bold ${microFontPx}px 'Courier New', Menlo, monospace`;
               const subOffsets = [
@@ -4153,13 +4300,11 @@
               }
             }
 
-            // 2. Uncanny gibberish / prayer glyph mutation as the 3-minute cycle deepens
             if (decayAmt > 0.36 && charRoll < (decayAmt - 0.32) * 0.85) {
               const gIdx = Math.floor(hash2(i, frameTick * 0.06) * ramp.length) % ramp.length;
               ch = toMonoChar(ramp[gIdx]);
             }
 
-            // 3. Crumbling debris shedding downward from bottom edges
             if ((stageIdx === 3 || decayAmt > 0.42) && charRoll > 0.58) {
               const dropProg = ((t * 1.9 + i * 0.65) % 3.5);
               const crumbY = py + fontPx * 0.6 + dropProg * fontPx * 0.65;
@@ -4170,7 +4315,6 @@
               ctx.fillText(crumbCh, crumbX, crumbY);
             }
 
-            // 4. Crisp Bold White Primary Lettering (always bright & legible)
             ctx.font = `900 ${fontPx}px 'Courier New', Menlo, monospace`;
             ctx.fillStyle = isMain ? pal.highlight : pal.domains[2];
             ctx.fillText(ch, px, py);
@@ -4192,10 +4336,10 @@
     const w = scopeCanvas.width;
     const h = scopeCanvas.height;
 
-    scopeCtx.fillStyle = '#040404';
+    scopeCtx.fillStyle = '#030403';
     scopeCtx.fillRect(0, 0, w, h);
 
-    scopeCtx.strokeStyle = '#181818';
+    scopeCtx.strokeStyle = '#151c18';
     scopeCtx.lineWidth = 1;
     scopeCtx.beginPath();
     scopeCtx.moveTo(0, h * 0.5);
@@ -4206,7 +4350,7 @@
       (state.sourceMode === 'mic' || (state.sourceMode === 'file' && !dom.audioPlayer.paused));
 
     if (!active) {
-      scopeCtx.strokeStyle = state.frozen ? '#00aaff' : (state.idlePresence > 0.1 ? '#52a869' : '#446252');
+      scopeCtx.strokeStyle = state.frozen ? '#4f99c7' : (state.idlePresence > 0.1 ? '#57b570' : '#3d5247');
       scopeCtx.lineWidth = 1;
       scopeCtx.beginPath();
       for (let x = 0; x < w; x++) {
@@ -4224,7 +4368,7 @@
 
     if (state.scopeMode === 0) {
       scopeCtx.lineWidth = 1.5;
-      scopeCtx.strokeStyle = state.frozen ? '#00aaff' : '#00ff44';
+      scopeCtx.strokeStyle = state.frozen ? '#4f99c7' : '#57b570';
       scopeCtx.beginPath();
       const sliceW = w / scopeBytes.length;
       let x = 0;
@@ -4245,7 +4389,7 @@
       }
       state.seismoHistory.shift();
       state.seismoHistory.push(peak);
-      scopeCtx.fillStyle = '#ff4444';
+      scopeCtx.fillStyle = '#c45858';
       for (let x = 0; x < w; x++) {
         const bh = state.seismoHistory[x] * h;
         scopeCtx.fillRect(x, h - bh, 1, bh);
@@ -4270,7 +4414,7 @@
   }
 
   /* ===========================================================================
-     SECTION I: LANE ENGAGEMENT, FX/DENSITY TOGGLES & ATELIER SHELF BUILDERS
+     SECTION I: LANE ENGAGEMENT, FX/DENSITY/ASPECT TOGGLES & ATELIER SHELF
      =========================================================================== */
   const LANE_NAMES = [
     'I. STRATA // Z-1 ARCHITECTURE, PAREIDOLIA & RELIC',
@@ -4332,6 +4476,18 @@
     showToast(state.density2x ? 'GRID DENSITY // 2X MICRO-ENGRAVING' : 'GRID DENSITY // 1X BRUTALIST TERMINAL');
   }
 
+  function cycleAspectMode() {
+    state.aspectModeIdx = (state.aspectModeIdx + 1) % ASPECT_MODES.length;
+    const modeLabel = ASPECT_MODES[state.aspectModeIdx];
+    dom.btnAspect.textContent = `[O] ${modeLabel}`;
+    dom.btnAspect.classList.toggle('active', state.aspectModeIdx !== 0);
+    resizeViewport();
+    const desc = modeLabel === '9:16'
+      ? '9:16 VERTICAL SOCIAL FRAME'
+      : (modeLabel === '16:9' ? '16:9 WIDESCREEN FRAME' : 'FULL EDGE-TO-EDGE STAGE');
+    showToast(`STAGE ASPECT // ${desc}`);
+  }
+
   function toggleVizScopeOverride() {
     state.vizScopeMode = !state.vizScopeMode;
     dom.btnVizScope.classList.toggle('active', state.vizScopeMode);
@@ -4375,7 +4531,7 @@
     state.calvedChunks.length = 0;
     initDustParticles();
     if (state.formationIdx === 8 && !state.relicLoaded) {
-      showToast('IX. RELIC // DRAG & DROP ANY PNG/JPG IMAGE TO CAST INTO STRATA');
+      showToast('IX. RELIC // DRAG & DROP OR PRESS FILE FOR PNG/JPG');
     } else {
       showToast(`FORMATION // ${fm.label} — ${dom.formationSubtitle.textContent}`);
     }
@@ -4731,6 +4887,7 @@
     dom.btnArtfx.addEventListener('click', toggleArtfx);
     dom.btnSpirits.addEventListener('click', toggleSpirits);
     dom.btnDensity.addEventListener('click', toggleDensity2x);
+    dom.btnAspect.addEventListener('click', cycleAspectMode);
     dom.btnAtelier.addEventListener('click', toggleAtelier);
     dom.btnFullscreen.addEventListener('click', toggleFullscreen);
     dom.btnHide.addEventListener('click', toggleHud);
@@ -4806,6 +4963,8 @@
         toggleSpirits();
       } else if (key === 'z') {
         toggleDensity2x();
+      } else if (key === 'o') {
+        cycleAspectMode();
       } else if (key === 'v') {
         toggleVizScopeOverride();
       } else if (key === 'c') {
