@@ -16,13 +16,13 @@
     --border-inner: #27342d;
     --col-div: rgba(93, 120, 106, 0.28);
 
-    /* De-saturated mineral domain inks matching the ASCII visualiser */
-    --c-green: #57b570;
-    --c-amber: #c9913e;
-    --c-cyan: #4f99c7;
-    --c-red: #c45858;
-    --c-sage: #7a9c8b;
-    --c-slate: #738ca3;
+    /* Silk-screened desaturated mineral pigments (VERDIGRIS / OCHRE / SLATE / CINNABAR) */
+    --c-green: #4e8f60;
+    --c-amber: #a67a3c;
+    --c-cyan: #487e9e;
+    --c-red: #9e4b4b;
+    --c-sage: #6a8778;
+    --c-slate: #62788c;
     --vellum: #e6e3da;
     --text-main: #c7d1cc;
     --text-dim: #6e8277;
@@ -35,7 +35,7 @@
   }
 
   html, body, #visualiser-canvas, #chassis, .column, .oled-container,
-  .knob-container, #atelier-shelf, button, .glyph-tile {
+  .knob-container, #atelier-shelf, button, .glyph-tile, .ascii-scrub, .mic-cycler {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -218,7 +218,6 @@
     overflow-y: auto;
   }
 
-  /* ASCII corner registration marks */
   #chassis::before,
   #chassis::after {
     position: absolute;
@@ -263,7 +262,7 @@
 
   .panel-core {
     display: grid;
-    grid-template-columns: 192px minmax(215px, 1.02fr) minmax(312px, 1.32fr) minmax(242px, 1.08fr);
+    grid-template-columns: 192px minmax(222px, 1.04fr) minmax(312px, 1.32fr) minmax(242px, 1.08fr);
     border-left: 1px solid var(--col-div);
     border-right: 1px solid var(--col-div);
     min-width: 0;
@@ -297,7 +296,7 @@
   .col-header::after  { content: ' ·'; color: var(--border-main); }
 
   /* =========================================================================
-     4. UPPER DECK COLUMN 1: SYSTEM & OLED
+     4. UPPER DECK COLUMN 1: SYSTEM & PIXEL-SNAPPED OLED SCOPE
      ========================================================================= */
   .oled-container {
     width: 100%;
@@ -325,6 +324,7 @@
     border: 1px solid var(--border-inner);
     cursor: pointer;
     display: block;
+    image-rendering: pixelated;
   }
 
   #btn-viz-scope {
@@ -421,7 +421,7 @@
     letter-spacing: 1.2px;
   }
   .oled-btn.freeze:hover {
-    background: rgba(79, 153, 199, 0.16);
+    background: rgba(72, 126, 158, 0.18);
   }
   .oled-btn.freeze.active {
     background: var(--c-cyan);
@@ -442,7 +442,7 @@
   }
 
   /* =========================================================================
-     5. UPPER DECK COLUMN 2: BESPOKE INGEST & HARDWARE SCRUBBER
+     5. UPPER DECK COLUMN 2: BESPOKE HARDWARE CYCLE-BOX & ASCII BLOCK SCRUBBER
      ========================================================================= */
   .ingest-stack {
     display: flex;
@@ -452,43 +452,57 @@
     justify-content: space-between;
   }
 
-  .select-wrap {
-    position: relative;
+  /* Custom Hardware Cycle-Box replacing native <select> */
+  .mic-cycler {
+    display: grid;
+    grid-template-columns: 18px 1fr 18px;
+    align-items: stretch;
     width: 100%;
     background: var(--well);
     border: 1px solid #35453c;
+    height: 22px;
   }
-  .select-wrap::after {
-    content: '▼';
-    position: absolute;
-    right: 6px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 8px;
-    color: var(--text-dim);
-    pointer-events: none;
-  }
-
-  #mic-device {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 100%;
-    background: transparent;
-    color: var(--text-main);
+  .mic-step-btn {
+    background: #080a09;
     border: none;
+    color: var(--text-dim);
     font-family: var(--mono);
-    font-size: 9px;
-    padding: 3.5px 18px 3.5px 5px;
-    outline: none;
+    font-size: 9.5px;
+    font-weight: bold;
     cursor: pointer;
-    text-overflow: ellipsis;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.1s;
   }
-  #mic-device:focus {
+  .mic-step-btn:first-child {
+    border-right: 1px solid var(--border-inner);
+  }
+  .mic-step-btn:last-child {
+    border-left: 1px solid var(--border-inner);
+  }
+  .mic-step-btn:hover {
+    background: #151c18;
     color: var(--vellum);
   }
-  #mic-device option {
-    background: #090b0a;
+  #mic-device-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    font-family: var(--mono);
+    font-size: 8.5px;
+    font-weight: bold;
     color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+  }
+  #mic-device-label:hover {
+    color: var(--vellum);
   }
 
   #file-name-display {
@@ -497,7 +511,7 @@
     border: 1px solid var(--border-inner);
     color: var(--vellum);
     font-family: var(--mono);
-    font-size: 9.5px;
+    font-size: 9px;
     font-weight: bold;
     padding: 4px 6px;
     white-space: nowrap;
@@ -513,60 +527,51 @@
   .transport-row {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     width: 100%;
   }
 
   #btn-play-pause {
     flex: 0 0 auto;
-    width: 32px;
+    width: 28px;
     padding: 3px 0;
     font-size: 9px;
   }
 
-  #file-scrub {
-    -webkit-appearance: none;
-    appearance: none;
+  /* Custom Discrete ASCII Block Scrubber ([■■■■░░░░░░░░]) replacing <input type="range"> */
+  .ascii-scrub {
     flex: 1;
-    min-width: 48px;
-    height: 8px;
+    min-width: 64px;
+    height: 18px;
     background: var(--well);
     border: 1px solid #35453c;
-    outline: none;
-    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.5px;
+    color: var(--vellum);
+    cursor: ew-resize;
+    overflow: hidden;
   }
-  #file-scrub::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 7px;
-    height: 12px;
-    background: var(--vellum);
-    border: 1px solid #050605;
-    cursor: pointer;
-  }
-  #file-scrub::-moz-range-thumb {
-    width: 7px;
-    height: 12px;
-    background: var(--vellum);
-    border: 1px solid #050605;
-    border-radius: 0;
-    cursor: pointer;
-  }
-  #file-scrub:disabled {
-    opacity: 0.35;
+  .ascii-scrub.disabled {
+    color: #3d4d44;
+    border-color: #1f2823;
     cursor: default;
   }
 
   #file-timecode {
     font-family: var(--mono);
-    font-size: 9px;
+    font-size: 8.5px;
     color: var(--text-dim);
     white-space: nowrap;
     flex-shrink: 0;
   }
 
   /* =========================================================================
-     6. UPPER DECK COLUMN 3: MACHINED HARDWARE POTENTIOMETERS (6 DIALS)
+     6. UPPER DECK COLUMN 3: SILK-SCREENED SYNTH POTENTIOMETERS (6 DIALS)
      ========================================================================= */
   .dials-row {
     display: grid;
@@ -600,21 +605,21 @@
     touch-action: none;
   }
   .knob-ticks {
-    stroke: #3b4a42;
+    stroke: #36453d;
     stroke-width: 1.2px;
   }
   .knob-bezel {
-    fill: #0b0e0c;
+    fill: #090c0a;
     stroke-width: 1.8px;
   }
   .knob-cap {
-    fill: #131715;
-    stroke: #2c3831;
+    fill: #111513;
+    stroke: #28332d;
     stroke-width: 1px;
   }
   .knob-indicator {
     stroke: var(--vellum);
-    stroke-width: 2.2px;
+    stroke-width: 2px;
     stroke-linecap: butt;
   }
   .knob-readout {
@@ -1028,7 +1033,7 @@
             <div class="col-header">SYSTEM &amp; OLED</div>
             <div class="oled-container">
               <div class="scope-strip">
-                <canvas id="scope" width="118" height="36" title="Click to toggle Waveform / Peak Seismograph"></canvas>
+                <canvas id="scope" width="118" height="36" title="Click to toggle Pixel Waveform / Peak Seismograph"></canvas>
                 <button type="button" id="btn-viz-scope" title="Override Main Canvas with Full-Screen Live ASCII Scope [V]">VIZ</button>
               </div>
               <div class="oled-row">
@@ -1051,27 +1056,27 @@
                 <button class="oled-btn" id="btn-mic" title="Engage Live DI / Microphone Input (Isolated From Speakers)">MIC</button>
                 <button class="oled-btn" id="btn-file" title="Upload Audio or Image File (iPadOS &amp; Desktop Compatible)">FILE</button>
                 <button class="oled-btn active-amber" id="btn-mon" title="Toggle Speaker Monitor for File Playback">MON: ON</button>
-                <!-- Explicit extensions so iPadOS Safari Files browser enables both audio & image files -->
                 <input type="file" id="file-upload" accept=".wav,.mp3,.m4a,.flac,.ogg,.aiff,.aif,.png,.jpg,.jpeg,.webp" style="display:none;">
               </div>
 
-              <div class="select-wrap">
-                <select id="mic-device" title="Select Audio Interface / Microphone Channel">
-                  <option value="">DEFAULT AUDIO INPUT</option>
-                </select>
+              <!-- Custom Hardware Cycle-Box replacing native <select> -->
+              <div class="mic-cycler" title="Cycle Audio Interface / Microphone Channel">
+                <button type="button" class="mic-step-btn" id="btn-mic-prev" aria-label="Previous Audio Input">&lt;</button>
+                <div id="mic-device-label">DEFAULT AUDIO INPUT</div>
+                <button type="button" class="mic-step-btn" id="btn-mic-next" aria-label="Next Audio Input">&gt;</button>
               </div>
 
               <div id="file-name-display" class="empty" title="No audio file loaded">NO FILE // DROP AUDIO OR IMAGE</div>
 
               <div class="transport-row">
                 <button class="oled-btn" id="btn-play-pause" title="Play / Pause Loaded Audio File [Space]">&#9654;</button>
-                <input type="range" id="file-scrub" min="0" max="1000" step="1" value="0" disabled title="Scrub Audio Playback">
-                <span id="file-timecode">00:00 / 00:00</span>
+                <div id="ascii-scrub" class="ascii-scrub disabled" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" title="Click or Drag to Scrub Audio">[░░░░░░░░░░░░]</div>
+                <span id="file-timecode">00:00/00:00</span>
               </div>
             </div>
           </div>
 
-          <!-- COLUMN 3: DOMAIN DIALS (6 MACHINED SYNTH POTENTIOMETERS) -->
+          <!-- COLUMN 3: DOMAIN DIALS (6 SILK-SCREENED SYNTH POTENTIOMETERS) -->
           <div class="column" data-col="dials">
             <div class="col-header" id="hdr-dials">DOMAIN DIALS</div>
             <div class="dials-row">
@@ -1250,7 +1255,7 @@
            ================================================================= -->
       <div id="atelier-shelf">
 
-        <!-- ROW 1: FORMATION [M] (9 ENGINES INCLUDING IX. RELIC IMAGE-TO-STRATA) -->
+        <!-- ROW 1: FORMATION [M] -->
         <div class="shelf-row">
           <div class="shelf-label">FORMATION [M]</div>
           <div class="shelf-btn-group" id="formation-buttons"></div>
@@ -1272,7 +1277,7 @@
           </div>
         </div>
 
-        <!-- ROW 3: PALETTE [P] (10 HIGH-CONTRAST QUIET MACHINERY MINERAL PALETTES) -->
+        <!-- ROW 3: PALETTE [P] -->
         <div class="shelf-row">
           <div class="shelf-label">PALETTE [P]</div>
           <div class="shelf-btn-group" id="palette-buttons"></div>
@@ -1292,8 +1297,8 @@
   /* ===========================================================================
      SECTION A: HACKABLE CODEBOX (EDIT DIRECTLY LIKE A gen~ CODEBOX)
      ---------------------------------------------------------------------------
-     Gold Core Engine + Etched Mineral Hardware Chassis + `[O] FULL / 9:16 / 16:9`
-     Stage Framing + iPadOS Safari File Picker Compatibility.
+     Gold Core Engine + Etched Mineral Chassis + Hardware Cycle-Box + Discrete
+     ASCII Block Scrubber + Pixel-Snapped OLED Trace + `[O] FULL/9:16/16:9`.
      =========================================================================== */
 
   const FORMATIONS = [
@@ -2505,7 +2510,7 @@
   }
 
   /* ===========================================================================
-     SECTION B: APPLICATION STATE, PULSAR BUS SIDECHAIN & ASPECT FRAMING STATE
+     SECTION B: APPLICATION STATE, PULSAR BUS SIDECHAIN & HARDWARE CYCLE-BOX
      =========================================================================== */
   function createVariantGenome(mutAmt) {
     return {
@@ -2545,7 +2550,7 @@
     artfxActive: false,
     spiritsActive: false,
     density2x: false,
-    aspectModeIdx: 0, // 0: FULL, 1: 9:16 VERTICAL, 2: 16:9 WIDE
+    aspectModeIdx: 0,
 
     relicLoaded: false,
     relicImageObj: null,
@@ -2569,7 +2574,10 @@
 
     lanesActive: [false, false, false, false],
 
+    micDevicesList: [{ deviceId: '', label: 'DEFAULT AUDIO INPUT' }],
+    micDeviceIdx: 0,
     selectedMicId: '',
+
     fileLoaded: false,
     fileUrl: null,
     wasPlayingBeforeSuspend: false,
@@ -2752,10 +2760,12 @@
     btnFile: document.getElementById('btn-file'),
     btnMon: document.getElementById('btn-mon'),
     fileUpload: document.getElementById('file-upload'),
-    micDevice: document.getElementById('mic-device'),
+    btnMicPrev: document.getElementById('btn-mic-prev'),
+    btnMicNext: document.getElementById('btn-mic-next'),
+    micDeviceLabel: document.getElementById('mic-device-label'),
     fileNameDisplay: document.getElementById('file-name-display'),
     btnPlayPause: document.getElementById('btn-play-pause'),
-    fileScrub: document.getElementById('file-scrub'),
+    asciiScrub: document.getElementById('ascii-scrub'),
     fileTimecode: document.getElementById('file-timecode'),
     audioPlayer: document.getElementById('audio-player'),
 
@@ -3032,7 +3042,6 @@
     const mode = state.aspectModeIdx;
 
     if (mode === 1) {
-      // 9:16 Vertical Stage Pillar (Social / Mobile Frame)
       const targetRatio = 9 / 16;
       stageH = winH;
       stageW = Math.min(winW, Math.round(stageH * targetRatio));
@@ -3041,7 +3050,6 @@
       }
       visCanvas.classList.add('framed');
     } else if (mode === 2) {
-      // 16:9 Widescreen Cinema Frame
       const targetRatio = 16 / 9;
       if (winW / winH > targetRatio) {
         stageH = winH;
@@ -3089,7 +3097,7 @@
   }
 
   /* ===========================================================================
-     SECTION E: WEB AUDIO 4-BAND CROSSOVER + TRUE PEAKAMP~ ENGINE
+     SECTION E: WEB AUDIO 4-BAND CROSSOVER + HARDWARE CYCLE-BOX & ASCII SCRUBBER
      =========================================================================== */
   let audioCtx = null;
   let inputGain = null;
@@ -3225,29 +3233,59 @@
     dom.btnPlayPause.classList.toggle('active', playing);
   }
 
+  function renderAsciiScrubBar(ratio) {
+    const cells = 12;
+    const filled = clamp(Math.round(clamp(ratio, 0, 1) * cells), 0, cells);
+    dom.asciiScrub.textContent = `[${'■'.repeat(filled)}${'░'.repeat(cells - filled)}]`;
+    dom.asciiScrub.setAttribute('aria-valuenow', String(Math.round(ratio * 100)));
+  }
+
+  function syncMicCyclerUI() {
+    const list = state.micDevicesList;
+    if (!list || list.length === 0) {
+      dom.micDeviceLabel.textContent = 'DEFAULT AUDIO INPUT';
+      return;
+    }
+    const idx = ((state.micDeviceIdx % list.length) + list.length) % list.length;
+    state.micDeviceIdx = idx;
+    state.selectedMicId = list[idx].deviceId;
+    dom.micDeviceLabel.textContent = list[idx].label;
+  }
+
+  function cycleMicDevice(delta) {
+    const list = state.micDevicesList;
+    if (!list || list.length <= 1) {
+      engageMicInput();
+      return;
+    }
+    state.micDeviceIdx = (state.micDeviceIdx + delta + list.length) % list.length;
+    syncMicCyclerUI();
+    showToast(`INPUT // ${list[state.micDeviceIdx].label}`);
+    if (state.sourceMode === 'mic') {
+      engageMicInput();
+    }
+  }
+
   async function populateMicDevices() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const inputs = devices.filter((d) => d.kind === 'audioinput');
-      const current = state.selectedMicId || dom.micDevice.value;
-      dom.micDevice.innerHTML = '';
-
       if (inputs.length === 0) {
-        const opt = document.createElement('option');
-        opt.value = '';
-        opt.textContent = 'NO AUDIO INPUTS';
-        dom.micDevice.appendChild(opt);
+        state.micDevicesList = [{ deviceId: '', label: 'NO AUDIO INPUTS' }];
+        state.micDeviceIdx = 0;
+        syncMicCyclerUI();
         return;
       }
 
-      inputs.forEach((dev, idx) => {
-        const opt = document.createElement('option');
-        opt.value = dev.deviceId;
-        opt.textContent = (dev.label || `AUDIO INPUT ${idx + 1}`).toUpperCase();
-        if (dev.deviceId === current) opt.selected = true;
-        dom.micDevice.appendChild(opt);
-      });
+      state.micDevicesList = inputs.map((dev, idx) => ({
+        deviceId: dev.deviceId,
+        label: (dev.label || `AUDIO INPUT ${idx + 1}`).toUpperCase()
+      }));
+
+      const matchIdx = state.micDevicesList.findIndex((d) => d.deviceId === state.selectedMicId);
+      state.micDeviceIdx = matchIdx >= 0 ? matchIdx : 0;
+      syncMicCyclerUI();
     } catch (_) {}
   }
 
@@ -3288,7 +3326,7 @@
       updateMonitorUI();
 
       await populateMicDevices();
-      showToast('LIVE DI / MIC ENGAGED (MON: ISO)');
+      showToast(`LIVE DI // ${state.micDevicesList[state.micDeviceIdx].label.slice(0, 26)}`);
     } catch (err) {
       const msg = err.name === 'NotAllowedError'
         ? 'MIC PERMISSION DENIED IN BROWSER OR OS'
@@ -3316,9 +3354,9 @@
       dom.fileNameDisplay.title = fileObj.name;
       dom.fileNameDisplay.classList.remove('empty');
 
-      dom.fileScrub.disabled = false;
-      dom.fileScrub.value = '0';
-      dom.fileTimecode.textContent = '00:00 / 00:00';
+      dom.asciiScrub.classList.remove('disabled');
+      renderAsciiScrubBar(0);
+      dom.fileTimecode.textContent = '00:00/00:00';
       state.fileLoaded = true;
     }
 
@@ -4225,8 +4263,8 @@
       const stageObj = SUITE_TITLE_STAGES[stageIdx];
       const entry = stageObj.entries[entryIdx];
 
-      const driftPxX = Math.sin(state.idleDuration * 0.14) * (visCanvas.width * 0.14);
-      const driftPxY = Math.cos(state.idleDuration * 0.10) * (visCanvas.height * 0.11);
+      const driftPxX = Math.sin(state.idleDuration * 0.14) * (visCanvas.width * 0.12);
+      const driftPxY = Math.cos(state.idleDuration * 0.10) * (visCanvas.height * 0.10);
 
       const arcUncanny = clamp(state.idleDuration / 180.0, 0, 1);
       const cycleFade = isReleasing ? ip : Math.sin(phrasePhase * PI);
@@ -4236,7 +4274,7 @@
         const ramp = state.activeGlyphs.length > 0 ? state.activeGlyphs : ['·', '∶', '┼', '◈'];
         const decayAmt = clamp((1.0 - cycleFade) * 0.72 + arcUncanny * 0.50 + erosion * 0.35, 0, 1);
 
-        const mainFontPx = clamp(Math.round(Math.min(visCanvas.width, visCanvas.height) * 0.034), 15, 28);
+        const mainFontPx = clamp(Math.round(Math.min(visCanvas.width, visCanvas.height) * 0.034), 14, 28);
         const subFontPx = Math.max(10, Math.round(mainFontPx * 0.62));
         const charAdvance = Math.round(mainFontPx * 0.70);
         const microFontPx = Math.max(8, Math.round(mainFontPx * 0.36));
@@ -4329,7 +4367,7 @@
   }
 
   /* ===========================================================================
-     SECTION H: OLED SCOPE, STRATA METERS & TRANSPORT TELEMETRY
+     SECTION H: PIXEL-SNAPPED DOTTED OLED SCOPE & HARDWARE TELEMETRY
      =========================================================================== */
   function renderScope() {
     if (!state.hudVisible) return;
@@ -4339,48 +4377,38 @@
     scopeCtx.fillStyle = '#030403';
     scopeCtx.fillRect(0, 0, w, h);
 
-    scopeCtx.strokeStyle = '#151c18';
-    scopeCtx.lineWidth = 1;
-    scopeCtx.beginPath();
-    scopeCtx.moveTo(0, h * 0.5);
-    scopeCtx.lineTo(w, h * 0.5);
-    scopeCtx.stroke();
+    // Dotted 2px graticule midline
+    scopeCtx.fillStyle = '#18221d';
+    const midY = Math.floor(h * 0.5);
+    for (let x = 2; x < w - 2; x += 4) {
+      scopeCtx.fillRect(x, midY, 1, 1);
+    }
 
     const active = scopeAnalyser && audioCtx && audioCtx.state === 'running' &&
       (state.sourceMode === 'mic' || (state.sourceMode === 'file' && !dom.audioPlayer.paused));
 
     if (!active) {
-      scopeCtx.strokeStyle = state.frozen ? '#4f99c7' : (state.idlePresence > 0.1 ? '#57b570' : '#3d5247');
-      scopeCtx.lineWidth = 1;
-      scopeCtx.beginPath();
-      for (let x = 0; x < w; x++) {
+      scopeCtx.fillStyle = state.frozen ? '#487e9e' : (state.idlePresence > 0.1 ? '#4e8f60' : '#3d5247');
+      for (let x = 2; x < w - 2; x += 3) {
         const u = x / w;
         const amp = state.idlePresence > 0.1 ? 4.5 : 2.5;
-        const y = h * 0.5 + Math.sin(u * TAU * 2.0 + state.morphTime * 1.8) * Math.sin(u * PI) * amp;
-        if (x === 0) scopeCtx.moveTo(x, y);
-        else scopeCtx.lineTo(x, y);
+        const y = Math.round(midY + Math.sin(u * TAU * 2.0 + state.morphTime * 1.8) * Math.sin(u * PI) * amp);
+        scopeCtx.fillRect(x, y, 2, 2);
       }
-      scopeCtx.stroke();
       return;
     }
 
     scopeAnalyser.getByteTimeDomainData(scopeBytes);
 
     if (state.scopeMode === 0) {
-      scopeCtx.lineWidth = 1.5;
-      scopeCtx.strokeStyle = state.frozen ? '#4f99c7' : '#57b570';
-      scopeCtx.beginPath();
-      const sliceW = w / scopeBytes.length;
-      let x = 0;
-      for (let i = 0; i < scopeBytes.length; i++) {
-        const v = scopeBytes[i] / 128.0;
-        const y = (v * h) * 0.5;
-        if (i === 0) scopeCtx.moveTo(x, y);
-        else scopeCtx.lineTo(x, y);
-        x += sliceW;
+      // Coarse 2px pixel-snapped dotted trace matching the main ASCII grid
+      scopeCtx.fillStyle = state.frozen ? '#487e9e' : '#4e8f60';
+      for (let x = 1; x < w - 1; x += 2) {
+        const sIdx = Math.min(scopeBytes.length - 1, Math.floor((x / w) * scopeBytes.length));
+        const v = scopeBytes[sIdx] / 128.0;
+        const y = clamp(Math.floor((v * h) * 0.5), 1, h - 3);
+        scopeCtx.fillRect(x, y, 2, 2);
       }
-      scopeCtx.lineTo(w, h * 0.5);
-      scopeCtx.stroke();
     } else {
       let peak = 0;
       for (let i = 0; i < scopeBytes.length; i++) {
@@ -4389,10 +4417,12 @@
       }
       state.seismoHistory.shift();
       state.seismoHistory.push(peak);
-      scopeCtx.fillStyle = '#c45858';
-      for (let x = 0; x < w; x++) {
-        const bh = state.seismoHistory[x] * h;
-        scopeCtx.fillRect(x, h - bh, 1, bh);
+      scopeCtx.fillStyle = '#9e4b4b';
+      for (let x = 1; x < w - 1; x += 2) {
+        const bh = Math.floor(state.seismoHistory[x] * (h - 2));
+        for (let py = h - 2; py >= h - 2 - bh; py -= 2) {
+          scopeCtx.fillRect(x, py, 1, 1);
+        }
       }
     }
   }
@@ -4408,8 +4438,8 @@
     if (state.fileLoaded && !state.isScrubbing && Number.isFinite(dom.audioPlayer.duration) && dom.audioPlayer.duration > 0) {
       const cur = dom.audioPlayer.currentTime || 0;
       const dur = dom.audioPlayer.duration;
-      dom.fileScrub.value = String(Math.round((cur / dur) * 1000));
-      dom.fileTimecode.textContent = `${formatTime(cur)} / ${formatTime(dur)}`;
+      renderAsciiScrubBar(cur / dur);
+      dom.fileTimecode.textContent = `${formatTime(cur)}/${formatTime(dur)}`;
     }
   }
 
@@ -4822,10 +4852,20 @@
     }
   }
 
+  function scrubToPointer(clientX) {
+    if (!state.fileLoaded || !Number.isFinite(dom.audioPlayer.duration) || dom.audioPlayer.duration <= 0) return;
+    const rect = dom.asciiScrub.getBoundingClientRect();
+    const ratio = clamp((clientX - rect.left) / Math.max(1, rect.width), 0, 1);
+    const targetSec = ratio * dom.audioPlayer.duration;
+    dom.audioPlayer.currentTime = targetSec;
+    renderAsciiScrubBar(ratio);
+    dom.fileTimecode.textContent = `${formatTime(targetSec)}/${formatTime(dom.audioPlayer.duration)}`;
+  }
+
   function wireControls() {
     scopeCanvas.addEventListener('click', () => {
       state.scopeMode = 1 - state.scopeMode;
-      showToast(state.scopeMode === 0 ? 'OLED // WAVEFORM' : 'OLED // SEISMOGRAPH');
+      showToast(state.scopeMode === 0 ? 'OLED // PIXEL WAVEFORM' : 'OLED // SEISMOGRAPH');
     });
 
     dom.btnVizScope.addEventListener('click', toggleVizScopeOverride);
@@ -4851,31 +4891,37 @@
       showToast(`SPEAKER MONITOR: ${state.monitorOn ? 'ON' : 'OFF'}`);
     });
 
-    dom.micDevice.addEventListener('change', (e) => {
-      state.selectedMicId = e.target.value;
-      if (state.sourceMode === 'mic') {
-        engageMicInput();
-      }
-    });
+    dom.btnMicPrev.addEventListener('click', () => cycleMicDevice(-1));
+    dom.btnMicNext.addEventListener('click', () => cycleMicDevice(1));
+    dom.micDeviceLabel.addEventListener('click', () => cycleMicDevice(1));
 
     dom.btnPlayPause.addEventListener('click', toggleFilePlayPause);
 
     dom.audioPlayer.addEventListener('loadedmetadata', () => {
-      dom.fileTimecode.textContent = `00:00 / ${formatTime(dom.audioPlayer.duration)}`;
+      dom.fileTimecode.textContent = `00:00/${formatTime(dom.audioPlayer.duration)}`;
     });
     dom.audioPlayer.addEventListener('play', updatePlayPauseUI);
     dom.audioPlayer.addEventListener('pause', updatePlayPauseUI);
 
-    dom.fileScrub.addEventListener('pointerdown', () => { state.isScrubbing = true; });
-    dom.fileScrub.addEventListener('input', (e) => {
-      if (!state.fileLoaded || !Number.isFinite(dom.audioPlayer.duration)) return;
-      const targetSec = (Number(e.target.value) / 1000) * dom.audioPlayer.duration;
-      dom.audioPlayer.currentTime = targetSec;
-      dom.fileTimecode.textContent = `${formatTime(targetSec)} / ${formatTime(dom.audioPlayer.duration)}`;
+    // Discrete ASCII block scrubber pointer interaction
+    dom.asciiScrub.addEventListener('pointerdown', (e) => {
+      if (!state.fileLoaded) return;
+      e.preventDefault();
+      state.isScrubbing = true;
+      scrubToPointer(e.clientX);
+      try { dom.asciiScrub.setPointerCapture(e.pointerId); } catch (_) {}
     });
-    const endScrub = () => { state.isScrubbing = false; };
-    dom.fileScrub.addEventListener('pointerup', endScrub);
-    dom.fileScrub.addEventListener('change', endScrub);
+    dom.asciiScrub.addEventListener('pointermove', (e) => {
+      if (!state.isScrubbing) return;
+      scrubToPointer(e.clientX);
+    });
+    const endScrub = (e) => {
+      if (!state.isScrubbing) return;
+      state.isScrubbing = false;
+      try { dom.asciiScrub.releasePointerCapture(e.pointerId); } catch (_) {}
+    };
+    dom.asciiScrub.addEventListener('pointerup', endScrub);
+    dom.asciiScrub.addEventListener('pointercancel', endScrub);
 
     for (let i = 0; i < 4; i++) {
       dom.laneBtns[i].addEventListener('click', () => toggleVisualLane(i));
