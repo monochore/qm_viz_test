@@ -6,7 +6,7 @@
 <title>QUIET MACHINERY // VISUALISER</title>
 <style>
   /* =========================================================================
-     1. QUIET MACHINERY // IN-WORLD ETCHED MINERAL & SONGS OF SYX TOKENS
+     01. COLOR TOKENS & BASE RESET
      ========================================================================= */
   :root {
     --bg: #050605;
@@ -16,7 +16,6 @@
     --border-inner: #27342d;
     --col-div: rgba(93, 120, 106, 0.28);
 
-    /* Silk-screened desaturated mineral pigments (VERDIGRIS / OCHRE / SLATE / CINNABAR) */
     --c-green: #4e8f60;
     --c-amber: #a67a3c;
     --c-cyan: #487e9e;
@@ -56,7 +55,7 @@
   }
 
   /* =========================================================================
-     2. STAGE-FRAMED ASCII CANVAS (SUPPORTS FULL, 9:16 VERTICAL & 16:9 WIDE)
+     02. STAGE VIEWPORT & OVERLAYS
      ========================================================================= */
   #stage-viewport {
     position: fixed;
@@ -180,7 +179,7 @@
   }
 
   /* =========================================================================
-     3. IN-WORLD ETCHED STONE & ASCII HARDWARE CHASSIS (BOTTOM-CENTERED)
+     03. CONTROL CHASSIS LAYOUT
      ========================================================================= */
   #chassis-dock {
     position: fixed;
@@ -296,7 +295,7 @@
   .col-header::after  { content: ' ·'; color: var(--border-main); }
 
   /* =========================================================================
-     4. UPPER DECK COLUMN 1: SYSTEM & PIXEL-SNAPPED OLED SCOPE
+     04. SYSTEM & OLED MODULE
      ========================================================================= */
   .oled-container {
     width: 100%;
@@ -442,7 +441,7 @@
   }
 
   /* =========================================================================
-     5. UPPER DECK COLUMN 2: BESPOKE HARDWARE CYCLE-BOX & ASCII BLOCK SCRUBBER
+     05. INGEST & TRANSPORT MODULE
      ========================================================================= */
   .ingest-stack {
     display: flex;
@@ -452,7 +451,6 @@
     justify-content: space-between;
   }
 
-  /* Custom Hardware Cycle-Box replacing native <select> */
   .mic-cycler {
     display: grid;
     grid-template-columns: 18px 1fr 18px;
@@ -538,7 +536,6 @@
     font-size: 9px;
   }
 
-  /* Custom Discrete ASCII Block Scrubber ([■■■■░░░░░░░░]) replacing <input type="range"> */
   .ascii-scrub {
     flex: 1;
     min-width: 64px;
@@ -571,7 +568,7 @@
   }
 
   /* =========================================================================
-     6. UPPER DECK COLUMN 3: SILK-SCREENED SYNTH POTENTIOMETERS (6 DIALS)
+     06. DOMAIN DIALS MODULE
      ========================================================================= */
   .dials-row {
     display: grid;
@@ -657,7 +654,7 @@
   }
 
   /* =========================================================================
-     7. UPPER DECK COLUMN 4: STRATA LANES, FX/DENSITY & ASPECT FRAMING
+     07. STRATA LANES & VIEW CONTROLS
      ========================================================================= */
   .strata-stack {
     display: flex;
@@ -748,7 +745,7 @@
   }
 
   /* =========================================================================
-     8. DEDICATED LOWER ATELIER SHELF (#atelier-shelf)
+     08. ATELIER SHELF (FORMATIONS, GLYPHS & PALETTES)
      ========================================================================= */
   #atelier-shelf {
     border-top: 1px solid var(--col-div);
@@ -943,6 +940,9 @@
     height: 100%;
   }
 
+  /* =========================================================================
+     09. RESPONSIVE BREAKPOINTS
+     ========================================================================= */
   @media (max-width: 1080px) {
     .upper-deck {
       grid-template-columns: 1fr;
@@ -997,18 +997,16 @@
 </head>
 <body>
 
-  <!-- CENTERED STAGE VIEWPORT (SUPPORTS FULL, 9:16 VERTICAL & 16:9 WIDE) -->
+  <!-- STAGE VIEWPORT -->
   <div id="stage-viewport">
-    <canvas id="visualiser-canvas" aria-label="QUIET MACHINERY Architectural Visualiser"></canvas>
+    <canvas id="visualiser-canvas" aria-label="QUIET MACHINERY Visualiser"></canvas>
   </div>
 
-  <!-- TOP-RIGHT STAGE PROJECTION TOGGLE -->
-  <button id="corner-toggle" title="Hide or Restore Console [H]">HIDE [H]</button>
-
-  <!-- INLINE TRANSIENT STATUS TOAST -->
+  <!-- HUD TOGGLE & STATUS TOAST -->
+  <button id="corner-toggle" title="Toggle Console [H]">HIDE [H]</button>
   <div id="qm-toast">INITIALIZED</div>
 
-  <!-- FULL-WINDOW DRAG & DROP AUDIO OR IMAGE OVERLAY -->
+  <!-- DRAG & DROP OVERLAY -->
   <div id="drop-overlay">
     <div class="drop-plaque">
       <div class="drop-title">CAST AUDIO OR IMAGE INTO MORTAR</div>
@@ -1016,74 +1014,71 @@
     </div>
   </div>
 
-  <!-- COMPACT TWO-TIER ETCHED MINERAL HARDWARE CHASSIS -->
+  <!-- HARDWARE CONTROL CHASSIS -->
   <div id="chassis-dock">
     <div id="chassis">
 
-      <!-- =================================================================
-           UPPER DECK: SIDE RAILS + 4 COMPACT HARDWARE COLUMNS
-           ================================================================= -->
+      <!-- UPPER DECK -->
       <div class="upper-deck">
         <div class="vertical-text">QUIET MACHINERY</div>
 
         <div class="panel-core">
 
-          <!-- COLUMN 1: SYSTEM & OLED -->
+          <!-- MODULE 01: SYSTEM & OLED -->
           <div class="column" data-col="sys">
             <div class="col-header">SYSTEM &amp; OLED</div>
             <div class="oled-container">
               <div class="scope-strip">
-                <canvas id="scope" width="118" height="36" title="Click to toggle Pixel Waveform / Peak Seismograph"></canvas>
-                <button type="button" id="btn-viz-scope" title="Override Main Canvas with Full-Screen Live ASCII Scope [V]">VIZ</button>
+                <canvas id="scope" width="118" height="36" title="Toggle Waveform / Seismograph"></canvas>
+                <button type="button" id="btn-viz-scope" title="Full-Screen Scope Override [V]">VIZ</button>
               </div>
               <div class="oled-row">
-                <button class="oled-btn" id="btn-activate" title="Initialize, Resume, or Suspend Audio Engine (Idle Title Liturgy When Silent)">ACTIVATE</button>
-                <button class="oled-btn" id="btn-scatter" title="Randomize Creative Dials &amp; Seed (Locks GAIN, GROW &amp; PRLX) [S]">SCATTER</button>
-                <button class="oled-btn" id="btn-drift" title="Slow Organic Random Walk on Creative Dials (Locks GAIN, GROW &amp; PRLX)">DRIFT</button>
+                <button class="oled-btn" id="btn-activate" title="Start / Suspend Audio Engine">ACTIVATE</button>
+                <button class="oled-btn" id="btn-scatter" title="Randomize Dials &amp; Seed [S]">SCATTER</button>
+                <button class="oled-btn" id="btn-drift" title="Slow Organic Parameter Walk">DRIFT</button>
               </div>
               <div class="oled-row">
-                <button class="oled-btn freeze" id="btn-freeze" title="Freeze Current Trace in Mortar [X]">FREEZE</button>
-                <button class="oled-btn cast" id="btn-cast" title="Export Patinated Archival PNG Plate in Active Aspect Ratio [C]">[C] CAST</button>
+                <button class="oled-btn freeze" id="btn-freeze" title="Freeze Frame [X]">FREEZE</button>
+                <button class="oled-btn cast" id="btn-cast" title="Export Archival PNG Plate [C]">[C] CAST</button>
               </div>
             </div>
           </div>
 
-          <!-- COLUMN 2: INGEST & TRANSPORT -->
+          <!-- MODULE 02: INGEST & TRANSPORT -->
           <div class="column" data-col="ingest">
             <div class="col-header">INGEST &amp; TRANSPORT</div>
             <div class="ingest-stack">
               <div class="oled-row">
-                <button class="oled-btn" id="btn-mic" title="Engage Live DI / Microphone Input (Isolated From Speakers)">MIC</button>
-                <button class="oled-btn" id="btn-file" title="Upload Audio or Image File (iPadOS &amp; Desktop Compatible)">FILE</button>
-                <button class="oled-btn active-amber" id="btn-mon" title="Toggle Speaker Monitor for File Playback">MON: ON</button>
+                <button class="oled-btn" id="btn-mic" title="Engage Live Audio Input">MIC</button>
+                <button class="oled-btn" id="btn-file" title="Load Audio or Image File">FILE</button>
+                <button class="oled-btn active-amber" id="btn-mon" title="Toggle Speaker Monitor">MON: ON</button>
                 <input type="file" id="file-upload" accept=".wav,.mp3,.m4a,.flac,.ogg,.aiff,.aif,.png,.jpg,.jpeg,.webp" style="display:none;">
               </div>
 
-              <!-- Custom Hardware Cycle-Box replacing native <select> -->
-              <div class="mic-cycler" title="Cycle Audio Interface / Microphone Channel">
+              <div class="mic-cycler" title="Select Audio Input Channel">
                 <button type="button" class="mic-step-btn" id="btn-mic-prev" aria-label="Previous Audio Input">&lt;</button>
                 <div id="mic-device-label">DEFAULT AUDIO INPUT</div>
                 <button type="button" class="mic-step-btn" id="btn-mic-next" aria-label="Next Audio Input">&gt;</button>
               </div>
 
-              <div id="file-name-display" class="empty" title="No audio file loaded">NO FILE // DROP AUDIO OR IMAGE</div>
+              <div id="file-name-display" class="empty" title="No file loaded">NO FILE // DROP AUDIO OR IMAGE</div>
 
               <div class="transport-row">
-                <button class="oled-btn" id="btn-play-pause" title="Play / Pause Loaded Audio File [Space]">&#9654;</button>
-                <div id="ascii-scrub" class="ascii-scrub disabled" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" title="Click or Drag to Scrub Audio">[░░░░░░░░░░░░]</div>
+                <button class="oled-btn" id="btn-play-pause" title="Play / Pause [Space]">&#9654;</button>
+                <div id="ascii-scrub" class="ascii-scrub disabled" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" title="Scrub Audio">[░░░░░░░░░░░░]</div>
                 <span id="file-timecode">00:00/00:00</span>
               </div>
             </div>
           </div>
 
-          <!-- COLUMN 3: DOMAIN DIALS (6 SILK-SCREENED SYNTH POTENTIOMETERS) -->
+          <!-- MODULE 03: DOMAIN DIALS -->
           <div class="column" data-col="dials">
             <div class="col-header" id="hdr-dials">DOMAIN DIALS</div>
             <div class="dials-row">
               <!-- GAIN -->
               <div class="knob-container d-green">
                 <div class="knob-label">GAIN</div>
-                <svg class="knob-svg" id="knob-gain" data-param="gain" data-val="0.50" data-default="0.50" viewBox="0 0 44 44" title="Bus Drive &amp; Input Gain (0.25x - 4.00x) | Push Past Unity for Rhythmic Tearing | Dbl-Click Reset">
+                <svg class="knob-svg" id="knob-gain" data-param="gain" data-val="0.50" data-default="0.50" viewBox="0 0 44 44" title="Input Gain (0.25x - 4.00x)">
                   <g class="knob-ticks">
                     <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-135,22,22)"/>
                     <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-90,22,22)"/>
@@ -1103,7 +1098,7 @@
               <!-- EROSION -->
               <div class="knob-container d-amber">
                 <div class="knob-label">EROSION</div>
-                <svg class="knob-svg" id="knob-erosion" data-param="erosion" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Stone Weathering, Gale Gusts &amp; Pareidolia Relief Emergence (>0.25) | Default: 0.00">
+                <svg class="knob-svg" id="knob-erosion" data-param="erosion" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Stone Weathering &amp; Gusts">
                   <g class="knob-ticks">
                     <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-135,22,22)"/>
                     <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-90,22,22)"/>
@@ -1123,7 +1118,7 @@
               <!-- TESSELLATION -->
               <div class="knob-container d-cyan">
                 <div class="knob-label">TESSELLATION</div>
-                <svg class="knob-svg" id="knob-tessellation" data-param="tessellation" data-val="0.50" data-default="0.50" viewBox="0 0 44 44" title="Subdivision, Ring Count &amp; Tile Scale | Default: 0.50">
+                <svg class="knob-svg" id="knob-tessellation" data-param="tessellation" data-val="0.50" data-default="0.50" viewBox="0 0 44 44" title="Subdivision &amp; Grid Frequency">
                   <g class="knob-ticks">
                     <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-135,22,22)"/>
                     <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-90,22,22)"/>
@@ -1143,7 +1138,7 @@
               <!-- FRACTURE -->
               <div class="knob-container d-red">
                 <div class="knob-label">FRACTURE</div>
-                <svg class="knob-svg" id="knob-fracture" data-param="fracture" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Sheet Lightning, Masonry Calving &amp; Inward Border Shatter (>0.45) | Default: 0.00">
+                <svg class="knob-svg" id="knob-fracture" data-param="fracture" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Transient Shear, Calving &amp; Lightning">
                   <g class="knob-ticks">
                     <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-135,22,22)"/>
                     <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-90,22,22)"/>
@@ -1163,7 +1158,7 @@
               <!-- GROW -->
               <div class="knob-container d-sage">
                 <div class="knob-label">GROW</div>
-                <svg class="knob-svg" id="knob-grow" data-param="grow" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Evolves Selected Engine &amp; Emergent Occult Pareidolia Within Domain Rules | Locked on SCATTER">
+                <svg class="knob-svg" id="knob-grow" data-param="grow" data-val="0.00" data-default="0.00" viewBox="0 0 44 44" title="Morphological Mutation &amp; Pareidolia">
                   <g class="knob-ticks">
                     <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-135,22,22)"/>
                     <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-90,22,22)"/>
@@ -1183,7 +1178,7 @@
               <!-- PRLX -->
               <div class="knob-container d-slate">
                 <div class="knob-label">PRLX</div>
-                <svg class="knob-svg" id="knob-prlx" data-param="prlx" data-val="0.25" data-default="0.25" viewBox="0 0 44 44" title="2.5D Z-Plane Parallax Separation &amp; Wide-Angle Perspective (>0.45) | Default: 0.25">
+                <svg class="knob-svg" id="knob-prlx" data-param="prlx" data-val="0.25" data-default="0.25" viewBox="0 0 44 44" title="2.5D Plane Separation &amp; Perspective">
                   <g class="knob-ticks">
                     <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-135,22,22)"/>
                     <line x1="22" y1="1.5" x2="22" y2="4.5" transform="rotate(-90,22,22)"/>
@@ -1203,42 +1198,42 @@
             <div class="dials-hint">DRAG · SHIFT FINE · DBL-CLK RESET</div>
           </div>
 
-          <!-- COLUMN 4: STRATA LANES, FX/DENSITY & ASPECT FRAMING -->
+          <!-- MODULE 04: STRATA & VIEW -->
           <div class="column" data-col="strata">
             <div class="col-header">STRATA &amp; VIEW</div>
             <div class="strata-stack">
-              <div class="meters-block" title="Click Square or Label to Engage Visual Layer [Q / W / E / R] · [A] Toggle All">
+              <div class="meters-block" title="Engage Visual Layers [Q / W / E / R] · [A] All">
                 <div class="meter-row disengaged" id="mrow-0">
                   <span class="meter-label" data-lane="0" style="color: var(--c-green);">I. STRATA [Q]</span>
                   <div class="meter-track"><div class="meter-fill" id="meter-0" style="background: var(--c-green);"></div></div>
-                  <button type="button" class="lane-toggle-sq" id="lane-btn-0" data-lane="0" aria-pressed="false" title="Engage Z-1 Midground: Lithic Architecture, Pareidolia &amp; Relic [Q]"></button>
+                  <button type="button" class="lane-toggle-sq" id="lane-btn-0" data-lane="0" aria-pressed="false" title="Layer I: Midground Architecture [Q]"></button>
                 </div>
                 <div class="meter-row disengaged" id="mrow-1">
                   <span class="meter-label" data-lane="1" style="color: var(--c-amber);">II. EROSION [W]</span>
                   <div class="meter-track"><div class="meter-fill" id="meter-1" style="background: var(--c-amber);"></div></div>
-                  <button type="button" class="lane-toggle-sq" id="lane-btn-1" data-lane="1" aria-pressed="false" title="Engage Z-2 Foreground: Engine-Specific Dust Geometries [W]"></button>
+                  <button type="button" class="lane-toggle-sq" id="lane-btn-1" data-lane="1" aria-pressed="false" title="Layer II: Foreground Particles [W]"></button>
                 </div>
                 <div class="meter-row disengaged" id="mrow-2">
                   <span class="meter-label" data-lane="2" style="color: var(--c-cyan);">III. SILICA [E]</span>
                   <div class="meter-track"><div class="meter-fill" id="meter-2" style="background: var(--c-cyan);"></div></div>
-                  <button type="button" class="lane-toggle-sq" id="lane-btn-2" data-lane="2" aria-pressed="false" title="Engage Z-0 Deep Background: Patina Wall &amp; Sheet Lightning [E]"></button>
+                  <button type="button" class="lane-toggle-sq" id="lane-btn-2" data-lane="2" aria-pressed="false" title="Layer III: Background Patina [E]"></button>
                 </div>
                 <div class="meter-row disengaged" id="mrow-3">
                   <span class="meter-label" data-lane="3" style="color: var(--c-red);">IV. LETHE [R]</span>
                   <div class="meter-track"><div class="meter-fill" id="meter-3" style="background: var(--c-red);"></div></div>
-                  <button type="button" class="lane-toggle-sq" id="lane-btn-3" data-lane="3" aria-pressed="false" title="Engage Z-0/Z-1 Borders (Shatters Inward on High Transients) [R]"></button>
+                  <button type="button" class="lane-toggle-sq" id="lane-btn-3" data-lane="3" aria-pressed="false" title="Layer IV: Peripheral Borders [R]"></button>
                 </div>
               </div>
 
               <div class="fx-btn-row">
-                <button type="button" class="oled-btn" id="btn-artfx" title="Engage Silhouette Occlusion, Volumetric Backlighting &amp; Directional Rim-Cast [T]">[T] ARTFX</button>
-                <button type="button" class="oled-btn" id="btn-spirits" title="Summon Engine-Specific Haunted Entities, Watcher Orbs &amp; Peering Eyes [Y]">[Y] SPIRITS</button>
-                <button type="button" class="oled-btn" id="btn-density" title="Toggle 1X Brutalist Terminal vs 2X High-Density Micro-Engraving Grid [Z]">[Z] 1X</button>
+                <button type="button" class="oled-btn" id="btn-artfx" title="Occlusion &amp; Volumetric Rim-Light [T]">[T] ARTFX</button>
+                <button type="button" class="oled-btn" id="btn-spirits" title="Summon Domain Entities [Y]">[Y] SPIRITS</button>
+                <button type="button" class="oled-btn" id="btn-density" title="Toggle 1X / 2X Grid Resolution [Z]">[Z] 1X</button>
               </div>
 
               <div class="view-btn-row">
-                <button class="oled-btn" id="btn-aspect" title="Cycle Stage Framing: FULL / 9:16 VERTICAL / 16:9 WIDE [O]">[O] FULL</button>
-                <button class="oled-btn active" id="btn-atelier" title="Toggle Formation, Symbol &amp; Palette Shelf [D]">[D] ATELIER</button>
+                <button class="oled-btn" id="btn-aspect" title="Stage Aspect: FULL / 9:16 / 16:9 [O]">[O] FULL</button>
+                <button class="oled-btn active" id="btn-atelier" title="Toggle Atelier Shelf [D]">[D] ATELIER</button>
                 <button class="oled-btn" id="btn-fullscreen" title="Toggle Fullscreen [F]">[F] SCRN</button>
                 <button class="oled-btn" id="btn-hide" title="Hide Console [H]">[H] HIDE</button>
               </div>
@@ -1250,34 +1245,32 @@
         <div class="vertical-text">VISUAL ENGINE</div>
       </div>
 
-      <!-- =================================================================
-           LOWER SHELF (#atelier-shelf): FORMATION / SYMBOLS / PALETTE
-           ================================================================= -->
+      <!-- LOWER SHELF: ATELIER -->
       <div id="atelier-shelf">
 
-        <!-- ROW 1: FORMATION [M] -->
+        <!-- FORMATIONS -->
         <div class="shelf-row">
           <div class="shelf-label">FORMATION [M]</div>
           <div class="shelf-btn-group" id="formation-buttons"></div>
           <div id="formation-subtitle">STEPPED PORTAL // APPARITION</div>
         </div>
 
-        <!-- ROW 2: SYMBOLS [G] + INTERACTIVE GLYPH STRIP & CUSTOM INPUT -->
+        <!-- SYMBOLS -->
         <div class="shelf-row">
           <div class="shelf-label">SYMBOLS [G]</div>
           <div class="shelf-btn-group" id="symbol-set-buttons"></div>
         </div>
         <div class="glyph-editor-row">
-          <div id="glyph-strip" title="Click individual glyphs to mute or unmute in real time"></div>
+          <div id="glyph-strip" title="Click glyphs to mute or unmute"></div>
           <div class="custom-glyph-wrap">
             <span class="custom-tag">CUSTOM</span>
             <input type="text" id="custom-glyph-input" maxlength="24" placeholder="·┼◈╬▓█" spellcheck="false" autocomplete="off">
-            <button class="shelf-btn" id="btn-custom-set" title="Apply Custom Symbol Ramp">SET</button>
-            <button class="shelf-btn" id="btn-custom-rst" title="Reset Active Symbol Set">RST</button>
+            <button class="shelf-btn" id="btn-custom-set" title="Apply Custom Ramp">SET</button>
+            <button class="shelf-btn" id="btn-custom-rst" title="Reset Symbol Set">RST</button>
           </div>
         </div>
 
-        <!-- ROW 3: PALETTE [P] -->
+        <!-- PALETTES -->
         <div class="shelf-row">
           <div class="shelf-label">PALETTE [P]</div>
           <div class="shelf-btn-group" id="palette-buttons"></div>
@@ -1287,7 +1280,6 @@
     </div>
   </div>
 
-  <!-- HIDDEN AUDIO ELEMENT FOR SEAMLESS LOOPING FILE PLAYBACK -->
   <audio id="audio-player" loop crossorigin="anonymous" style="display:none;"></audio>
 
 <script>
@@ -1295,12 +1287,8 @@
   'use strict';
 
   /* ===========================================================================
-     SECTION A: HACKABLE CODEBOX (EDIT DIRECTLY LIKE A gen~ CODEBOX)
-     ---------------------------------------------------------------------------
-     Gold Core Engine + Etched Mineral Chassis + Hardware Cycle-Box + Discrete
-     ASCII Block Scrubber + Pixel-Snapped OLED Trace + `[O] FULL/9:16/16:9`.
+     01. CONFIGURATION: FORMATIONS, GLYPH LEXICONS, PALETTES & IDLE TEXT
      =========================================================================== */
-
   const FORMATIONS = [
     { id: 0, label: 'I. MONOLITH',    subtitle: 'STEPPED PORTAL // APPARITION' },
     { id: 1, label: 'II. SEAL',       subtitle: 'SACRED ASTROLABE // WATCHER ORBS' },
@@ -1432,6 +1420,9 @@
     }
   ];
 
+  /* ===========================================================================
+     02. MATH UTILITIES & SIGNED DISTANCE FIELDS
+     =========================================================================== */
   const PI = Math.PI;
   const TAU = Math.PI * 2;
 
@@ -1461,6 +1452,9 @@
     return { x: nx * scale, y: ny * scale };
   }
 
+  /* ===========================================================================
+     03. PROCEDURAL ENTITY & RELIEF EVALUATORS
+     =========================================================================== */
   function evaluateSpectralFigure(nx, ny, col, row, f, vGen, figureScale, offsetX, offsetY) {
     const { p0, p1, b0, b1, b2, b3, tess } = f;
     const safeScale = Math.max(0.1, figureScale || 1.0);
@@ -1678,9 +1672,9 @@
     return { density, zone, peak };
   }
 
-  /**
-   * 5. GENERATIVE ARCHITECTURAL, OCCULT PAREIDOLIA & RELIC IMAGE EVALUATOR
-   */
+  /* ===========================================================================
+     04. FORMATION FIELD EVALUATOR (ENGINES I - IX)
+     =========================================================================== */
   function evaluateSingleFormation(fIdx, nx, ny, col, row, f, vGen) {
     const {
       p0, p1, p2, p3,
@@ -1699,7 +1693,7 @@
     const mut = clamp(vGen.mutAmt || 0, 0, 1);
     const occultEmergence = clamp((dialExplore - 0.22) * 1.45, 0, 1);
 
-    // ENGINE 1 — I. MONOLITH
+    // I. MONOLITH
     if (fIdx === 0) {
       const asymSkew = (vGen.g1 - 0.5) * 0.24 * mut;
       const splitGap = (mut > 0.45 && vGen.g2 > 0.55) ? (vGen.g2 - 0.55) * 0.32 * mut : 0;
@@ -1805,7 +1799,7 @@
         }
       }
 
-    // ENGINE 2 — II. SEAL
+    // II. SEAL
     } else if (fIdx === 1) {
       const eccX = (vGen.g1 - 0.5) * 0.14 * mut;
       const eccY = (vGen.g2 - 0.5) * 0.14 * mut;
@@ -1894,7 +1888,7 @@
         }
       }
 
-    // ENGINE 3 — III. MOSAIC
+    // III. MOSAIC
     } else if (fIdx === 2) {
       if (Math.abs(ny) <= 0.86 && Math.abs(nx) <= (cols / Math.max(1, rows)) * 0.86) {
         const wMod = Math.round((vGen.g1 - 0.5) * 5 * mut);
@@ -1987,7 +1981,7 @@
         }
       }
 
-    // ENGINE 4 — IV. STRATA
+    // IV. STRATA
     } else if (fIdx === 3) {
       const dipSlope = (vGen.g1 - 0.5) * 0.55 * mut;
       const syncline = Math.cos(nx * (2.5 + vGen.g4 * 3.0)) * 0.24 * mut;
@@ -2058,7 +2052,7 @@
         }
       }
 
-    // ENGINE 5 — V. OBELISK
+    // V. OBELISK
     } else if (fIdx === 4) {
       const idolDrive = spiritsOn
         ? clamp(0.55 + (b1 + b2) * 0.55, 0.35, 1.0)
@@ -2169,7 +2163,7 @@
         }
       }
 
-    // ENGINE 6 — VI. VAULT
+    // VI. VAULT
     } else if (fIdx === 5) {
       const engage = clamp(erosion * 0.45 + fracture * 0.55 + tess * 0.25 + mut * 0.55, 0, 1.4);
       const warpX = Math.sin(p1 * 0.85 + vGen.seed) * 0.24 * engage;
@@ -2242,7 +2236,7 @@
         }
       }
 
-    // ENGINE 7 — VII. CITADEL
+    // VII. CITADEL
     } else if (fIdx === 6) {
       const safeAspect = Math.max(0.5, cols / Math.max(1, rows));
       const maxW = safeAspect * 0.88;
@@ -2303,7 +2297,7 @@
         }
       }
 
-    // ENGINE 8 — VIII. HORIZON
+    // VIII. HORIZON
     } else if (fIdx === 7) {
       const shiftX = (vGen.g1 - 0.5) * 0.20 * mut;
       const shiftY = (vGen.g2 - 0.5) * 0.12 * mut;
@@ -2348,7 +2342,7 @@
         }
       }
 
-    // ENGINE 9 — IX. RELIC
+    // IX. RELIC
     } else if (fIdx === 8) {
       if (state.relicLoaded && relicLumaBuf.length === cols * rows && col >= 0 && col < cols && row >= 0 && row < rows) {
         const idx = row * cols + col;
@@ -2405,9 +2399,9 @@
     };
   }
 
-  /**
-   * 6. COMPOSITE MORPHOLOGICAL EVALUATOR WITH STRUCTURAL SURVIVAL FLOOR
-   */
+  /* ===========================================================================
+     05. COMPOSITE MORPH & WEATHERING EVALUATOR
+     =========================================================================== */
   function computeFormationCell(fCtx, nx, ny, col, row, wakeScar) {
     const {
       fIdx, morphAlpha,
@@ -2510,7 +2504,7 @@
   }
 
   /* ===========================================================================
-     SECTION B: APPLICATION STATE, PULSAR BUS SIDECHAIN & HARDWARE CYCLE-BOX
+     06. APPLICATION STATE & PARTICLE SYSTEM
      =========================================================================== */
   function createVariantGenome(mutAmt) {
     return {
@@ -2617,9 +2611,6 @@
     seismoHistory: new Array(156).fill(0)
   };
 
-  /* ===========================================================================
-     SECTION B2: LAYER II (ASPERITAS) ENGINE-SPECIFIC DUST GEOMETRY ENGINE
-     =========================================================================== */
   const PARTICLE_COUNT = 220;
   const dustParticles = [];
 
@@ -2735,7 +2726,7 @@
   }
 
   /* ===========================================================================
-     SECTION C: DOM REFERENCES
+     07. DOM REFERENCES
      =========================================================================== */
   const visCanvas = document.getElementById('visualiser-canvas');
   const ctx = visCanvas.getContext('2d', { alpha: false });
@@ -2818,7 +2809,7 @@
   }
 
   /* ===========================================================================
-     SECTION D: HIGH-DPI GLYPH ATLAS, RELIC INGEST & [C] CAST SNAPSHOT
+     08. OFFSCREEN GLYPH ATLAS, RELIC BUFFER & SNAPSHOT EXPORT
      =========================================================================== */
   const atlasCanvas = document.createElement('canvas');
   const atlasCtx = atlasCanvas.getContext('2d');
@@ -3097,7 +3088,7 @@
   }
 
   /* ===========================================================================
-     SECTION E: WEB AUDIO 4-BAND CROSSOVER + HARDWARE CYCLE-BOX & ASCII SCRUBBER
+     09. WEB AUDIO 4-BAND CROSSOVER & INPUT ROUTING
      =========================================================================== */
   let audioCtx = null;
   let inputGain = null;
@@ -3208,16 +3199,16 @@
       dom.btnMon.textContent = 'MON: ISO';
       dom.btnMon.disabled = true;
       dom.btnMon.classList.add('locked-iso');
-      dom.btnMon.title = 'Isolated in MIC Mode (Zero Speaker Feedback)';
+      dom.btnMon.title = 'Isolated in MIC Mode';
     } else {
       dom.btnMon.disabled = false;
       if (state.monitorOn) {
         dom.btnMon.textContent = 'MON: ON';
         dom.btnMon.classList.add('active-amber');
-        dom.btnMon.title = 'File Speaker Monitor Active — Click to Mute';
+        dom.btnMon.title = 'Speaker Monitor Active';
       } else {
         dom.btnMon.textContent = 'MON: OFF';
-        dom.btnMon.title = 'File Speaker Monitor Muted — Click to Audition';
+        dom.btnMon.title = 'Speaker Monitor Muted';
       }
     }
 
@@ -3386,7 +3377,7 @@
   }
 
   /* ===========================================================================
-     SECTION F: PULSAR-23 BUS SIDECHAIN HIERARCHY & 4 INDEPENDENT BAND CLOCKS
+     10. ENVELOPE FOLLOWERS, SIDECHAIN & TRANSIENT GATES
      =========================================================================== */
   function advanceMorphCycle(phaseStep) {
     state.morphCyclePhase += phaseStep;
@@ -3613,7 +3604,7 @@
   }
 
   /* ===========================================================================
-     SECTION G1: FULL-SCREEN ASCII OSCILLOSCOPE / SEISMOGRAPH ([V] VIZ MODE)
+     11. FULL-SCREEN SCOPE OVERRIDE ([V] MODE)
      =========================================================================== */
   function renderAsciiScopeOverride(t, b0, b1, b2, b3, gateShear) {
     const pal = PALETTES[state.paletteIdx];
@@ -3719,7 +3710,7 @@
   }
 
   /* ===========================================================================
-     SECTION G2: 5-LAYER PARALLAX & BOLD WHITE + 4X MICRO-SYMBOL TITLE LITURGY
+     12. MAIN 60FPS MULTI-PLANE COMPOSITOR
      =========================================================================== */
   function renderVisualiser(nowMs, dtSec) {
     const pal = PALETTES[state.paletteIdx];
@@ -3827,9 +3818,7 @@
     const shearSeed = state.gates.shear.seed;
     const dropSeed = state.gates.drop.seed;
 
-    // =========================================================================
-    // PRE-EVALUATE Z-PLANE 1 (MIDGROUND MONUMENT & RELIC IMAGE)
-    // =========================================================================
+    // Z-PLANE 1: PRE-EVALUATE MIDGROUND BUFFER
     if (state.lanesActive[0]) {
       for (let r = 0; r < rows; r++) {
         const rawNy = (r - cy) * invScale + camY;
@@ -3891,9 +3880,7 @@
       z1DensityBuf.fill(0);
     }
 
-    // =========================================================================
-    // Z-PLANE 0: DEEP BACKGROUND (CONTINUOUS ARTFX BACKGLOW, LIGHTNING & PATINA)
-    // =========================================================================
+    // Z-PLANE 0: BACKGROUND LIGHTING & PATINA WALL
     const bgCols = Math.ceil(visCanvas.width / dynBgCellPx);
     const bgRows = Math.ceil(visCanvas.height / dynBgCellPx);
     const bgCx = (bgCols - 1) * 0.5;
@@ -3993,9 +3980,7 @@
       }
     }
 
-    // =========================================================================
-    // LAYER 4 (IV. LETHE): PERIPHERAL BORDERS — SHATTER INWARD ON HIGH TRANSIENTS
-    // =========================================================================
+    // LAYER IV: PERIPHERAL BORDERS
     if (state.lanesActive[3]) {
       const letheEnergy = clamp(b3 * 1.25 * scDuck + b0 * 0.20 + 0.14, 0.14, 1.0);
       const borderShatter = clamp(Math.max(0, erosion - 0.35) * 1.1 + Math.max(0, effFrac - 0.30) * 1.35 + gateShear * 0.65, 0, 1.3);
@@ -4068,9 +4053,7 @@
       }
     }
 
-    // =========================================================================
-    // Z-PLANE 1: BLIT MIDGROUND MONUMENT + ARTFX DIRECTIONAL RIM-LIGHTING
-    // =========================================================================
+    // Z-PLANE 1: BLIT MIDGROUND ARCHITECTURE
     if (state.lanesActive[0]) {
       const boltDirX = Math.cos(state.gates.lightning.angle);
       const boltDirY = Math.sin(state.gates.lightning.angle);
@@ -4164,9 +4147,7 @@
       }
     }
 
-    // =========================================================================
-    // Z-PLANE 2: FOREGROUND ENGINE-SPECIFIC DUST & HAT PATTERNS (2.3x PARALLAX)
-    // =========================================================================
+    // Z-PLANE 2: FOREGROUND PARTICLES
     if (state.lanesActive[1]) {
       const highPresence = clamp((b2 * 0.80 + b3 * 1.15) * scDuck + b1 * 0.25 + erosion * 0.45, 0, 2.0);
       const speedScale = 0.25 + Math.pow(highPresence, 1.65) * 4.4 + gateShear * 2.8;
@@ -4248,9 +4229,7 @@
       }
     }
 
-    // =========================================================================
-    // LAYER 5: BOLD WHITE TITLE LITURGY WRAPPED IN 4X MICRO-SYMBOL FILIGREE
-    // =========================================================================
+    // IDLE TITLE OVERLAY (180s CYCLE)
     if (state.idlePresence > 0.03) {
       const ip = state.idlePresence;
       const isReleasing = (ip < state.prevIdlePresence);
@@ -4367,7 +4346,7 @@
   }
 
   /* ===========================================================================
-     SECTION H: PIXEL-SNAPPED DOTTED OLED SCOPE & HARDWARE TELEMETRY
+     13. OLED SCOPE & METER TELEMETRY
      =========================================================================== */
   function renderScope() {
     if (!state.hudVisible) return;
@@ -4377,7 +4356,6 @@
     scopeCtx.fillStyle = '#030403';
     scopeCtx.fillRect(0, 0, w, h);
 
-    // Dotted 2px graticule midline
     scopeCtx.fillStyle = '#18221d';
     const midY = Math.floor(h * 0.5);
     for (let x = 2; x < w - 2; x += 4) {
@@ -4401,7 +4379,6 @@
     scopeAnalyser.getByteTimeDomainData(scopeBytes);
 
     if (state.scopeMode === 0) {
-      // Coarse 2px pixel-snapped dotted trace matching the main ASCII grid
       scopeCtx.fillStyle = state.frozen ? '#487e9e' : '#4e8f60';
       for (let x = 1; x < w - 1; x += 2) {
         const sIdx = Math.min(scopeBytes.length - 1, Math.floor((x / w) * scopeBytes.length));
@@ -4444,13 +4421,13 @@
   }
 
   /* ===========================================================================
-     SECTION I: LANE ENGAGEMENT, FX/DENSITY/ASPECT TOGGLES & ATELIER SHELF
+     14. UI STATE TOGGLES & ATELIER BUILDERS
      =========================================================================== */
   const LANE_NAMES = [
-    'I. STRATA // Z-1 ARCHITECTURE, PAREIDOLIA & RELIC',
-    'II. EROSION // Z-2 ENGINE DUST GEOMETRIES',
-    'III. SILICA // Z-0 PATINA WALL & LIGHTNING',
-    'IV. LETHE // Z-0/Z-1 SHATTERING BORDERS'
+    'I. STRATA // MIDGROUND ARCHITECTURE',
+    'II. EROSION // FOREGROUND PARTICLES',
+    'III. SILICA // BACKGROUND PATINA',
+    'IV. LETHE // PERIPHERAL BORDERS'
   ];
 
   function syncLaneEngagementUI() {
@@ -4470,7 +4447,7 @@
     state.lanesActive[idx] = !state.lanesActive[idx];
     syncLaneEngagementUI();
     if (!silent) {
-      showToast(`${LANE_NAMES[idx]}: ${state.lanesActive[idx] ? 'ENGAGED' : 'OFF'}`);
+      showToast(`${LANE_NAMES[idx]}: ${state.lanesActive[idx] ? 'ON' : 'OFF'}`);
     }
   }
 
@@ -4483,19 +4460,19 @@
     const target = !anyOn;
     state.lanesActive = [target, target, target, target];
     syncLaneEngagementUI();
-    showToast(`ALL VISUAL LAYERS: ${target ? 'ENGAGED' : 'DISENGAGED'}`);
+    showToast(`ALL LAYERS: ${target ? 'ON' : 'OFF'}`);
   }
 
   function toggleArtfx() {
     state.artfxActive = !state.artfxActive;
     dom.btnArtfx.classList.toggle('active-cyan', state.artfxActive);
-    showToast(`ARTFX // VOLUMETRIC BACKLIGHT & RIM-CAST: ${state.artfxActive ? 'ON' : 'OFF'}`);
+    showToast(`ARTFX: ${state.artfxActive ? 'ON' : 'OFF'}`);
   }
 
   function toggleSpirits() {
     state.spiritsActive = !state.spiritsActive;
     dom.btnSpirits.classList.toggle('active-amber', state.spiritsActive);
-    showToast(`SPIRITS // HAUNTED ENTITIES & ORBS: ${state.spiritsActive ? 'SUMMONED' : 'DISMISSED'}`);
+    showToast(`SPIRITS: ${state.spiritsActive ? 'ON' : 'OFF'}`);
   }
 
   function toggleDensity2x() {
@@ -4503,7 +4480,7 @@
     dom.btnDensity.textContent = state.density2x ? '[Z] 2X' : '[Z] 1X';
     dom.btnDensity.classList.toggle('active-green', state.density2x);
     resizeViewport();
-    showToast(state.density2x ? 'GRID DENSITY // 2X MICRO-ENGRAVING' : 'GRID DENSITY // 1X BRUTALIST TERMINAL');
+    showToast(`GRID DENSITY: ${state.density2x ? '2X' : '1X'}`);
   }
 
   function cycleAspectMode() {
@@ -4512,16 +4489,13 @@
     dom.btnAspect.textContent = `[O] ${modeLabel}`;
     dom.btnAspect.classList.toggle('active', state.aspectModeIdx !== 0);
     resizeViewport();
-    const desc = modeLabel === '9:16'
-      ? '9:16 VERTICAL SOCIAL FRAME'
-      : (modeLabel === '16:9' ? '16:9 WIDESCREEN FRAME' : 'FULL EDGE-TO-EDGE STAGE');
-    showToast(`STAGE ASPECT // ${desc}`);
+    showToast(`ASPECT: ${modeLabel}`);
   }
 
   function toggleVizScopeOverride() {
     state.vizScopeMode = !state.vizScopeMode;
     dom.btnVizScope.classList.toggle('active', state.vizScopeMode);
-    showToast(state.vizScopeMode ? 'VIZ OVERRIDE // FULL-SCREEN ASCII SCOPE' : 'VIZ OVERRIDE // ARCHITECTURAL STRATA');
+    showToast(`SCOPE OVERRIDE: ${state.vizScopeMode ? 'ON' : 'OFF'}`);
   }
 
   function syncFormationButtonsUI() {
@@ -4561,9 +4535,9 @@
     state.calvedChunks.length = 0;
     initDustParticles();
     if (state.formationIdx === 8 && !state.relicLoaded) {
-      showToast('IX. RELIC // DRAG & DROP OR PRESS FILE FOR PNG/JPG');
+      showToast('IX. RELIC // DROP OR LOAD PNG/JPG IMAGE');
     } else {
-      showToast(`FORMATION // ${fm.label} — ${dom.formationSubtitle.textContent}`);
+      showToast(`FORMATION // ${fm.label}`);
     }
   }
 
@@ -4583,11 +4557,11 @@
       tile.type = 'button';
       tile.className = 'glyph-tile' + (state.mutedFlags[idx] ? ' muted' : '');
       tile.textContent = toMonoChar(ch);
-      tile.title = state.mutedFlags[idx] ? 'Click to unmute glyph' : 'Click to mute glyph';
+      tile.title = state.mutedFlags[idx] ? 'Unmute glyph' : 'Mute glyph';
       tile.addEventListener('click', () => {
         const activeCount = state.mutedFlags.filter((m) => !m).length;
         if (!state.mutedFlags[idx] && activeCount <= 1) {
-          showToast('AT LEAST ONE GLYPH MUST REMAIN ACTIVE');
+          showToast('MIN 1 GLYPH REQUIRED');
           return;
         }
         state.mutedFlags[idx] = !state.mutedFlags[idx];
@@ -4639,7 +4613,7 @@
     PALETTES.forEach((pal, idx) => {
       const btn = document.createElement('button');
       btn.className = 'pal-btn' + (idx === state.paletteIdx ? ' active' : '');
-      btn.title = `Select ${pal.name} Palette`;
+      btn.title = pal.name;
 
       const labelSpan = document.createElement('span');
       labelSpan.textContent = pal.name;
@@ -4668,7 +4642,7 @@
   }
 
   /* ===========================================================================
-     SECTION J: MNEMOSYNE ROTARY KNOBS, ACTIONS & STAGE SHORTCUTS
+     15. KNOB INTERACTION & KEYBOARD SHORTCUTS
      =========================================================================== */
   const knobEls = Array.from(document.querySelectorAll('.knob-svg'));
 
@@ -4734,7 +4708,7 @@
         e.preventDefault();
         const def = parseFloat(knob.dataset.default);
         setKnobValue(knob, def);
-        const label = knob.dataset.param === 'gain' ? 'GAIN RESET TO 1.00x' : `${knob.dataset.param.toUpperCase()} RESET`;
+        const label = knob.dataset.param === 'gain' ? 'GAIN RESET (1.00x)' : `${knob.dataset.param.toUpperCase()} RESET`;
         showToast(label);
       });
     });
@@ -4754,13 +4728,13 @@
       state.frozenSeed = state.morphSeed;
     }
     initDustParticles();
-    showToast('SCATTER // DIALS & SEED ROLLED (GAIN/GROW/PRLX LOCKED)');
+    showToast('SCATTER // SEED & DIALS ROLLED');
   }
 
   function toggleDrift() {
     state.driftActive = !state.driftActive;
     dom.btnDrift.classList.toggle('active', state.driftActive);
-    showToast(`DRIFT: ${state.driftActive ? 'ON (GAIN/GROW/PRLX LOCKED)' : 'OFF'}`);
+    showToast(`DRIFT: ${state.driftActive ? 'ON' : 'OFF'}`);
   }
 
   setInterval(() => {
@@ -4784,10 +4758,10 @@
         state.frozenBands[i] = state.bands[i].env;
       }
       dom.btnFreeze.textContent = 'FROZEN';
-      showToast('FORMATION FROZEN IN MORTAR');
+      showToast('FRAME FROZEN');
     } else {
       dom.btnFreeze.textContent = 'FREEZE';
-      showToast('MORTAR RELEASED');
+      showToast('FRAME RELEASED');
     }
   }
 
@@ -4795,7 +4769,7 @@
     state.atelierOpen = !state.atelierOpen;
     dom.atelierShelf.classList.toggle('collapsed', !state.atelierOpen);
     dom.btnAtelier.classList.toggle('active', state.atelierOpen);
-    showToast(`ATELIER SHELF: ${state.atelierOpen ? 'OPEN' : 'COLLAPSED'}`);
+    showToast(`ATELIER: ${state.atelierOpen ? 'OPEN' : 'COLLAPSED'}`);
   }
 
   function toggleHud() {
@@ -4804,7 +4778,7 @@
     dom.cornerToggle.textContent = state.hudVisible ? 'HIDE [H]' : 'SHOW [H]';
     dom.cornerToggle.classList.toggle('stealth', !state.hudVisible);
     if (!state.hudVisible) {
-      showToast('PROJECTION MODE // PRESS [H] TO SHOW CHASSIS');
+      showToast('HUD HIDDEN // PRESS [H] TO RESTORE');
     }
   }
 
@@ -4816,7 +4790,7 @@
         document.exitFullscreen();
       }
     } catch (_) {
-      showToast('FULLSCREEN UNAVAILABLE IN THIS VIEW');
+      showToast('FULLSCREEN UNAVAILABLE');
     }
   }
 
@@ -4848,7 +4822,7 @@
     } else if (file.type.startsWith('audio/') || /\.(wav|mp3|ogg|flac|aiff|aif|m4a)$/i.test(file.name)) {
       loadAudioFile(file);
     } else {
-      showToast('DROP AUDIO (WAV/MP3/FLAC) OR IMAGE (PNG/JPG/WEBP)');
+      showToast('UNSUPPORTED FILE TYPE');
     }
   }
 
@@ -4865,7 +4839,7 @@
   function wireControls() {
     scopeCanvas.addEventListener('click', () => {
       state.scopeMode = 1 - state.scopeMode;
-      showToast(state.scopeMode === 0 ? 'OLED // PIXEL WAVEFORM' : 'OLED // SEISMOGRAPH');
+      showToast(state.scopeMode === 0 ? 'OLED // WAVEFORM' : 'OLED // SEISMOGRAPH');
     });
 
     dom.btnVizScope.addEventListener('click', toggleVizScopeOverride);
@@ -4888,7 +4862,7 @@
       if (state.sourceMode === 'mic') return;
       state.monitorOn = !state.monitorOn;
       updateMonitorUI();
-      showToast(`SPEAKER MONITOR: ${state.monitorOn ? 'ON' : 'OFF'}`);
+      showToast(`MONITOR: ${state.monitorOn ? 'ON' : 'OFF'}`);
     });
 
     dom.btnMicPrev.addEventListener('click', () => cycleMicDevice(-1));
@@ -4903,7 +4877,6 @@
     dom.audioPlayer.addEventListener('play', updatePlayPauseUI);
     dom.audioPlayer.addEventListener('pause', updatePlayPauseUI);
 
-    // Discrete ASCII block scrubber pointer interaction
     dom.asciiScrub.addEventListener('pointerdown', (e) => {
       if (!state.fileLoaded) return;
       e.preventDefault();
@@ -4943,7 +4916,7 @@
       const val = dom.customGlyphInput.value;
       loadSymbolRampString(val, true);
       dom.customGlyphInput.blur();
-      showToast('CUSTOM SYMBOL RAMP APPLIED');
+      showToast('CUSTOM GLYPH RAMP APPLIED');
     });
     dom.customGlyphInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
@@ -5045,7 +5018,7 @@
   }
 
   /* ===========================================================================
-     SECTION K: MAIN 60FPS ANIMATION LOOP
+     16. MAIN RENDER LOOP
      =========================================================================== */
   let lastMs = performance.now();
 
